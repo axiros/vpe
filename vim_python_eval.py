@@ -52,6 +52,7 @@ s1.pipe(rx.combine_latest(s2, s3)).subscribe(lambda x: p.append(x))
 
 """
 
+
 def read_file(fn):
     try:
         with open(fn) as fd:
@@ -61,12 +62,13 @@ def read_file(fn):
     return s
 
 
-macros = {'r': m_r, "rx": m_rx}
+macros = {'r': m_r, 'rx': m_rx}
 # custom ones:
 fn_m = os.environ['HOME'] + '/.config/vpe/macros.py'
 s = read_file(fn_m)
 m = {}
-if s: exec(s, m, m)
+if s:
+    exec(s, m, m)
 macros.update(m['macros'])
 
 # Avoiding the infomous python indent bug for Treesitter...
@@ -241,11 +243,12 @@ class swagger:
         Swagger API (from %(givenurl)s)
         '''
 
-        import requests, json, functools, inspect
+        import requests, json, functools, inspect, os
+        env = os.environ.get
 
         class API:
             proto = 'https'
-            user, passw = '', ''
+            user, passw = env('user', ''), env('password', '')
             host = '%(host)s'
             base = '%(basePath)s'
 
@@ -256,6 +259,7 @@ class swagger:
         methods = lambda: (
             _TOC_
         ) # :clear :doc :eval file :exec single :wrap p = Tools.send({})
+
 
         class Tools:
             @staticmethod
@@ -289,12 +293,23 @@ class swagger:
 
             @staticmethod
             def send(meth):
+                def repl(s, keyw=%(forbidden_kw)s):
+                    if isinstance(s, str):
+                        for k in keyw:
+                            s = s.replace(f'{k}__', k)
+                    else:
+                        s = json.loads(Tools.repl(json.dumps(s)))
+                    return s
+
                 methd, pth, params, data, h = Tools.build_req(meth)
-                auth = f'{API.user}:{API.passw}@' if API.passw else ''
-                url = f'{API.proto}://{auth}{API.host}{API.base}{pth}'
+                url = repl(f'{API.proto}://{API.host}{API.base}{pth}')
+                kw = {'params': params, 'headers': h}
+                if API.passw:
+                    kw['auth'] = (API.user, API.passw)
+                if data:
+                    kw['data'] = repl(data)
                 req = getattr(requests, methd)
-                req = functools.partial(req, url, params=params, headers=h)
-                req = req(data=data) if data else req()
+                req = req(url, **kw)
                 if show_all:
                     return req   # show all
                 r = {'status': req.status_code}
@@ -314,10 +329,13 @@ class swagger:
                     def_ = getattr(Defs, def_[4:])
                 if isinstance(def_, (float, int, bool, str)):
                     return def_
-                if isinstance(def_, list):
-                    return [Tools.obj(def_[0])]
                 me = Tools.obj
+                if isinstance(def_, list):
+                    return [me(def_[0])]
+                if isinstance(def_, dict):
+                    return {k: me(v) for k, v in def_.items()}
                 return {k: me(getattr(def_, k)) for k in dir(def_) if not k[0] == '_'}
+
 
         """
 
@@ -344,13 +362,25 @@ class swagger:
             return t, swagger.by_array
         if t == 'file':
             return t, swagger.by_file
+        if t == 'object':
+            swagger.by_obj
+        if t == 'object':
+            return t, swagger.by_obj
         return t, swagger.by_obj
 
     @staticmethod
     def by_obj(k, v, ex, descr):
-        d = swagger.get_ref(v)
-        if not d:
-            breakpoint()   # FIXME BREAKPOINT
+        p = v.get('properties')
+        if p:
+            d = []
+            for k1, v1 in p.items():
+                v2 = swagger.prop(k1, v1)[-1]
+                d.append(v2)
+            d = 'dict(%s)' % ', '.join(d)
+        else:
+            d = swagger.get_ref(v)
+            if not d:
+                breakpoint()   # FIXME BREAKPOINT
         return ex or d, descr or k
 
     @staticmethod
@@ -391,6 +421,9 @@ class swagger:
         if not d:
             if i.get('example'):
                 d = i['example']
+                # be robust against ill defined {'example': 'value of any type'}
+                if isinstance(d, str) and (not d or d[0] not in {'"', "'"}):
+                    d = f"'{d}'"
             else:
                 d = swagger.by_type(i)[1](k, i, ex, descr)[0]
         d = v.get('default', f'[{d}]')
@@ -415,9 +448,18 @@ class swagger:
     def prop(k, v, no_ref=False):
         # if k == 'username': breakpoint()   # FIXME BREAKPOINT
         t, f = swagger.by_type(v)
+        # if v == {
+        #     'description': 'Execution result',
+        #     'items': {'example': 'value of any type'},
+        # }:
+        #     breakpoint()   # FIXME BREAKPOINT            'items': {'example': 'value of any type'},
+
         d = v.pop('description', '')
         if d:
             d += ' '
+        # if 'value of any' in str(v.get('example')):
+        #     breakpoint()   # FIXME BREAKPOINT
+        #     return
         r, d = f(k, v, ex=v.get('example'), descr=d)
         v = v if v else ''
         v, d = r, f'# {d} {v}'
@@ -440,14 +482,17 @@ class swagger:
         add = r.append
 
         for n, d in defs.items():
+            # if 'GenericMethodRe' in n:
+            #     breakpoint()   # FIXME BREAKPOINT
             swagger.definitions.add(n)
             d.pop('xml', 0)
             assert d.pop('type') == 'object'
-            m = d.pop('properties')
+            props = d.pop('properties')
             add(f'{i}class {n}:')
+            # add non relevant props, e.g. required with _ = ... after class:
             [add(f'{i*2}_{k}={v}') for k, v in d.items()]
-            if m:
-                for k, v in m.items():
+            if props:
+                for k, v in props.items():
                     if k in swagger.forbidden_kw:
                         k += '__'
                     for line in swagger.prop(k, v):
@@ -474,8 +519,13 @@ class swagger:
         except:
             return
         # sp = mod.SwaggerParser(swagger_dict=d)
-        # spec = sp.specification
+        # allows to predefine globals:
+        pp = ctx.state.get('params', {})
+        for p, v in pp.items():
+            v = f"'{v}'" if isinstance(v, str) else v
+            swagger.pparams[p] = f'{p} = {v}'
         spec['givenurl'] = url
+        spec['forbidden_kw'] = swagger.forbidden_kw
         r = deindent(swagger.code)
         r = r % spec
         r = r.replace('\n    ', '\n')
@@ -622,7 +672,7 @@ def ExecuteSelectedRange():
     # find statements like clear or doc:
     bs, docs, l1 = list(block), [], ''
     while bs:
-        l = bs.pop() # bottom to top
+        l = bs.pop()   # bottom to top
         l = l.strip()
         l = (l[1:] if l.startswith('#') else l).strip()
         if l.startswith(':cmt '):
@@ -679,14 +729,14 @@ def ExecuteSelectedRange():
     vim.command(':Format')
     vim.command(f'{len(res_buf)}j')
     res_buf = add_or_switch_to_window('previous')
-    #vim.command('delete') if clear_buffer else 0
+    # vim.command('delete') if clear_buffer else 0
     if post_generate:
         post_generate(src_buf, res_buf)
 
 
 if __name__ == '__main__':
     # testing. call the module with a swagger file
-    r = try_load_file_or_url(sys.argv[1])
+    r = try_load_file_or_url(sys.argv[1])[0]
 
     # r = try_load_file_or_url('./s.json')
     # r = try_load_file_or_url('http://httpbin.org/post')
