@@ -78,7 +78,18 @@ should be part of your editor python setup.
 
 - If you have the swagger definition in a file, press the hotkey on the filename
 
+<details><summary>demo</summary>
 [![asciicast](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK.svg)](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK)
+</details>
+
+- You may define, in addition to automatically extracted path params, other parameters globally, by
+  evaluating a `params={<param defs>}` assignment, before evaluating the file path or URL to the
+  swagger definition.
+
+<details><summary>demo</summary>
+[![asciicast](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK.svg)](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK)
+</details>
+
 
 
 ## Installation
