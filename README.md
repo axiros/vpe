@@ -5,9 +5,8 @@
 
 
 
-## Use Cases
 
-### Rules
+## Usage
 
 - Hit the hotkey (e.g. `,r`) on a line or visually selected range, which you want evaluated.
 - If the line is part of a block (e.g. a line within a function), then the whole block is evaluated
@@ -27,6 +26,8 @@
     - `:wrap <code>`: The line is wrapped into code, replacing the string '{}' (see swagger)
 - Objects or classes within result structures are walked for their attributes, when printing them
 
+
+## Features
 
 ### Simple Example
 
