@@ -63,8 +63,13 @@ Note: Early phase, only tested against the [petstore](https://petstore.swagger.i
 
 1. Hit the hotkey on a Swagger definition URL or filename => All RPCs are listed, incl. Parameter
    definitions.
-2. You can now parametrize and send requests to the endpoint by hitting the hotkey on the methods.
-
+2. Path parameters are extracted and configured globally on module level
+3. You can now parametrize and send requests to the endpoint by hitting the hotkey on the methods.
+4. Set `show_all` to 1 or True in order to inspect all attributes of the `requests` result object. 
+5. Configure any authentication within `class API`
+6. Directives are at the end of the `methods` block, ready for change.
+    - Remove the `:clear` to not loose output of previous runs
+    - Set `:wrap p = ...` to `:wrap y= ...` to get output as yaml
 
 [![asciicast](https://asciinema.org/a/Ot2gPgtAu292UgZpFgTwLKAU1.svg)](https://asciinema.org/a/Ot2gPgtAu292UgZpFgTwLKAU1)
 
