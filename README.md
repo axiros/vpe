@@ -87,7 +87,7 @@ should be part of your editor python setup.
   swagger definition.
 
 <details><summary>demo</summary>
-<a href="https://asciinema.org/a/12rsNrLd55oyjG1LlO93HcP4L" target="_blank"><img src="https://asciinema.org/a/12rsNrLd55oyjG1LlO93HcP4L.svg" /></a>
+<a href="https://asciinema.org/a/CNcvf0gn3zxGO1eHr4B8uBdZ1" target="_blank"><img src="https://asciinema.org/a/CNcvf0gn3zxGO1eHr4B8uBdZ1.svg" /></a>
 </details>
 
 
