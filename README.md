@@ -79,7 +79,7 @@ should be part of your editor python setup.
 - If you have the swagger definition in a file, press the hotkey on the filename
 
 <details><summary>demo</summary>
-[![asciicast](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK.svg)](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK)
+<a href="https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK" target="_blank"><img src="https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK.svg" /></a>
 </details>
 
 - You may define, in addition to automatically extracted path params, other parameters globally, by
@@ -87,7 +87,7 @@ should be part of your editor python setup.
   swagger definition.
 
 <details><summary>demo</summary>
-[![asciicast](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK.svg)](https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK)
+[![asciicast](https://asciinema.org/a/12rsNrLd55oyjG1LlO93HcP4L.svg)](https://asciinema.org/a/12rsNrLd55oyjG1LlO93HcP4L)
 </details>
 
 
