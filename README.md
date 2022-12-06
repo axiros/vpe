@@ -1,5 +1,19 @@
 # Vim Python Eval
 
+<!--toc:start-->
+- [Vim Python Eval](#vim-python-eval)
+  - [Usage](#usage)
+  - [Features](#features)
+    - [Simple Example](#simple-example)
+    - [Macros](#macros)
+    - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
+      - [Source Layout and Navigation](#source-layout-and-navigation)
+      - [Preparametrization](#preparametrization)
+  - [Installation](#installation)
+    - [Requirements](#requirements)
+  - [Developing](#developing)
+<!--toc:end-->
+
 - Facilitates evaluation and display of python directly from vim.
 - Offers built in support for interaction with swagger APIs
 
@@ -33,7 +47,6 @@
 
 [![asciicast](https://asciinema.org/a/cEmG79nApjbKe6Mvohco7OfqU.svg)](https://asciinema.org/a/cEmG79nApjbKe6Mvohco7OfqU)
 
-
 ### Macros
 
 If you hit the hotkey on an empty line we present a list of predefined code blocks, for quick adds
@@ -53,45 +66,68 @@ print('Hello', time.time())
 macros = {'demo': d}
 ```
 
-
 [![asciicast](https://asciinema.org/a/057ewOGytqJDGEL6DF9Ck1hDw.svg)](https://asciinema.org/a/057ewOGytqJDGEL6DF9Ck1hDw)
-
 
 
 ### Interacting with Swagger APIs
 
-Note: Early phase, only tested against the [petstore](https://petstore.swagger.io/) demo API.
+Note: Early phase. Manually tested against various swagger files, incl. the
+[petstore](https://petstore.swagger.io/) demo API.
 
-1. Hit the hotkey on a Swagger definition URL or filename => All RPCs are listed, incl. Parameter
-   definitions.
-2. Path parameters are extracted and configured globally on module level
+[![asciicast](https://asciinema.org/a/Ot2gPgtAu292UgZpFgTwLKAU1.svg)](https://asciinema.org/a/Ot2gPgtAu292UgZpFgTwLKAU1)
+
+1. Hit the hotkey on a Swagger definition URL or filename =>
+  - All RPCs are listed, incl. Parameter definitions.
+  - Path parameters are extracted and configured globally on module level
+  - Definitions are wrapped into a `class Defs`
+  - API Methods as top level classes, referencing definitions.
+  - Tools for actual sending the requests within `class Tools` at the end.
 3. You can now parametrize and send requests to the endpoint by hitting the hotkey on the methods.
 4. Set `show_all` to 1 or True in order to inspect all attributes of the `requests` result object. 
 5. Configure any authentication within `class API`
 6. Directives are at the end of the `methods` block, ready for change.
+    - Default: `# :clear :doc :eval file :exec single :wrap p = Tools.send({})`
     - Remove the `:clear` to not loose output of previous runs
     - Set `:wrap p = ...` to `:wrap y= ...` to get output as yaml
 
-[![asciicast](https://asciinema.org/a/Ot2gPgtAu292UgZpFgTwLKAU1.svg)](https://asciinema.org/a/Ot2gPgtAu292UgZpFgTwLKAU1)
-
-- The source module is folded and optimized for jumping around using `gd` (goto definition), which
-should be part of your editor python setup.
-
-- If you have the swagger definition in a file, press the hotkey on the filename
+If you have downloaded a swagger definition into a file, press the hotkey on the filename
 
 <details><summary>demo</summary>
 <a href="https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK" target="_blank"><img src="https://asciinema.org/a/KTvAtUqYCVkYclJKLDoz0mGOK.svg" /></a>
 </details>
 
-- You may define, in addition to automatically extracted path params, other parameters globally, by
-  evaluating a `params={<param defs>}` assignment, before evaluating the file path or URL to the
-  swagger definition.
 
-<details><summary>demo</summary>
-<a href="https://asciinema.org/a/CNcvf0gn3zxGO1eHr4B8uBdZ1" target="_blank"><img src="https://asciinema.org/a/CNcvf0gn3zxGO1eHr4B8uBdZ1.svg" /></a>
-</details>
+#### Source Layout and Navigation
 
+- The source module is optimized for jumping around using `gd` (goto definition), which should be part of your editor python setup. Optimized means: Some
+    refs may be wrapped into lambdas, when not resolvable at import time
+- `<Ctrl-o>` to jump back in history (`:help jump`)
 
+- The source module is also built for simple indent based folding, allowing to focus on specific
+  methods also within bigger APIs
+
+#### Pre-Parametrization
+
+Before evaluating the link to a swagger definition file, resulting in source module build, you may
+parametrize the build by evaluating some other conventional assignments.
+
+These are understood:
+
+- `sep=<methods seperator>`: "Stretching the methods, with a sep only line between them, for
+  readability
+- `params={<dict of global params>}`: The key values given here will be added to the path
+  parameters, i.e. get referenced globally.
+- `noshow=[<list of key matches>]`: Result dicts are (recursively) scanned for keys matching those,
+  and values "x-ed out". Intended to not show passwords and the like in demos.
+- `hdrs={<dict of additional headers}`: Request headers may be given here, e.g. API-Keys. `$`
+  notation is understood for values, referencing environ variables.
+
+Here a demo against a DynDNS provider's API, illustrating the use of those parameters. 
+
+<a href="https://asciinema.org/a/hCa6naJ7d6SCEJRioJCmjoLs1" target="_blank"><img src="https://asciinema.org/a/hCa6naJ7d6SCEJRioJCmjoLs1.svg" /></a>
+
+Note that the API server was a bit... slow at time of recording, we had to raise the request
+timeout.
 
 ## Installation
 
@@ -122,7 +158,6 @@ xnoremap <silent> ,r  :Evl<CR>
 ```
 
 This lazy loads the module on first use.
-
 
 
 ### Requirements
@@ -156,4 +191,6 @@ vpe.ctx.state = m
 This takes care to not loose your evaluation state over reloads.
 
 In order to run tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
+
+
 

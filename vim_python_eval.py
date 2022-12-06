@@ -1,14 +1,77 @@
 #!/usr/bin/env python
 """
-Tools to make use of python API
+Tools to make use of python API.
 
-API funcs are in Capitals
+API funcs are in Capitals. Currently only "ExecuteSelectedRange" - evaluating selected python code.
+
+Most code is for swagger definition parsing, in namespace class "swagger".
 """
-# pyright: typeCheckingMode=off
-import sys, os, json, vim, importlib, time
-from functools import partial as P
-from pprint import pformat
 
+import sys, os, json, importlib, time
+from functools import partial as P
+
+try:
+    import vim
+except:
+    # we can still parse swagger
+    print('no vim api importable', file=sys.stderr)
+
+
+class ctx:
+    """Interface for the caller, setting us up
+    Also transfers state over debug module reloads.
+    """
+
+    cur_buffer = None
+    prev_buffer = None
+    L1 = 0   # selected first line in vim source buffer
+    L2 = 0
+    # transferred even over module reloads:
+    state = {'_loaded_libs': {'yaml': 'pyyaml'}}
+
+
+def read_file(fn):
+    try:
+        with open(fn) as fd:
+            s = fd.read()
+    except:
+        s = ''
+    return s
+
+
+apostr = lambda s: f"'{s}'" if isinstance(s, str) else s
+
+
+def lib(l, t={}):
+    """we don't always require all libs"""
+    c = ctx.state['_loaded_libs']
+    v = c.get(l, l)
+    if not isinstance(v, str):
+        return v
+    if not t.get(l):
+        try:
+            t[l] = True
+            c[l] = importlib.import_module(l)
+            return c[l]
+        except:
+            pass
+    s = '\n' + '-' * 40 + '\n'
+    print(f'{s}Please: pip install {l}{s}\n')
+
+
+# Avoiding the infomous python indent bug for Treesitter...
+BRKT = {'{', '['}
+
+
+def log(s, **kw):
+    """for debug only"""
+    with open('/tmp/py_api', 'a') as fd:
+        s = f'{s} {kw}\n'
+        fd.write(s)
+
+
+# ------------------------------------------------------------------------------------------------ "macros"
+# some predefined code blocks, extensible by user:
 m_r = """
 if 'Sending requests to API endpoint':
     from requests import get, post, delete, patch
@@ -52,16 +115,6 @@ s1.pipe(rx.combine_latest(s2, s3)).subscribe(lambda x: p.append(x))
 
 """
 
-
-def read_file(fn):
-    try:
-        with open(fn) as fd:
-            s = fd.read()
-    except:
-        s = ''
-    return s
-
-
 macros = {'r': m_r, 'rx': m_rx}
 # custom ones:
 fn_m = os.environ['HOME'] + '/.config/vpe/macros.py'
@@ -71,27 +124,9 @@ if s:
     exec(s, m, m)
 macros.update(m['macros'])
 
-# Avoiding the infomous python indent bug for Treesitter...
-BRKT = {'{', '['}
-
-
-def lib(l, t={}) -> dict:
-    c = ctx.state['_loaded_libs']
-    v = c.get(l, l)
-    if not isinstance(v, str):
-        return v
-    if not t.get(l):
-        try:
-            t[l] = True
-            c[l] = importlib.import_module(l)
-            return c[l]
-        except:
-            pass
-    s = '\n' + '-' * 40 + '\n'
-    return print(f'{s}Please: pip install {l}{s}\n')
-
 
 def help():
+    """Display available macros"""
     r = 'Enter letter and hit evaluation hotkey on it:\n\n'
     for m, v in macros.items():
         v = '# ' + v.lstrip().split('\n', 1)[0].replace('if ', '')
@@ -100,22 +135,7 @@ def help():
     return r
 
 
-# def get_sel_lines():
-class ctx:
-    """Interface for the caller, setting us up"""
-
-    cur_buffer = None
-    prev_buffer = None
-    L1 = 0
-    L2 = 0
-    # transferred even over module reloads:
-    state = {'_loaded_libs': {'yaml': 'pyyaml'}}
-
-
-def log(s, **kw):
-    with open('/tmp/py_api', 'a') as fd:
-        s = f'{s} {kw}\n'
-        fd.write(s)
+# ------------------------------------------------------------------------------------------------ Vim API tools
 
 
 def clear_all(buffer):
@@ -123,6 +143,7 @@ def clear_all(buffer):
 
 
 buf = lambda: vim.current.buffer
+vimcmd = lambda cmd: vim.command(cmd)
 
 
 def add_or_switch_to_window(buffername, remember_cur=False, b=None):
@@ -136,13 +157,14 @@ def add_or_switch_to_window(buffername, remember_cur=False, b=None):
         ctx.prev_win = vim.current.window
     bid = vim.eval(f'bufwinnr("{buffername}")')
     if bid == '-1':
-        vim.command(f'rightbelow vsplit {buffername}')
-        vim.command(f'setlocal buftype=nofile nospell')
+        vimcmd(f'rightbelow vsplit {buffername}')
+        vimcmd(f'setlocal buftype=nofile nospell')
     else:
-        vim.command(f'{bid}wincmd w')
+        vimcmd(f'{bid}wincmd w')
     return vim.current.buffer
 
 
+# ------------------------------------------------------------------------------------------------ Result Formatting
 def check_print_wanted(m):
     for k in formatters:
         v = m.pop(k, None)
@@ -170,7 +192,22 @@ def check_print_wanted(m):
 def to_dict(*a, **kw):
     """Try to represent anything in valid python, avoiding tons of lsp errors in the result window"""
     d = _to_dict(*a, **kw)
-    return json.loads(json.dumps(d, default=str))
+    d = json.loads(json.dumps(d, default=str))
+    nosh = ctx.state.get('noshow')
+    if not nosh:
+        return d
+
+    def ns(d, nosh=nosh):
+        if isinstance(d, (list, tuple, set)):
+            return type(d)([ns(i) for i in d])
+        if isinstance(d, dict):
+            for k in list(d.keys()):
+                if any([i for i in nosh if i in k]):
+                    d[k] = 'xxx'
+                d[k] = ns(d[k])
+        return d
+
+    return ns(d)
 
 
 def _to_dict(obj, depth=0, maxd=5, have=None):
@@ -218,7 +255,10 @@ def to_y(o):
 
 formatters['y'] = to_y
 
+deindent = lambda s, spec={}: s.replace(f'\n{" "*8}', '\n') % spec
 
+# ------------------------------------------------------------------------------------------------ Being smart about one liners
+# Currently only about swagger defs:
 def try_load_file_or_url(url):
     s = read_file(url)
     h = {'http', 'https'}
@@ -227,32 +267,38 @@ def try_load_file_or_url(url):
     return swagger.try_load(s, url=url)
 
 
-deindent = lambda s: s.replace('\n    ', '\n')
-
-
 class swagger:
     """namespace for all swagger handling related funcs"""
 
+    # nasty details: when params are named e.g. async we must convert to "async__", then replace before send
     forbidden_kw = {'async', 'for', 'if', 'while'}
+    # path params. will be exposed globally
     pparams = {}
+    # number of classes generated to that we can collapse after build:
     clses = 0
+    # all definitions:
     definitions = set()
+    # while in def we can't ref other defs, must put into lambdas:
     in_def_block = False
+    # the tooling:
     code = """
         '''
-        Swagger API (from %(givenurl)s)
+        Swagger API Tester
+        %(givenurl)s
+        %(pre_params)s
         '''
 
         import requests, json, functools, inspect, os
         env = os.environ.get
 
         class API:
-            proto = 'https'
             user, passw = env('user', ''), env('password', '')
             host = '%(host)s'
             base = '%(basePath)s'
+            hdrs = %(hdrs)s
 
         show_all = 0
+        timeout = 5
 
         _PTHPARAMS_
 
@@ -260,6 +306,10 @@ class swagger:
             _TOC_
         ) # :clear :doc :eval file :exec single :wrap p = Tools.send({})
 
+
+        """
+
+    tools_code = """
 
         class Tools:
             @staticmethod
@@ -269,7 +319,7 @@ class swagger:
                 if ins['body'] and ins['formData']:
                     raise Exception('cannot send form AND json')
                 Is = isinstance
-                data, h, q, m = {}, {}, {}, {}
+                data, h, q, m = {}, API.hdrs, {}, {}
                 c = globals()[meth.__qualname__.split('.', 1)[0]]
                 for k in [k for k in dir(meth) if not k[0] == '_']:
                     v = getattr(meth, k)
@@ -302,8 +352,13 @@ class swagger:
                     return s
 
                 methd, pth, params, data, h = Tools.build_req(meth)
-                url = repl(f'{API.proto}://{API.host}{API.base}{pth}')
-                kw = {'params': params, 'headers': h}
+                host = f"{API.host}"
+                if not '://' in host:
+                    host = 'https://' + host
+                url = repl(f'{host}{API.base}{pth}')
+                getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v 
+                h = {k: getenv(v) for k, v in h.items()}
+                kw = {'params': params, 'headers': h, 'timeout': timeout}
                 if API.passw:
                     kw['auth'] = (API.user, API.passw)
                 if data:
@@ -337,7 +392,7 @@ class swagger:
                 return {k: me(getattr(def_, k)) for k in dir(def_) if not k[0] == '_'}
 
 
-        """
+    """
 
     @staticmethod
     def definition(ref: str):
@@ -403,6 +458,7 @@ class swagger:
 
     @staticmethod
     def by_file(k, v, ex, descr):
+        # TODO file upload not yet working, user must manually read in the content:
         return ex or v.get('default', "'~/my_file'"), descr or k
 
     @staticmethod
@@ -446,14 +502,7 @@ class swagger:
 
     @staticmethod
     def prop(k, v, no_ref=False):
-        # if k == 'username': breakpoint()   # FIXME BREAKPOINT
         t, f = swagger.by_type(v)
-        # if v == {
-        #     'description': 'Execution result',
-        #     'items': {'example': 'value of any type'},
-        # }:
-        #     breakpoint()   # FIXME BREAKPOINT            'items': {'example': 'value of any type'},
-
         d = v.pop('description', '')
         if d:
             d += ' '
@@ -466,13 +515,10 @@ class swagger:
         l = []
         l.append(f'{d}')
         d = ''
-
         if k in swagger.pparams and not no_ref:
             v = k
         l.append(f'{k} = {v}')
         return l
-
-    # return r, f'# {d} {v}'
 
     @staticmethod
     def defs(defs):
@@ -482,10 +528,9 @@ class swagger:
         add = r.append
 
         for n, d in defs.items():
-            # if 'GenericMethodRe' in n:
-            #     breakpoint()   # FIXME BREAKPOINT
             swagger.definitions.add(n)
             d.pop('xml', 0)
+            # Maybe we should gen those classes also for objects within methods?
             assert d.pop('type') == 'object'
             props = d.pop('properties')
             add(f'{i}class {n}:')
@@ -498,18 +543,14 @@ class swagger:
                     for line in swagger.prop(k, v):
                         add(f'{i*2}{line}')
 
-                    # v, d = swagger.prop(k, v)
-                    # if isinstance(v, list):
-                    #     add(f'{i*2}{d}')
-                    #     d = ''
-                    # s = f'{k} = {v} '.ljust(40) + d
-                    # add(f'{i*2}{s}')
         swagger.in_def_block = False
         return '\n'.join(r)
 
     @staticmethod
     def try_load(s: str, url='n.a.'):
-        if not s or not 'swagger' in s:
+        """s the content of a swagger definition file"""
+        s = s.encode().decode('utf-8-sig')
+        if not s or (not 'swagger' in s and not 'openapi' in s):
             return
         try:
             if s.strip()[0] in BRKT:
@@ -518,20 +559,30 @@ class swagger:
                 spec = lib('yaml').loads(s)
         except:
             return
-        # sp = mod.SwaggerParser(swagger_dict=d)
+        # sp = mod.SwaggerParser(swagger_dict=d) # swagger parser did not cut it for us :-/
         # allows to predefine globals:
-        pp = ctx.state.get('params', {})
-        for p, v in pp.items():
-            v = f"'{v}'" if isinstance(v, str) else v
-            swagger.pparams[p] = f'{p} = {v}'
+        spec['params'] = ctx.state.get('params', {})
+        for p, v in spec['params'].items():
+            swagger.pparams[p] = f'{p} = {apostr(v)}'
+        spec['hdrs'] = ctx.state.get('hdrs', {})
         spec['givenurl'] = url
         spec['forbidden_kw'] = swagger.forbidden_kw
-        r = deindent(swagger.code)
-        r = r % spec
-        r = r.replace('\n    ', '\n')
+        if not spec.get('host'):
+            spec['host'] = spec['servers'][0]['url']
+        if not spec.get('basePath'):
+            spec['basePath'] = ''
+
+        pp = ['hdrs', 'sep', 'params', 'noshow']
+        pp = [(k, ctx.state.get(k)) for k in pp]
+        pp = [f'{k} = {apostr(v)}' for k, v in pp if v is not None]
+        spec['pre_params'] = '\n'.join(pp)
+        r = deindent(swagger.code, spec)
+        tools_cls = deindent(swagger.tools_code, spec)
         paths = spec['paths']
 
         def new_pparam(p, _=swagger.pparams):
+            if p['name'] in _:
+                return
             v = swagger.prop(p['name'], p, no_ref=True)[-1]
             v = v.split('#', 1)[0].strip()   # comments differ => omit
             _[p['name']] = v
@@ -544,8 +595,9 @@ class swagger:
                             new_pparam(p)
 
         find_path_params(paths.values())
-
-        r += swagger.defs(spec['definitions'])
+        if spec.get('definitions'):
+            swagger.clses += 1
+            r += swagger.defs(spec['definitions'])
 
         toc = []
 
@@ -569,7 +621,7 @@ class swagger:
                 toc.append(f'{pn}.{m},')
                 r += f'\n{i}class {m}:'
                 M = P[m]
-                params = M.pop('parameters')
+                params = M.pop('parameters', [])
                 doc = f'{M.pop("description", "")} {M.pop("summary", "")}'
                 r += f'\n{i}{i}"""{doc}"""'
                 r += f'\n{i}{i}# _ = {M}'
@@ -587,10 +639,16 @@ class swagger:
         P = []
         for p, d in swagger.pparams.items():
             P.append(d)
-
-        r = r.replace('_TOC_', '\n    '.join(toc))
+        sep = '\n    '
+        _ = ctx.state.get('sep')
+        if _ != None:
+            _ = f"'{_}'" if isinstance(_, str) else _
+            sep = f'\n    {_},{sep}'
+        r = r.replace('_TOC_', sep.join(toc))
         r = r.replace('_PTHPARAMS_', '\n'.join(P))
+        r += tools_cls
         # r += '\nTools.send(pet___petId_.get)'
+
         return r, swagger.src_post_generate
 
     @staticmethod
@@ -607,17 +665,17 @@ class swagger:
         return l
 
     def src_post_generate(scb, rb):
-        vim.command(':1')
-        for i in range(swagger.clses + 3):
-            vim.command('/\\nclass')
-            vim.command('normal 2j')
-            vim.command('foldclose')
-        vim.command(':1')
-        vim.command('/methods')
+        vimcmd(':1')
+        for i in range(swagger.clses + 2):
+            vimcmd('/\\nclass')
+            vimcmd('normal 2j')
+            vimcmd('foldclose')
+        vimcmd(':1')
+        vimcmd('/methods')
 
 
 def ExecuteSelectedRange():
-    """Called method whan hotkey is pressed in vim"""
+    """Called method when hotkey is pressed in vim"""
     src_buf = vim.current.buffer
     nrs = list(range(ctx.L1 - 1, ctx.L2))
     # check if we are within a block and go up:
@@ -625,11 +683,12 @@ def ExecuteSelectedRange():
     show_help = clear_buffer = clear_help = False
 
     def into_src_buffer(sb, lines):
+        """sometimes we modify the source buffer. macros, swagger, ..."""
         for l in lines.strip().splitlines():
             l1 = l.strip()
             if l1.startswith('vim:'):
-                vim.command(f'{len(sb)}j')
-                vim.command(l1.split('vim:', 1)[1].strip())
+                vimcmd(f'{len(sb)}j')
+                vimcmd(l1.split('vim:', 1)[1].strip())
             else:
                 sb.append(l)
 
@@ -637,9 +696,10 @@ def ExecuteSelectedRange():
     # and extend the selected range the top of the block:
     orig_line = src_buf[nrs[0]]
     post_generate = False
+    # just hotkey on a single line?
     if len(nrs) == 1:
+        # in general, if not special handling is wanted we move up until the block starts, then go down:
         l = src_buf[nrs[0]].strip()
-        # os.system(f'notify-send "{l}"')
         v = try_load_file_or_url(l)   # load swagger specs
         if v:
             v, post_generate = v
@@ -649,12 +709,13 @@ def ExecuteSelectedRange():
         elif l == '':
             show_help = clear_buffer = True
         elif l in macros:
-            vim.command('delete')
-            vim.command('delete')
+            vimcmd('delete')
+            vimcmd('delete')
             v = macros[l]
             into_src_buffer(src_buf, v)
             clear_buffer = clear_help = True
         else:
+            # move up:
             while (src_buf[nrs[0]] + ' ')[0] in {' ', ']', '}', ')'}:
                 nrs.insert(0, nrs[0] - 1)
             nrs = [nrs[0]]
@@ -682,16 +743,16 @@ def ExecuteSelectedRange():
         l1 = l
 
     block = '\n'.join(block)
-    m = ctx.state
+    state = ctx.state
     if ':autodoc' in block:
-        m['autodoc'] = True
+        state['autodoc'] = True
     if ':noautodoc' in block:
-        m.pop('autodoc', 0)
+        state.pop('autodoc', 0)
     if ':clear' in block:
         clear_buffer = True
     if ':eval file' in block:
         all_ = '\n'.join([src_buf[i] for i in range(0, len(src_buf))])
-        exec(all_, m, m)
+        exec(all_, state, state)
     wrap = doc_call = ''
     if ':wrap ' in block and '{}' in block.split(':wrap ', 1)[1]:
         wrap = block.split(':wrap ', 1)[1].split('\n', 1)[0].strip()
@@ -706,9 +767,9 @@ def ExecuteSelectedRange():
         block = wrap.replace('{}', block)
 
     res_buf: list = add_or_switch_to_window('results.py', remember_cur=True)
-    if not m:
-        m.update(globals())
-    if clear_buffer or m.get('autodoc'):
+    if not state:
+        state.update(globals())
+    if clear_buffer or state.get('autodoc'):
         clear_all(buffer=res_buf)
     if show_help:
         ress = help()
@@ -716,20 +777,21 @@ def ExecuteSelectedRange():
         ress = ''
     else:
         try:
-            exec(block, m, m)
+            exec(block, state, state)
         except Exception as ex:
-            m['y'] = f'Evaluation error:\n{type(ex)}\n{str(ex)}'
-        ress = check_print_wanted(m)   # res str
+            state['y'] = f'Evaluation error:\n{type(ex)}\n{str(ex)}'
+        ress = check_print_wanted(state)   # res str
         # [b.append(l) for l in block.splitlines()]
-    if doc_call or m.get('autodoc'):
+    if doc_call or state.get('autodoc'):
         [docs.append(f'# {i}') for i in block.splitlines()]
     [res_buf.append(l) for l in docs]
+
     if ress:
         [res_buf.append(l) for l in ress.splitlines()]
-    vim.command(':Format')
-    vim.command(f'{len(res_buf)}j')
+    vimcmd(':Format')
+    vimcmd(f'{len(res_buf)}j')
     res_buf = add_or_switch_to_window('previous')
-    # vim.command('delete') if clear_buffer else 0
+    # vimcmd('delete') if clear_buffer else 0
     if post_generate:
         post_generate(src_buf, res_buf)
 
