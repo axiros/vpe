@@ -8,7 +8,7 @@
     - [Macros](#macros)
     - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
       - [Source Layout and Navigation](#source-layout-and-navigation)
-      - [Preparametrization](#preparametrization)
+      - [Pre-Parametrization](#pre-parametrization)
   - [Installation](#installation)
     - [Requirements](#requirements)
   - [Developing](#developing)
