@@ -34,7 +34,10 @@
 - Previously evaluated lines are remembered, i.e. state is kept between evaluations.
 - Objects or classes within result structures are walked for their attributes, when printing them
 
-Note: Evaluated code may even reside within docstrings or markdown code blocks - as long as you omit the comment delimiters from the evaluation, all assignements make it into the next evaluation state.
+Notes:
+- Evaluated code may even reside within docstrings or markdown code blocks - as long as you omit the comment delimiters from the evaluation, all assignements make it into the next evaluation state.
+- vim calls the python code syncronously, blocking. You have to kill the python process to unblock
+  it, should your code block forever, while executing.
 
 ## Features
 
