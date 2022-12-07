@@ -4,6 +4,8 @@
 - [Vim Python Eval](#vim-python-eval)
   - [Usage](#usage)
   - [Features](#features)
+    - [Directives](#directives)
+    - [Result Display](#result-display)
     - [Simple Example](#simple-example)
     - [Macros](#macros)
     - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
@@ -17,7 +19,7 @@
 - Facilitates evaluation and display of python directly from vim.
 - Offers built in support for interaction with swagger APIs
 
-
+![](./img/swagger.png)
 
 
 ## Usage

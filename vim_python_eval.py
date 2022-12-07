@@ -270,8 +270,8 @@ def to_y(o):
     d = to_dict(o)
     y = lib('yaml').safe_dump(d, default_flow_style=False)
     return f'''"""
-{y}
-    """'''
+{y}\n"""
+    '''
 
 
 formatters['y'] = to_y
