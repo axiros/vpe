@@ -226,9 +226,12 @@ This takes care to not loose your evaluation state over reloads.
 
 In order to run tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
 
-## Acknowledgements
+## Credits and Alternatives
 
-- [vim-http-client](https://github.com/aquach/vim-http-client)
+Inspiration from this: [vim-http-client](https://github.com/aquach/vim-http-client)
+
+Powerful alternative: [jupyter-vim](https://github.com/jupyter-vim/jupyter-vim)
+
 
 
 
