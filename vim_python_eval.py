@@ -28,6 +28,7 @@ class ctx:
     L2 = 0
     # transferred even over module reloads:
     state = {'_loaded_libs': {'yaml': 'pyyaml'}}
+    docs = []
 
 
 def read_file(fn):
@@ -190,24 +191,44 @@ def check_print_wanted(m):
 
 
 def to_dict(*a, **kw):
-    """Try to represent anything in valid python, avoiding tons of lsp errors in the result window"""
+    """Try to represent anything in valid python, avoiding tons of lsp errors in the result window
+
+    This is the place where we apply hide and filter
+    filter='foo,bar': only return kvs which match foo OR bar
+    hide='foo,bar': x out values for those
+    """
     d = _to_dict(*a, **kw)
     d = json.loads(json.dumps(d, default=str))
-    nosh = ctx.state.get('noshow')
-    if not nosh:
+    nosh: str = ctx.state.get('hide', '')
+    filter: str = ctx.state.get('filter', '')
+    if not nosh and not filter:
         return d
+    fnr = [0]
 
-    def ns(d, nosh=nosh):
+    def ns(d, nosh=nosh, filter=filter, fnr=fnr):
+        f = [s.strip() for s in filter.split(',')] if filter else []
+        n = [s.strip() for s in nosh.split(',')]
         if isinstance(d, (list, tuple, set)):
             return type(d)([ns(i) for i in d])
         if isinstance(d, dict):
-            for k in list(d.keys()):
-                if any([i for i in nosh if i in k]):
-                    d[k] = 'xxx'
-                d[k] = ns(d[k])
+            r = {}
+            for k, v in d.items():
+                s = f'{k}{v}'
+                if f and not any([i for i in f if i in s]):
+                    fnr[0] += 1
+                    continue
+                if any([i for i in n if i in k]):
+                    v = 'xxx'
+                else:
+                    v = ns(v)
+                r[k] = v
+            return r
         return d
 
-    return ns(d)
+    r = ns(d)
+    if fnr[0]:
+        ctx.docs.append(f'# {fnr[0]} keys filtered, matching [{filter}]')
+    return r
 
 
 def _to_dict(obj, depth=0, maxd=5, have=None):
@@ -285,32 +306,28 @@ class swagger:
         '''
         Swagger API Tester
         %(givenurl)s
-        %(pre_params)s
         '''
-
-        import requests, json, functools, inspect, os
-        env = os.environ.get
+        %(pre_params)s
+        # -
 
         class API:
-            user, passw = env('user', ''), env('password', '')
+            user, passw = '$user', '$password'
             host = '%(host)s'
             base = '%(basePath)s'
             hdrs = %(hdrs)s
 
-        show_all = 0
-        timeout = 5
-
         _PTHPARAMS_
 
-        methods = lambda: (
+        methods = lambda: ( # :clear :doc :eval file :exec single :wrap p = Tools.send({})
             _TOC_
-        ) # :clear :doc :eval file :exec single :wrap p = Tools.send({})
+        ) 
 
 
         """
 
     tools_code = """
 
+        import requests, json, functools, inspect, os
         class Tools:
             @staticmethod
             def build_req(meth):
@@ -343,6 +360,8 @@ class swagger:
 
             @staticmethod
             def send(meth):
+                env = os.environ.get
+                getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v 
                 def repl(s, keyw=%(forbidden_kw)s):
                     if isinstance(s, str):
                         for k in keyw:
@@ -350,24 +369,25 @@ class swagger:
                     else:
                         s = json.loads(Tools.repl(json.dumps(s)))
                     return s
-
                 methd, pth, params, data, h = Tools.build_req(meth)
                 host = f"{API.host}"
                 if not '://' in host:
                     host = 'https://' + host
                 url = repl(f'{host}{API.base}{pth}')
-                getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v 
                 h = {k: getenv(v) for k, v in h.items()}
                 kw = {'params': params, 'headers': h, 'timeout': timeout}
-                if API.passw:
-                    kw['auth'] = (API.user, API.passw)
+                if getenv(API.passw):
+                    kw['auth'] = (getenv(API.user), getenv(API.passw))
                 if data:
                     kw['data'] = repl(data)
                 req = getattr(requests, methd)
                 req = req(url, **kw)
-                if show_all:
+                if sh_req == 2:
                     return req   # show all
                 r = {'status': req.status_code}
+                if sh_req == 1:
+                    r.update(dict(kw))
+                    r['url'] = url
                 try:
                     r['resp'] = json.loads(req.text)
                 except:
@@ -571,9 +591,16 @@ class swagger:
             spec['host'] = spec['servers'][0]['url']
         if not spec.get('basePath'):
             spec['basePath'] = ''
-
-        pp = ['hdrs', 'sep', 'params', 'noshow']
-        pp = [(k, ctx.state.get(k)) for k in pp]
+        pp = {
+            'hdrs': None,
+            'hide': None,
+            'params': None,
+            'sep': None,
+            'filter': None,
+            'sh_req': 0,
+            'timeout': 5,
+        }
+        pp = [(k, ctx.state.get(k, pp[k])) for k in sorted(pp)]
         pp = [f'{k} = {apostr(v)}' for k, v in pp if v is not None]
         spec['pre_params'] = '\n'.join(pp)
         r = deindent(swagger.code, spec)
@@ -731,7 +758,7 @@ def ExecuteSelectedRange():
     block = [src_buf[i] for i in nrs]
 
     # find statements like clear or doc:
-    bs, docs, l1 = list(block), [], ''
+    bs, docs, l1 = list(block), ctx.docs, []
     while bs:
         l = bs.pop()   # bottom to top
         l = l.strip()
@@ -744,6 +771,7 @@ def ExecuteSelectedRange():
 
     block = '\n'.join(block)
     state = ctx.state
+
     if ':autodoc' in block:
         state['autodoc'] = True
     if ':noautodoc' in block:
@@ -765,7 +793,7 @@ def ExecuteSelectedRange():
 
     if wrap:
         block = wrap.replace('{}', block)
-
+    dt = ''
     res_buf: list = add_or_switch_to_window('results.py', remember_cur=True)
     if not state:
         state.update(globals())
@@ -777,14 +805,18 @@ def ExecuteSelectedRange():
         ress = ''
     else:
         try:
+            t0 = time.time()
             exec(block, state, state)
+            dt = round(time.time() - t0, 2)
         except Exception as ex:
             state['y'] = f'Evaluation error:\n{type(ex)}\n{str(ex)}'
         ress = check_print_wanted(state)   # res str
         # [b.append(l) for l in block.splitlines()]
     if doc_call or state.get('autodoc'):
-        [docs.append(f'# {i}') for i in block.splitlines()]
+        dt = f'[{dt}s]' if dt else ''
+        [docs.insert(0, f'# {i} {dt}') for i in block.splitlines()]
     [res_buf.append(l) for l in docs]
+    docs.clear()
 
     if ress:
         [res_buf.append(l) for l in ress.splitlines()]
