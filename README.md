@@ -144,13 +144,11 @@ parametrize the build by evaluating some other conventional assignments.
 
 These are understood, in addition to the always supported ones (e.g. `hide` or `filter`):
 
-- `sep=<methods seperator>`: "Stretching the methods, with a sep only line between them, for
-  readability
-- `params={<dict of global params>}`: The key values given here will be added to the path
-  parameters, i.e. get referenced globally.
-- `hdrs={<dict of additional headers}`: Request headers may be given here, e.g. API-Keys. `$`
-  notation is understood for values, referencing environ variables.
-- `sh_req=[0|1|2]`: Shows result only for 0, request with 1, full dump of the request object at 2
+- `hdrs={<dict of additional headers}`: Request headers may be given here, e.g. API-Keys. `$` notation is understood for values, referencing environ variables.
+- `noicos=[False]`: Skip showing colored icons in the methods list
+- `params={<dict of global params>}`: The key values given here will be added to the path parameters, i.e. get referenced globally.
+- `sep=<methods seperator>`: "Stretching the methods, with a sep only line between them, for readability
+- `sh_req=[0] [0|1|2]`: Shows result only for 0, request with 1, full dump of the request object at 2
 
 
 

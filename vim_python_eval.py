@@ -291,6 +291,8 @@ def try_load_file_or_url(url):
 class swagger:
     """namespace for all swagger handling related funcs"""
 
+    icos = dict(put='🟨', post='🟪', get='🟩', delete='🟥', dflt='🟫')
+
     # nasty details: when params are named e.g. async we must convert to "async__", then replace before send
     forbidden_kw = {'async', 'for', 'if', 'while'}
     # path params. will be exposed globally
@@ -318,9 +320,11 @@ class swagger:
 
         _PTHPARAMS_
 
+        # fmt:off
         methods = lambda: ( # :clear :doc :eval file :exec single :wrap p = Tools.send({})
             _TOC_
         ) 
+        # fmt:on
 
 
         """
@@ -359,7 +363,9 @@ class swagger:
                 return meth.__name__, pth, q, data, h
 
             @staticmethod
-            def send(meth):
+            def send(meth, *args):
+                if args:
+                    meth = args[0] # ico in line
                 env = os.environ.get
                 getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v 
                 def repl(s, keyw=%(forbidden_kw)s):
@@ -594,6 +600,7 @@ class swagger:
         pp = {
             'hdrs': None,
             'hide': None,
+            'noicos': None,
             'params': None,
             'sep': None,
             'filter': None,
@@ -602,7 +609,7 @@ class swagger:
         }
         pp = [(k, ctx.state.get(k, pp[k])) for k in sorted(pp)]
         pp = [f'{k} = {apostr(v)}' for k, v in pp if v is not None]
-        spec['pre_params'] = '\n'.join(pp)
+        spec['pre_params'] = '\n'.join(pp)   # render them into src buffer
         r = deindent(swagger.code, spec)
         tools_cls = deindent(swagger.tools_code, spec)
         paths = spec['paths']
@@ -645,7 +652,11 @@ class swagger:
             r += f'\n{i}pth = "{p_orig}"'
             methods = paths[p_orig].keys()
             for m in methods:
-                toc.append(f'{pn}.{m},')
+                if ctx.state.get('noicos'):
+                    toc.append(f'{pn}.{m},')
+                else:
+                    ico = swagger.icos.get(m, swagger.icos['dflt'])
+                    toc.append(f"'{ico}', {pn}.{m},")
                 r += f'\n{i}class {m}:'
                 M = P[m]
                 params = M.pop('parameters', [])
