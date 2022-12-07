@@ -25,6 +25,8 @@
 ## Usage
 
 - Hit the hotkey (e.g. `,r`) on a line or visually selected range, which you want evaluated.
+- The line may be a filename or URL of a swagger definition, resulting in code generation for a
+  python requests based API client (see below)
 - When the evaluated block contains assignments to `p` or `y`, their values are shown pretty printed
   or as yaml within a vertical split window. As are evaluation errors.
 - If the evaluated line is part of a block (e.g. a line within a function), then the whole block is evaluated by default.
@@ -220,6 +222,10 @@ vpe.ctx.state = m
 This takes care to not loose your evaluation state over reloads.
 
 In order to run tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
+
+## Acknowledgements
+
+- [vim-http-client](https://github.com/aquach/vim-http-client)
 
 
 
