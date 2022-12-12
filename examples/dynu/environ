@@ -1,0 +1,2 @@
+export token="$(pass show AX/ddns_dynu_api)"
+export id="$(pass show AX/ddns_dynu_id_home)"

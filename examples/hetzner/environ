@@ -1,0 +1,2 @@
+export token="$(pass show HCloud/token)"
+export bearer="Bearer $token"

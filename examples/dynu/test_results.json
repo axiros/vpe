@@ -1,0 +1,780 @@
+[
+    "https://api.dynu.com/v2/dns",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns",
+    "post",
+    {
+        "data": {
+            "allowZoneTransfer": true,
+            "createdOn": "2020-12-12",
+            "dnssec": true,
+            "group": "office",
+            "id": 8358362,
+            "ipv4": true,
+            "ipv4Address": "1.2.3.4",
+            "ipv4WildcardAlias": true,
+            "ipv6": true,
+            "ipv6Address": "1111:2222:3333::4444",
+            "ipv6WildcardAlias": true,
+            "name": "somedomain.com",
+            "state": "AwaitingPayment",
+            "token": "",
+            "ttl": 90,
+            "unicodeName": "",
+            "updatedOn": "2020-12-12"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/getroot/test.mydomain.com",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/record/test.mydomain.com",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "recordType": "TXT"
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362",
+    "post",
+    {
+        "data": {
+            "allowZoneTransfer": true,
+            "createdOn": "2020-12-12",
+            "dnssec": true,
+            "group": "office",
+            "id": 8358362,
+            "ipv4": true,
+            "ipv4Address": "1.2.3.4",
+            "ipv4WildcardAlias": true,
+            "ipv6": true,
+            "ipv6Address": "1111:2222:3333::4444",
+            "ipv6WildcardAlias": true,
+            "name": "somedomain.com",
+            "state": "AwaitingPayment",
+            "token": "",
+            "ttl": 90,
+            "unicodeName": "",
+            "updatedOn": "2020-12-12"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/dnssec",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/dnssec/enable",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/dnssec/disable",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/record",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/record",
+    "post",
+    {
+        "data": {
+            "group": "",
+            "ipv4Address": "204.25.79.214",
+            "nodeName": "mail",
+            "recordType": "A",
+            "state": true,
+            "ttl": 300
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/record/758426278",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/record/758426278",
+    "post",
+    {
+        "data": {
+            "group": "",
+            "ipv4Address": "204.25.79.214",
+            "nodeName": "mail",
+            "recordType": "A",
+            "state": true,
+            "ttl": 300
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/record/758426278",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/webredirect",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/webredirect",
+    "post",
+    {
+        "data": {
+            "domainId": 123456789,
+            "host": "www.myotherdomain.com",
+            "includeQueryString": true,
+            "nodeName": "www",
+            "port": 8080,
+            "redirectType": "PF",
+            "state": true
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/webRedirect/758426278",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/webRedirect/758426278",
+    "post",
+    {
+        "data": {
+            "cloak": true,
+            "nodeName": "www",
+            "port": 8080,
+            "redirectType": "PF",
+            "state": true,
+            "useDynamicIPv4Address": true,
+            "useDynamicIPv6Address": true
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/webRedirect/758426278",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/ipUpdateHistory",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/group",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/group",
+    "post",
+    {
+        "data": {
+            "groupName": "work"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/group/8358362",
+    "post",
+    {
+        "data": {
+            "groupName": "work",
+            "groupPassword": "A8ce83cl31",
+            "id": 35836285753
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/group/8358362",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/limit",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/dns/8358362/limit",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/autorenewEnable",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/autorenewDisable",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/lock",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/unlock",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/nameServer",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/nameServer",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "nameServer": "ns3.dynu.com"
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/nameServer/add",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "nameServer": "ns3.dynu.com"
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/nameServer/primary",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "nameServer": "ns1.dynu.com"
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/domain/8358362/cancel",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/deliveryQueue",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/blacklist",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/blacklist",
+    "post",
+    {
+        "data": {
+            "data": "bademail@externaldomain.com",
+            "state": true,
+            "type": "EmailAddress"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/blacklist/758426278",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/blacklist/758426278",
+    "post",
+    {
+        "data": {
+            "data": "bademail@externaldomain.com",
+            "state": true,
+            "type": "EmailAddress"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/blacklist/758426278",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/whitelist",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/whitelist",
+    "post",
+    {
+        "data": {
+            "data": "bademail@externaldomain.com",
+            "state": true,
+            "type": "EmailAddress"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/whitelist/758426278",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/whitelist/758426278",
+    "post",
+    {
+        "data": {
+            "data": "bademail@externaldomain.com",
+            "state": true,
+            "type": "EmailAddress"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/email/8358362/whitelist/758426278",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/monitor/limit",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/monitor",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/monitor",
+    "post",
+    {
+        "data": {
+            "authenticationType": "NONE",
+            "checkInterval": 10,
+            "name": "HTTP monitor for www.dynu.com",
+            "type": "HTTP",
+            "url": "https://www.dynu.com"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/monitor/8358362",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/monitor/8358362",
+    "delete",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/monitor/8358362/pause",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/monitor/8358362/unpause",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/ping",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "message": "test"
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://api.dynu.com/v2/ping",
+    "post",
+    {
+        "data": {
+            "message": "test"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]

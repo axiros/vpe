@@ -1,0 +1,5421 @@
+﻿{
+  "openapi": "3.0.0",
+
+  "tags": [
+    {
+      "name": "dns"
+    },
+    {
+      "name": "domain"
+    },
+    {
+      "name": "email"
+    },
+    {
+      "name": "monitor"
+    },
+    {
+      "name": "ping"
+    }
+  ],
+
+  "paths": {
+
+    "/dns": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Get a list of domains for DNS service.",
+        "operationId": "dnsGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSDomain"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "dns" ],
+        "summary": "Add a new DNS service.",
+        "operationId": "dnsPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNS.domain"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/getroot/{hostname}": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Get the root domain name based on a hostname.",
+        "operationId": "dnsGetrootHostnameGet",
+        "parameters": [
+          {
+            "name": "hostname",
+            "in": "path",
+            "description": "The child hostname of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "test.mydomain.com"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSHostnameGetGetrootByHostname"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/record/{hostname}": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Get DNS records based on a hostname and resource record type.",
+        "operationId": "dnsRecordHostnameGetRecordType",
+        "parameters": [
+          {
+            "name": "hostname",
+            "in": "path",
+            "description": "The hostname of the DNS records.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "test.mydomain.com"
+            }
+          },
+          {
+            "name": "recordType",
+            "in": "query",
+            "description": "The record type of DNS records.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [ "A", "AAAA", "CAA", "CNAME", "HINFO", "LOC", "MX", "NS", "PTR", "PF", "RP", "SPF", "TXT", "UF", "URI" ],
+              "example": "TXT"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSRecord"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Get details of a domain for DNS service.",
+        "operationId": "dnsIdGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 8358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSDomainGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "dns" ],
+        "summary": "Update an existing DNS service.",
+        "operationId": "dnsIdPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1583628575
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNS.domain"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "dns" ],
+        "summary": "Remove domain from DNS service.",
+        "operationId": "dnsIdDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/dnssec": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "DS record of DNSSEC for DNS service.",
+        "operationId": "dnsIdDNSSECGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1583624578
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSDNSSECGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/dnssec/enable": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Enable DNSSEC for DNS service.",
+        "operationId": "dnsIdDNSSECEnableId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362457
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/dnssec/disable": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Disable DNSSEC for DNS service.",
+        "operationId": "dnsIdDNSSECDisableGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1583624587
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/record": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Get a list of DNS records for DNS service.",
+        "operationId": "dnsIdRecordGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836275
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSRecord"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "dns" ],
+        "summary": "Add a new DNS record for DNS service.",
+        "operationId": "dnsIdRecordPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836275
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/DNS.dnsRecordA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordAAAA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordCAA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordCNAME" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordHINFO" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordLOC" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordMX" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordNS" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordPTR" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordRP" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSOA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSPF" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSRV" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSSHFP" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordTLSA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordTXT" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordURI" }
+                ],
+                "example": {
+                  "nodeName": "mail",
+                  "recordType": "A",
+                  "ttl": 300,
+                  "state": true,
+                  "group": "",
+                  "ipv4Address": "204.25.79.214"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSRecordGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/record/{dnsRecordId}": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Get details of a DNS record for DNS service.",
+        "operationId": "dnsIdRecordDnsRecordIdGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836278
+            }
+          },
+          {
+            "name": "dnsRecordId",
+            "in": "path",
+            "description": "The id of the DNS record for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSRecordGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "dns" ],
+        "summary": "Update an existing DNS record for DNS service.",
+        "operationId": "dnsIdRecordDnsRecordIdPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1583628575
+            }
+          },
+          {
+            "name": "dnsRecordId",
+            "in": "path",
+            "description": "The id of the DNS record for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/DNS.dnsRecordA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordAAAA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordCAA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordCNAME" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordHINFO" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordLOC" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordMX" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordNS" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordPTR" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordRP" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSOA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSPF" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSRV" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordSSHFP" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordTLSA" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordTXT" },
+                  { "$ref": "#/components/schemas/DNS.dnsRecordURI" }
+                ],
+                "example": {
+                  "nodeName": "mail",
+                  "recordType": "A",
+                  "ttl": 300,
+                  "state": true,
+                  "group": "",
+                  "ipv4Address": "204.25.79.214"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSRecordGetById"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "dns" ],
+        "summary": "Remove a DNS record from DNS service.",
+        "operationId": "dnsIdRecordDnsRecordIdDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 789245718
+            }
+          },
+          {
+            "name": "dnsRecordId",
+            "in": "path",
+            "description": "The id of the DNS record for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 754258952
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/webredirect": {
+      "get": {
+        "tags": [ "dns", "webredirect" ],
+        "summary": "Get a list of web redirects.",
+        "operationId": "dnsIdWebRedirectGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836275
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200WebRedirect"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "dns", "webredirect" ],
+        "summary": "Add a new web redirect.",
+        "operationId": "dnsIdWebRedirectPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836275
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNS.webRedirect",
+                "example": {
+                  "domainId": 123456789,
+                  "nodeName": "www",
+                  "redirectType": "PF",
+                  "state": true,
+                  "host": "www.myotherdomain.com",
+                  "port": 8080,
+                  "includeQueryString": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200WebRedirectGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/webRedirect/{webRedirectId}": {
+      "get": {
+        "tags": [ "dns", "webredirect" ],
+        "summary": "Get details of the web redirect.",
+        "operationId": "dnsIdWebRedirectWebRedirectIdGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836278
+            }
+          },
+          {
+            "name": "webRedirectId",
+            "in": "path",
+            "description": "The id of the web redirect.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200WebRedirectGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "dns", "webredirect" ],
+        "summary": "Update an existing web redirect.",
+        "operationId": "dnsIdWebRedirectWebRedirectIdPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 583628575
+            }
+          },
+          {
+            "name": "webRedirectId",
+            "in": "path",
+            "description": "The id of the web redirect.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNS.webRedirect",
+                "example": {
+                  "nodeName": "www",
+                  "redirectType": "PF",
+                  "state": true,
+                  "port": 8080,
+                  "useDynamicIPv4Address": true,
+                  "useDynamicIPv6Address": true,
+                  "cloak": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200WebRedirectGetById"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "dns", "webredirect" ],
+        "summary": "Remove a web redirect.",
+        "operationId": "dnsIdWebRedirectWebRedirectIdDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 789245718
+            }
+          },
+          {
+            "name": "webRedirectId",
+            "in": "path",
+            "description": "The id of the web redirect.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 542589526
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/ipUpdateHistory": {
+      "get": {
+        "tags": [ "dns" ],
+        "summary": "Get a list of IP address updates.",
+        "operationId": "dnsIPUpdateHistoryGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSIPUpdateHistory"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/group": {
+      "get": {
+        "tags": [ "dns", "group" ],
+        "summary": "Get a list of groups to which hosts are assigned to.",
+        "operationId": "dnsGroupGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSGroup"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "dns", "group" ],
+        "summary": "Add a new group.",
+        "operationId": "dnsGroupPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNS.dnsGroup",
+                "example": {
+                  "groupName": "work"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSGroupGetById"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/group/{id}": {
+      "post": {
+        "tags": [ "dns", "group" ],
+        "summary": "Update an existing group.",
+        "operationId": "dnsGroupIdPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the group.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362857
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNS.dnsGroup",
+                "example": {
+                  "id": 35836285753,
+                  "groupName": "work",
+                  "groupPassword": "A8ce83cl31"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSGroupGetById"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "dns", "group" ],
+        "summary": "Remove a group.",
+        "operationId": "dnsGroupIdDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the group.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/limit": {
+      "get": {
+        "tags": [ "dns", "limit" ],
+        "summary": "Limits associated with hostnames.",
+        "operationId": "dnsLimitGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSLimit"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/dns/{id}/limit": {
+      "get": {
+        "tags": [ "dns", "limit" ],
+        "summary": "Limits associated with DNS records.",
+        "operationId": "dnsRecordLimitGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain for DNS service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836275
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DNSRecordLimit"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+
+    "/domain": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Get a list of domains for domain registration service.",
+        "operationId": "domainGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Domain"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Get details of a domain registration domain.",
+        "operationId": "domainGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DomainGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/autorenewEnable": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Enable autorenewal for a domain.",
+        "operationId": "domainAutorenewEnableGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/autorenewDisable": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Disable autorenewal for a domain.",
+        "operationId": "domainAutorenewDisableGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/lock": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Lock a domain.",
+        "operationId": "domainLockGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/unlock": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Unlock a domain.",
+        "operationId": "domainUnlockGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/nameServer": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Get a list of name servers for a domain.",
+        "operationId": "domainNameServerGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200DomainNameServer"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "domain" ],
+        "summary": "Delete a name server of a domain.",
+        "operationId": "domainNameServerDeleteGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          },
+          {
+            "name": "nameServer",
+            "in": "query",
+            "description": "The name server to delete for the domain.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ns3.dynu.com"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/nameServer/add": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Add a name server to a domain.",
+        "operationId": "domainNameServerAddGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          },
+          {
+            "name": "nameServer",
+            "in": "query",
+            "description": "The name server to add to the domain.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ns3.dynu.com"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/nameServer/primary": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Make a name server the primary name server of a domain.",
+        "operationId": "domainNameServerPrimaryGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          },
+          {
+            "name": "nameServer",
+            "in": "query",
+            "description": "The name server to make primary for the domain.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ns1.dynu.com"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/domain/{id}/cancel": {
+      "get": {
+        "tags": [ "domain" ],
+        "summary": "Cancel a domain.",
+        "operationId": "domainCancelGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the domain.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+
+
+
+    "/email": {
+      "get": {
+        "tags": [ "email" ],
+        "summary": "Get a list of email services.",
+        "operationId": "emailGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Email"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/email/{id}": {
+      "get": {
+        "tags": [ "email" ],
+        "summary": "Get details of an email service.",
+        "operationId": "emailGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/email/{id}/deliveryQueue": {
+      "get": {
+        "tags": [ "email" ],
+        "summary": "Get a list of messages in delivery queue.",
+        "operationId": "emailDeliveryQueueGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailDeliveryQueue"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/email/{id}/blacklist": {
+      "get": {
+        "tags": [ "email" ],
+        "summary": "Get a list of blacklist.",
+        "operationId": "emailBlacklistGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailBlacklist"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "email" ],
+        "summary": "Add a new blacklist for email service.",
+        "operationId": "emailIdBlacklistPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836275
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Email.emailBlacklist",
+                "example": {
+                  "type": "EmailAddress",
+                  "data": "bademail@externaldomain.com",
+                  "state": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailBlacklistGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/email/{id}/blacklist/{blacklistId}": {
+      "get": {
+        "tags": [ "email" ],
+        "summary": "Get details of a blacklist for email service.",
+        "operationId": "emailIdBlacklistBlacklistIdGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836278
+            }
+          },
+          {
+            "name": "blacklistId",
+            "in": "path",
+            "description": "The id of the blacklist for email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailBlacklistGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "email" ],
+        "summary": "Update details of an existing blacklist for email service.",
+        "operationId": "emailIdBlacklistBlacklistIdPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836278
+            }
+          },
+          {
+            "name": "blacklistId",
+            "in": "path",
+            "description": "The id of the blacklist for email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Email.emailBlacklist",
+                "example": {
+                  "type": "EmailAddress",
+                  "data": "bademail@externaldomain.com",
+                  "state": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailBlacklistGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "email" ],
+        "summary": "Remove a blacklist from email service.",
+        "operationId": "emailIdBlacklistBlacklistIdDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 578924571
+            }
+          },
+          {
+            "name": "blacklistId",
+            "in": "path",
+            "description": "The id of the blacklist for email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 754258952
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/email/{id}/whitelist": {
+      "get": {
+        "tags": [ "email" ],
+        "summary": "Get a list of whitelist.",
+        "operationId": "emailWhitelistGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailWhitelist"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "email" ],
+        "summary": "Add a new whitelist for email service.",
+        "operationId": "emailIdWhitelistPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836275
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Email.emailWhitelist",
+                "example": {
+                  "type": "EmailAddress",
+                  "data": "bademail@externaldomain.com",
+                  "state": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailWhitelistGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/email/{id}/whitelist/{whitelistId}": {
+      "get": {
+        "tags": [ "email" ],
+        "summary": "Get details of a whitelist for email service.",
+        "operationId": "emailIdWhitelistWhitelistIdGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836278
+            }
+          },
+          {
+            "name": "whitelistId",
+            "in": "path",
+            "description": "The id of the whitelist for email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailWhitelistGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "email" ],
+        "summary": "Update details of an existing whitelist for email service.",
+        "operationId": "emailIdWhitelistWhitelistIdPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 35836278
+            }
+          },
+          {
+            "name": "whitelistId",
+            "in": "path",
+            "description": "The id of the whitelist for email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 758426278
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Email.emailWhitelist",
+                "example": {
+                  "type": "EmailAddress",
+                  "data": "bademail@externaldomain.com",
+                  "state": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200EmailWhitelistGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "email" ],
+        "summary": "Remove a whitelist from email service.",
+        "operationId": "emailIdWhitelistWhitelistIdDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 789245718
+            }
+          },
+          {
+            "name": "whitelistId",
+            "in": "path",
+            "description": "The id of the whitelist for email service.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 754258952
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+
+
+    "/monitor/limit": {
+      "get": {
+        "tags": [ "monitor", "limit" ],
+        "summary": "Limits associated with monitoring.",
+        "operationId": "monitorLimitGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200MonitorLimit"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/monitor": {
+      "get": {
+        "tags": [ "monitor" ],
+        "summary": "Get a list of monitors.",
+        "operationId": "monitorGet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Monitor"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "post": {
+        "tags": [ "monitor" ],
+        "summary": "Add a new monitor.",
+        "operationId": "monitorAddPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/Monitor.monitorDNS" },
+                  { "$ref": "#/components/schemas/Monitor.monitorHTTP" },
+                  { "$ref": "#/components/schemas/Monitor.monitorKeyword" },
+                  { "$ref": "#/components/schemas/Monitor.monitorPing" },
+                  { "$ref": "#/components/schemas/Monitor.monitorPort" }
+                ],
+                "example": {
+                  "name": "HTTP monitor for www.dynu.com",
+                  "type": "HTTP",
+                  "checkInterval": 10,
+                  "url": "https://www.dynu.com",
+                  "authenticationType": "NONE"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200MonitorAdd"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/monitor/{id}": {
+      "get": {
+        "tags": [ "monitor" ],
+        "summary": "Get details of a monitor.",
+        "operationId": "monitorGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the monitor.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200MonitorGetById"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      },
+      "delete": {
+        "tags": [ "monitor" ],
+        "summary": "Delete a monitor.",
+        "operationId": "monitorDeleteGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the monitor.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/monitor/{id}/pause": {
+      "get": {
+        "tags": [ "monitor" ],
+        "summary": "Pause a monitor.",
+        "operationId": "monitorPauseGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the monitor.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+    "/monitor/{id}/unpause": {
+      "get": {
+        "tags": [ "monitor" ],
+        "summary": "Unpause a monitor.",
+        "operationId": "monitorUnpauseGetId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the monitor.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 358362
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": [
+          { "apiKey": [] },
+          { "oauth2": [] }
+        ]
+      }
+    },
+
+    "/ping": {
+
+      "get": {
+        "tags": [ "ping" ],
+        "summary": "Ping the API server to obtain the pong response.",
+        "operationId": "pingGet",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "description": "The message to receive back in pong.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "test"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Ping"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": []
+      },
+
+      "post": {
+        "tags": [ "ping" ],
+        "summary": "Ping the API server to obtain the pong response.",
+        "operationId": "pingPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ping.ping"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Ping"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "501": {
+            "$ref": "#/components/responses/501"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          }
+        },
+        "security": []
+      }
+    }
+  }, 
+   
+  "components": {
+
+    "schemas": {
+
+      "apiResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "exception": {
+            "type": "object",
+            "$ref": "#/components/schemas/apiException"
+          }
+        }
+      },
+      "apiException": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "enum": [ "Application Exception", "Argument Exception", "Authentication Exception", "Authorization Exception", "IO Exception", "Not Implemented", "Parse Exception", "Quota Exception", "Timeout Exception", "Request Exception", "Server Exception", "Validation Exception" ]
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+
+      "DNS.domain": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "example": "somedomain.com"
+          },
+          "unicodeName": {
+            "type": "string",
+            "readOnly": true
+          },
+          "token": {
+            "type": "string",
+            "readOnly": true
+          },
+          "state": {
+            "type": "string",
+            "enum": [ "AwaitingPayment", "AwaitingAuthorizationCode", "AwaitingIPSTAGChange", "Complete", "Cancelled", "Expired", "TransferPending", "TransferFailed", "RedemptionPeriod", "Provisioning" ],
+            "readOnly": true
+          },
+          "group": {
+            "type": "string",
+            "example": "office"
+          },
+          "ipv4Address": {
+            "type": "string",
+            "example": "1.2.3.4"
+          },
+          "ipv6Address": {
+            "type": "string",
+            "example": "1111:2222:3333::4444"
+          },
+          "ttl": {
+            "type": "integer",
+            "format": "int32",
+            "example": 90
+          },
+          "ipv4": {
+            "type": "boolean",
+            "example": true
+          },
+          "ipv6": {
+            "type": "boolean",
+            "example": true
+          },
+          "ipv4WildcardAlias": {
+            "type": "boolean",
+            "example": true
+          },
+          "ipv6WildcardAlias": {
+            "type": "boolean",
+            "example": true
+          },
+          "allowZoneTransfer": {
+            "type": "boolean",
+            "example": false
+          },
+          "dnssec": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "DNS.dnsSec": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "domainName": {
+            "type": "string"
+          },
+          "dsRecord": {
+            "type": "string"
+          },
+          "digest": {
+            "type": "string"
+          },
+          "digestType": {
+            "type": "string",
+            "enum": [ "Sha1", "Sha256", "EccGost", "Sha384" ]
+          },
+          "algorithm": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "publicKey": {
+            "type": "string"
+          },
+          "keyTag": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "flags": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DNS.hostname": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "domainName": {
+            "type": "string"
+          },
+          "node": {
+            "type": "string"
+          }
+        }
+      },
+      "DNS.dnsRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "domainId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "domainName": {
+            "type": "string",
+            "example": "mydomain.com",
+            "readOnly": true
+          },
+          "nodeName": {
+            "type": "string",
+            "example": "www"
+          },
+          "hostname": {
+            "type": "string",
+            "example": "www.mydomain.com",
+            "readOnly": true
+          },
+          "recordType": {
+            "type": "string",
+            "enum": [ "A", "AAAA", "CAA", "CNAME", "HINFO", "LOC", "MX", "NS", "PTR", "PF", "RP", "SOA", "TXT", "UF", "URI" ],
+            "example": "A"
+          },
+          "state": {
+            "type": "boolean"
+          },
+          "content": {
+            "type": "string",
+            "example": "",
+            "readOnly": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "DNS.dnsRecordA": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "group": {
+                "type": "string",
+                "example": "work"
+              },
+              "ipv4Address": {
+                "type": "string",
+                "example": "1.2.3.4"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordAAAA": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "group": {
+                "type": "string",
+                "example": "work"
+              },
+              "ipv6Address": {
+                "type": "string",
+                "example": "1111:2222:3333::4444"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordCAA": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "flags": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "tag": {
+                "type": "string",
+                "enum": [ "issue", "issuewild", "iodef" ],
+                "example": "issue"
+              },
+              "value": {
+                "type": "string",
+                "example": "dynuca.org"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordCNAME": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "example": "www.anotherdomain.com"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordHINFO": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "CPU": {
+                "type": "string",
+                "example": "Xeon"
+              },
+              "OperatingSystem": {
+                "type": "string",
+                "example": "Linux"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordLOC": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "latitude": {
+                "type": "number",
+                "format": "double",
+                "example": 61.1833
+              },
+              "longitude": {
+                "type": "number",
+                "format": "double",
+                "example": -149.8333
+              },
+              "altitude": {
+                "type": "number",
+                "format": "double",
+                "example": 10
+              },
+              "size": {
+                "type": "number",
+                "format": "double",
+                "example": 1000
+              },
+              "horizontalPrecision": {
+                "type": "number",
+                "format": "double",
+                "example": 10000
+              },
+              "verticalPrecision": {
+                "type": "number",
+                "format": "double",
+                "example": 10
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordMX": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "example": "mail.anotherdomain.com"
+              },
+              "priority": {
+                "type": "integer",
+                "format": "int32",
+                "example": 10
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordNS": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "example": "ns2.anotherdomain.com"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordPTR": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "example": "10.207.160.216.in-addr.arpa"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordRP": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "mailBox": {
+                "type": "string",
+                "example": "admin.domain.com"
+              },
+              "txtDomainName": {
+                "type": "string",
+                "example": "domain.com"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordSOA": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "masterName": {
+                "type": "string",
+                "example": "ns1.dynu.com"
+              },
+              "responsibleName": {
+                "type": "string",
+                "example": "administrator.dynu.com"
+              },
+              "refresh": {
+                "type": "integer",
+                "format": "int32",
+                "example": 1800
+              },
+              "retry": {
+                "type": "integer",
+                "format": "int32",
+                "example": 300
+              },
+              "expire": {
+                "type": "integer",
+                "format": "int32",
+                "example": 86400
+              },
+              "negativeTTL": {
+                "type": "integer",
+                "format": "int32",
+                "example": 300
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordSPF": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "textData": {
+                "type": "string",
+                "example": "v=spf1 include:_spf.somedomain.com ~all"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordSRV": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "example": "sip.mydomain.com"
+              },
+              "priority": {
+                "type": "integer",
+                "format": "int32",
+                "example": 10
+              },
+              "weight": {
+                "type": "integer",
+                "format": "int32",
+                "example": 0
+              },
+              "port": {
+                "type": "integer",
+                "format": "int32",
+                "example": 5060
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordSSHFP": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "algorithm": {
+                "type": "integer",
+                "format": "int32",
+                "example": 1,
+                "minimum": 0,
+                "maximum": 4
+              },
+              "fingerPrintType": {
+                "type": "integer",
+                "format": "int32",
+                "example": 1,
+                "minimum": 0,
+                "maximum": 2
+              },
+              "fingerPrint": {
+                "type": "string",
+                "example": "f9e3c9b1df3569c99ea3c5af4e9686d90ae778b484af86d37e96603e9895ea7d"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordTLSA": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "certificateUsage": {
+                "type": "integer",
+                "format": "int32",
+                "example": 3,
+                "minimum": 0,
+                "maximum": 3
+              },
+              "selector": {
+                "type": "integer",
+                "format": "int32",
+                "example": 1,
+                "minimum": 0,
+                "maximum": 1
+              },
+              "matchingType": {
+                "type": "integer",
+                "format": "int32",
+                "example": 1,
+                "minimum": 0,
+                "maximum": 2
+              },
+              "certificateAssociatedData": {
+                "type": "string",
+                "example": "0D6FCE3320315023FF499A3F3DE1C362C88F8380311AC8C036890DAB13243AA7"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordTXT": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "textData": {
+                "type": "string",
+                "example": "facebook-domain-verification=22rm551cu4k0ab0bxsw536tlds4h95"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.dnsRecordURI": {
+        "allOf": [
+          { "$ref": "#/components/schemas/DNS.dnsRecord" },
+          {
+            "type": "object",
+            "properties": {
+              "priority": {
+                "type": "integer",
+                "format": "int32",
+                "example": 10
+              },
+              "weight": {
+                "type": "integer",
+                "format": "int32",
+                "example": 1
+              },
+              "targetUri": {
+                "type": "string",
+                "example": "ftp://ftp.example.com/public"
+              }
+            }
+          }
+        ]
+      },
+      "DNS.ipUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "responseId": {
+            "type": "string"
+          },
+          "updateStatus": {
+            "type": "string",
+            "enum": [ "Good", "Bad Authentication", "DNS Error", "Server Error", "911", "Not Fully Qualified Domain Name", "No Change", "Abuse", "No Host", "Too Many Hosts", "Not Member", "Old Version", "Unknown" ],
+            "readOnly": true
+          },
+          "ipv4Address": {
+            "type": "string",
+            "readOnly": true
+          },
+          "ipv6Address": {
+            "type": "string",
+            "readOnly": true
+          },
+          "queryString": {
+            "type": "string",
+            "readOnly": true
+          },
+          "userAgent": {
+            "type": "string",
+            "readOnly": true
+          },
+          "ssl": {
+            "type": "boolean"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "DNS.dnsGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "groupName": {
+            "type": "string",
+            "example": "work"
+          },
+          "groupPassword": {
+            "type": "string",
+            "example": "A64Cce8cHx37"
+          },
+          "passwordProtected": {
+            "type": "boolean",
+            "readOnly":  true,
+            "example": true
+          }
+        }
+      },
+      "DNS.webRedirect": {
+        "type": "object",
+        "required": [
+          "id",
+          "domainId",
+          "domainName",
+          "nodeName",
+          "hostname",
+          "redirectType",
+          "state",
+          "updatedOn",
+          "url",
+          "host",
+          "port"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "domainId": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "domainName": {
+            "type": "string",
+            "example": "mydomain.com",
+            "readOnly": true
+          },
+          "nodeName": {
+            "type": "string",
+            "example": "www"
+          },
+          "hostname": {
+            "type": "string",
+            "example": "www.mydomain.com",
+            "readOnly": true
+          },
+          "redirectType": {
+            "type": "string",
+            "enum": [ "PF", "UF" ],
+            "description": "UF stands for 'URL Forwarding' and PF stands for 'Port Forwarding'",
+            "example": "PF"
+          },
+          "state": {
+            "type": "boolean"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "url": {
+            "type": "string",
+            "description": "This property only applies when redirectType is UF",
+            "example": "https://www.mydomain.com"
+          },
+          "host": {
+            "type": "string",
+            "description": "This property only applies when redirectType is PF",
+            "example": "www.mydomain.com"
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32",
+            "description": "This property only applies when redirectType is PF",
+            "example": 8080
+          },
+          "useDynamicIPv4Address": {
+            "type": "boolean"
+          },
+          "useDynamicIPv6Address": {
+            "type": "boolean"
+          },
+          "cloak": {
+            "type": "boolean"
+          },
+          "includeQueryString": {
+            "type": "boolean"
+          },
+          "redirect301": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string",
+            "example": "Acme, Inc."
+          },
+          "metaKeywords": {
+            "type": "string",
+            "example": "plumbing, water supply, contract work"
+          },
+          "metaDescription": {
+            "type": "string",
+            "example": "Our company performs general plumbing and contract work."
+          }
+        }
+      },
+      "DNS.limit": {
+        "type": "object",
+        "properties": {
+          "activeCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 132
+          },
+          "remainingCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 368
+          }
+        }
+      },
+      "DNS.recordLimit": {
+        "type": "object",
+        "properties": {
+          "recordTypes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "MX"
+            },
+            "example": [ "A", "AAAA" ]
+          },
+          "activeCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 132
+          },
+          "remainingCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 368
+          }
+        }
+      },
+
+
+      "Domain.domain": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "unicodeName": {
+            "type": "string",
+            "readOnly": true
+          },
+          "token": {
+            "type": "string",
+            "readOnly": true
+          },
+          "state": {
+            "type": "string",
+            "enum": [ "AwaitingPayment", "AwaitingAuthorizationCode", "AwaitingIPSTAGChange", "Complete", "Cancelled", "Expired", "TransferPending", "TransferFailed", "RedemptionPeriod", "Provisioning" ],
+            "readOnly": true
+          },
+          "autoRenew": {
+            "type": "boolean"
+          },
+          "whoisProtected": {
+            "type": "boolean"
+          },
+          "expiresOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "transferState": {
+            "type": "string",
+            "enum": [ "TRANSFERPENDINGAUTHCODE", "TRANSFERPENDINGOPS_WHOIS", "TRANSFERPENDINGAPPROVAL", "TRANSFERPENDING", "TRANSFERCOMPLETE", "TRANSFERFAILED", "TRANSFERCANCELLED" ],
+            "readOnly": true
+          },
+          "transferAuthorizationCode": {
+            "type": "string"
+          },
+          "transferInitiatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "transferUpdatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+
+
+      "Email.email": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "unicodeName": {
+            "type": "string",
+            "readOnly": true
+          },
+          "token": {
+            "type": "string",
+            "readOnly": true
+          },
+          "state": {
+            "type": "string",
+            "enum": [ "AwaitingPayment", "Complete", "OnHold", "Cancelled", "Expired", "Provisioning", "Other" ],
+            "readOnly": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [ "EmailBackup", "EmailForward", "EmailStoreForward", "FullServiceEmail", "SMTPOutboundRelay" ]
+          },
+          "autoRenew": {
+            "type": "boolean"
+          },
+          "antiSpam": {
+            "type": "boolean"
+          },
+          "expiresOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "Email.emailBackup": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Email.email" },
+          {
+            "type": "object",
+            "properties": {
+              "etrnHost": {
+                "type": "string"
+              },
+              "etrnPort": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "etrnConnectionSecurity": {
+                "type": "string",
+                "enum": [ "None", "SSLTLS", "STARTTLSOptional", "STARTTLSRequired" ]
+              },
+              "etrnRetryInterval": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "Email.emailForward": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Email.email" },
+          {
+            "type": "object",
+            "properties": {
+              "catchAllAddress": {
+                "type": "string"
+              },
+              "plusAddressing": {
+                "type": "boolean"
+              },
+              "plusAddressingCharacter": {
+                "type": "string"
+              },
+              "greyListing": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "Email.emailFullService": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Email.email" },
+          {
+            "type": "object",
+            "properties": {
+              "catchAllAddress": {
+                "type": "string"
+              },
+              "plusAddressing": {
+                "type": "boolean"
+              },
+              "plusAddressingCharacter": {
+                "type": "string"
+              },
+              "greyListing": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "Email.emailSMTPOutboundRelay": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Email.email" },
+          {
+            "type": "object",
+            "properties": {
+
+            }
+          }
+        ]
+      },
+      "Email.emailStoreForward": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Email.email" },
+          {
+            "type": "object",
+            "properties": {
+              "etrnHost": {
+                "type": "string"
+              },
+              "etrnPort": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "etrnConnectionSecurity": {
+                "type": "string",
+                "enum": [ "None", "SSLTLS", "STARTTLSOptional", "STARTTLSRequired" ]
+              },
+              "etrnRetryInterval": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "Email.emailAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "emailId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emailAddress": {
+            "type": "string"
+          },
+          "unicodeEmailAddress": {
+            "type": "string",
+            "readOnly": true
+          },
+          "state": {
+            "type": "string",
+            "enum": [ "Active", "InActive" ]
+          },
+          "useForwarding": {
+            "type": "boolean"
+          },
+          "keepOriginalMessage": {
+            "type": "boolean"
+          },
+          "forwardAddress": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Email.emailDeliveryQueueMessage": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "tries": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "nextRetryOn": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "Email.emailBlacklist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "domainId": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "domainName": {
+            "type": "string",
+            "readOnly": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [ "EmailAddress", "Domain", "IPAddress" ],
+            "example": "EmailAddress"
+          },
+          "data": {
+            "type": "string"
+          },
+          "state": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Email.emailWhitelist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "domainId": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "domainName": {
+            "type": "string",
+            "readOnly": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [ "EmailAddress", "Domain", "IPAddress" ],
+            "example": "EmailAddress"
+          },
+          "data": {
+            "type": "string"
+          },
+          "state": {
+            "type": "boolean"
+          }
+        }
+      },
+
+
+      "Monitor.limit": {
+        "type": "object",
+        "properties": {
+          "activeCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 32
+          },
+          "remainingCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 68
+          }
+        }
+      },
+      "Monitor.monitor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "example": "HTTP monitor for www.dynu.com"
+          },
+          "type": {
+            "type": "string",
+            "enum": [ "DNS", "HTTP", "KEYWORD", "PING", "PORT" ],
+            "example": "HTTP"
+          },
+          "checkInterval": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "state": {
+            "type": "string",
+            "enum": [ "NONE", "PAUSED", "WARNING", "UP", "DOWN" ],
+            "readOnly": true
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "lastCheck": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "nextCheck": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "lastSuccessfulCheck": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "Monitor.monitorDNS": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Monitor.monitor" },
+          {
+            "type": "object",
+            "properties": {
+              "protocol": {
+                "type": "string",
+                "enum": [ "TCP", "UDP" ],
+                "example": "UDP"
+              },
+              "nameServer": {
+                "type": "string",
+                "example": "ns1.dynu.com"
+              },
+              "hostname": {
+                "type": "string",
+                "example": "www.dynu.com"
+              }
+            }
+          }
+        ]
+      },
+      "Monitor.monitorHTTP": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Monitor.monitor" },
+          {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "example": "https://www.dynu.com"
+              },
+              "authenticationType": {
+                "type": "string",
+                "example": "NONE"
+              },
+              "username": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "Monitor.monitorKeyword": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Monitor.monitor" },
+          {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "keyword": {
+                "type": "string"
+              },
+              "keywordExists": {
+                "type": "boolean"
+              },
+              "authenticationType": {
+                "type": "string",
+                "example": "NONE"
+              },
+              "username": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "Monitor.monitorPing": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Monitor.monitor" },
+          {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "example": "mail.dynu.com"
+              }
+            }
+          }
+        ]
+      },
+      "Monitor.monitorPort": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Monitor.monitor" },
+          {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "example": "mail.dynu.com"
+              },
+              "port": {
+                "type": "integer",
+                "format": "int32",
+                "example": 25
+              }
+            }
+          }
+        ]
+      },
+
+      "Ping.ping": {
+        "type": "object",
+        "required": [ "message" ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "test"
+          }
+        }
+      },
+      "Ping.pong": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "test"
+          }
+        }
+      }
+    },
+     
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "API-Key"
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "authorizationUrl": "/v2/oauth2/token",
+            "tokenUrl": "/v2/oauth2/token",
+            "refreshUrl": "/v2/oauth2/token"
+          }
+        }
+      }
+    },
+
+    "responses": {
+
+      "200DNSLimit": {
+        "description": "Limits associated with hostnames.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/DNS.limit" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "activeCount": 32,
+            "remainingCount": 68
+          },
+          "Failure": {
+            "statusCode": 503,
+            "type": "Quota Exception",
+            "message": "Failed."
+          }
+        }
+      },
+      "200DNSDomain": {
+        "description": "A list of domains for DNS service.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "domains": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DNS.domain"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "domains": [
+              {
+                "id": 358362,
+                "name": "workplace.mywire.org",
+                "unicodeName": "workplace.mywire.org",
+                "token": "yc0bia6g92p49061wko1",
+                "state": "Complete",
+                "group": "Office",
+                "ipv4Address": "207.52.45.12",
+                "ttl": 300,
+                "ipv4": true,
+                "ipv6": false,
+                "ipv4WildcardAlias": false,
+                "createdOn": "2012-08-09T10:20:50.52Z",
+                "updatedOn": "2018-07-19T13:42:08.52Z"
+              },
+              {
+                "id": 365321,
+                "name": "organic.org",
+                "unicodeName": "organic.org",
+                "token": "8q34u7mhplopq6vwpmkh",
+                "state": "Complete",
+                "ipv4Address": "207.52.45.12",
+                "ipv6Address": "2001:38e4:38e4::8",
+                "ttl": 180,
+                "ipv4": true,
+                "ipv6": true,
+                "ipv4WildcardAlias": true,
+                "ipv6WildcardAlias": true,
+                "allowZoneTransfer": false,
+                "dnssec": true,
+                "createdOn": "2014-04-12T23:20:50.52Z",
+                "updatedOn": "2018-05-08T14:52:11.52Z"
+              },
+              {
+                "id": 428546,
+                "name": "xn--witowa-g1a3lpy.pl",
+                "unicodeName": "świętować.pl",
+                "token": "p2nqroylqmohjrq66mks",
+                "state": "Complete",
+                "group": "hosting",
+                "ipv4Address": "105.46.76.33",
+                "ttl": 180,
+                "ipv4": true,
+                "ipv6": false,
+                "ipv4WildcardAlias": true,
+                "ipv6WildcardAlias": false,
+                "allowZoneTransfer": false,
+                "dnssec": false,
+                "createdOn": "2018-04-12T23:20:50.52Z",
+                "updatedOn": "2018-07-19T13:42:08.52Z"
+              }
+            ]
+          }
+        }
+      },
+      "200DNSDomainGetById": {
+        "description": "Details of a domain for DNS service.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/DNS.domain" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 358362,
+            "name": "workplace.mywire.org",
+            "unicodeName": "workplace.mywire.org",
+            "token": "yc0bia6g92p49061wko1",
+            "state": "Complete",
+            "group": "Office",
+            "ipv4Address": "207.52.45.12",
+            "ttl": 300,
+            "ipv4": true,
+            "ipv6": false,
+            "ipv4WildcardAlias": false,
+            "createdOn": "2012-08-09T10:20:50.52Z",
+            "updatedOn": "2018-07-19T13:42:08.52Z"
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200DNSDNSSECGetById": {
+        "description": "DS record for DNSSEC of a domain for DNS service.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/DNS.dnsSec" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 568335462,
+            "domainName": "example.com",
+            "dsRecord": "example.com. 86400 IN DS 13534 13 2 58E0F0314C93FE095C41F2813DB1C28DE5214770F588E7BA9A71962F7DB643C4",
+            "digest": "58E0F0314C93FE095C41F2813DB1C28DE5214770F588E7BA9A71962F7DB643C4",
+            "digestType": "Sha256",
+            "algorithm": 13,
+            "publicKey": "+1xulhSFjEGp/Y+4m8IHLACNMMFHdmQEZ6zY30ToQpmNPPkwC0Tn9y5XL1UBKr2Fs+A7ZuEV4pHEznMBT3rUWw==",
+            "keyTag": 13534,
+            "flags": 257
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200DNSHostnameGetGetrootByHostname": {
+        "description": "Root domain of DNS service along with the hostname and node.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/DNS.hostname" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 358362,
+            "hostname": "secure.mydomain.com",
+            "domainName": "mydomain.com",
+            "node": "secure"
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200WebRedirect": {
+        "description": "A list of web redirects.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "webRedirects": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DNS.webRedirect"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "webRedirects": [
+              {
+                "id": 35836280,
+                "domainId": 8246254,
+                "domainName": "mydomain.com",
+                "nodeName": "cms",
+                "hostname": "cms.mydomain.com",
+                "redirectType": "PF",
+                "state": true,
+                "updatedOn": "2018-07-19T13:42:08.52Z",
+                "host": "cms.myotherdomain.com",
+                "port": 8080,
+                "includeQueryString": true
+              },
+              {
+                "id": 45805321,
+                "domainId": 8246254,
+                "domainName": "mydomain.com",
+                "nodeName": "www",
+                "hostname": "www.mydomain.com",
+                "redirectType": "UF",
+                "state": true,
+                "updatedOn": "2018-07-19T13:42:08.52Z",
+                "url": "https://www.mydomain.com"
+              }
+            ]
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200WebRedirectGetById": {
+        "description": "Details of the web redirect.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/DNS.webRedirect" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 35836280,
+            "domainId": 8246254,
+            "domainName": "mydomain.com",
+            "nodeName": "cms",
+            "hostname": "cms.mydomain.com",
+            "redirectType": "PF",
+            "state": true,
+            "updatedOn": "2018-07-19T13:42:08.52Z",
+            "host": "cms.myotherdomain.com",
+            "port": 8080,
+            "includeQueryString": true
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200DNSRecord": {
+        "description": "A list of DNS records for DNS service.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "dnsRecords": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          { "$ref": "#/components/schemas/DNS.dnsRecordA" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordAAAA" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordCAA" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordCNAME" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordHINFO" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordLOC" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordMX" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordNS" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordPTR" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordRP" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordSOA" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordSPF" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordSRV" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordSSHFP" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordTLSA" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordTXT" },
+                          { "$ref": "#/components/schemas/DNS.dnsRecordURI" }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "dnsRecords": [
+              {
+                "id": 35836280,
+                "domainId": 8246254,
+                "domainName": "mydomain.com",
+                "nodeName": "mail",
+                "hostname": "mail.mydomain.com",
+                "recordType": "A",
+                "ttl": 300,
+                "state": true,
+                "content": "204.25.79.214",
+                "updatedOn": "2018-07-19T13:42:08.52Z",
+                "group": "work",
+                "ipv4Address": "204.25.79.214"
+              },
+              {
+                "id": 45805321,
+                "domainId": 8246254,
+                "domainName": "mydomain.com",
+                "nodeName": "www",
+                "hostname": "www.mydomain.com",
+                "recordType": "CNAME",
+                "ttl": 600,
+                "state": true,
+                "content": "www.anotherdomain.com",
+                "updatedOn": "2018-07-19T13:42:08.52Z",
+                "host": "www.anotherdomain.com"
+              }
+            ]
+          }
+        }
+      },
+      "200DNSRecordGetById": {
+        "description": "Details of a DNS record for DNS service.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/DNS.dnsRecordA" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordAAAA" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordCAA" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordCNAME" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordHINFO" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordLOC" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordMX" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordNS" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordPTR" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordRP" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordSOA" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordSPF" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordSRV" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordSSHFP" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordTLSA" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordTXT" },
+                    { "$ref": "#/components/schemas/DNS.dnsRecordURI" }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 35836280,
+            "domainId": 8246254,
+            "domainName": "mydomain.com",
+            "nodeName": "www",
+            "hostname": "www.mydomain.com",
+            "recordType": "A",
+            "ttl": 300,
+            "state": true,
+            "content": "204.25.79.214",
+            "updatedOn": "2018-07-19T13:42:08.52Z",
+            "group": "work",
+            "ipv4Address": "204.25.79.214"
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 501,
+              "type": "Argument Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200DNSRecordLimit": {
+        "description": "Limits associated with DNS records.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "domains": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DNS.recordLimit"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Member": {
+            "statusCode": 200,
+            "limits": [
+              {
+                "recordTypes": [ "A", "AAAA", "AFSDB", "CAA", "CNAME", "HINFO", "KEY", "LOC", "MX", "NS", "NAPTR", "PF", "PTR", "RP", "SPF", "SRV", "SSHFP", "TLSA", "TXT", "UF", "URI" ],
+                "activeCount": 149,
+                "remainingCount": 351
+              }
+            ]
+          },
+          "NonMember": {
+            "statusCode": 200,
+            "limits": [
+              {
+                "recordTypes": [ "A", "AAAA" ],
+                "activeCount": 3,
+                "remainingCount": 1
+              },
+              {
+                "recordTypes": [ "MX" ],
+                "activeCount": 2,
+                "remainingCount": 2
+              },
+              {
+                "recordTypes": [ "AFSDB", "CAA", "CNAME", "HINFO", "KEY", "LOC", "PTR", "RP", "SPF", "SRV", "SSHFP", "TLSA", "TXT", "URI" ],
+                "activeCount": 3,
+                "remainingCount": 1
+              },
+              {
+                "recordTypes": [ "PF", "UF" ],
+                "activeCount": 0,
+                "remainingCount": 4
+              }
+            ]
+          }
+        }
+      },
+      "200DNSIPUpdateHistory": {
+        "description": "A list of IP address updates.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "domains": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DNS.ipUpdate"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "ipUpdateHistory": [
+              {
+                "id": 108510696,
+                "responseId": "QQRM636796275004079722",
+                "updateStatus": "No Change",
+                "ipv4Address": "97.124.226.198",
+                "ipv6Address": "2602:61:7ce2:c600:6061:4749:3257:3de8",
+                "queryString": "/nic/clientupdate?group=&myipv4=97.124.226.198&myipv6=2602:0061:7ce2:c600:6061:4749:3257:3de8",
+                "userAgent": "Dynu.Service 5.3.0.0",
+                "ssl": true,
+                "updatedOn": "2018-07-19T13:42:08.52Z"
+              },
+              {
+                "id": 108455637,
+                "responseId": "JTBS636796202648455271",
+                "updateStatus": "Good",
+                "ipv4Address": "97.124.226.198",
+                "ipv6Address": "2602:61:7ce2:c600:6061:4749:3257:3de8",
+                "queryString": "/nic/clientupdate?group=&myipv4=97.124.226.198&myipv6=2602:61:7ce2:c600:6061:4749:3257:3de8",
+                "userAgent": "Dynu.Service 5.3.0.0",
+                "ssl": true,
+                "updatedOn": "2018-07-11T43:16:18.32Z"
+              },
+              {
+                "id": 108395892,
+                "responseId": "POFT636796162019617771",
+                "updateStatus": "No Change",
+                "ipv4Address": "207.81.26.211",
+                "ipv6Address": null,
+                "queryString": "/nic/clientupdate?group=&myipv4=207.81.26.211&ipv6=no",
+                "userAgent": "Dynu.Service 5.3.0.0",
+                "ssl": true,
+                "updatedOn": "2018-07-10T18:39:48.12Z"
+              }
+            ]
+          }
+        }
+      },
+      "200DNSGroup": {
+        "description": "A list of groups to which hosts are assigned to.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "groups": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DNS.dnsGroup"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "groups": [
+              {
+                "id": 108510696,
+                "domainName": "workplace.mywire.org",
+                "groupName": "work"
+              },
+              {
+                "id": 408455637,
+                "domainName": "organic.org",
+                "groupName": "datacenter"
+              },
+              {
+                "id": 208395892,
+                "domainName": "xn--witowa-g1a3lpy.pl",
+                "groupName": null
+              },
+              {
+                "id": 101758524,
+                "domainName": "home.mywire.org",
+                "groupName": null
+              }
+            ]
+          }
+        }
+      },
+      "200DNSGroupGetById": {
+        "description": "Details of the group.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/DNS.dnsGroup" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 35836280,
+            "domainName": "mydomain.com",
+            "groupName": "work"
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+
+
+      "200Domain": {
+        "description": "A list of domains.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "domains": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Domain.domain"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "domains": [
+              {
+                "id": 358362,
+                "name": "mydomain.com",
+                "unicodeName": "mydomain.com",
+                "token": "yc0bia6g92p49061wko1",
+                "state": "Complete",
+                "autoRenew": true,
+                "whoisProtected": false,
+                "createdOn": "2014-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": "2019-04-12T23:32:13.52Z"
+              },
+              {
+                "id": 365321,
+                "name": "organic.org",
+                "unicodeName": "organic.org",
+                "token": "i6ge0g76pqa890f01vyv",
+                "state": "AwaitingPayment",
+                "autoRenew": true,
+                "whoisProtected": false,
+                "createdOn": "2017-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": null
+              },
+              {
+                "id": 428546,
+                "name": "xn--witowa-g1a3lpy.pl",
+                "unicodeName": "świętować.pl",
+                "token": "8gzd6pu5kffa8q6wo0nt",
+                "state": "TransferPending",
+                "autoRenew": true,
+                "whoisProtected": false,
+                "createdOn": "2017-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": "2019-04-12T23:32:13.52Z"
+              }
+            ]
+          }
+        }
+      },
+      "200DomainGetById": {
+        "description": "Details of a domain.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/Domain.domain" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 358362,
+            "name": "mydomain.com",
+            "unicodeName": "mydomain.com",
+            "state": "Complete",
+            "autoRenew": true,
+            "whoisProtected": false,
+            "createdOn": "2014-04-12T23:20:50.52Z",
+            "updatedOn": "2017-07-19T13:42:08.52Z",
+            "expires": "2019-04-12T23:32:13.52Z"
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200DomainNameServer": {
+        "description": "A list of name servers for a domain.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "nameServers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "domains": [
+              {
+                "id": 358362,
+                "name": "mydomain.com",
+                "unicodeName": "mydomain.com",
+                "state": "Complete",
+                "autoRenew": true,
+                "whoisProtected": false,
+                "createdOn": "2014-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": "2019-04-12T23:32:13.52Z"
+              },
+              {
+                "id": 365321,
+                "name": "organic.org",
+                "unicodeName": "organic.org",
+                "state": "AwaitingPayment",
+                "autoRenew": true,
+                "whoisProtected": false,
+                "createdOn": "2017-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": null
+              },
+              {
+                "id": 428546,
+                "name": "xn--witowa-g1a3lpy.pl",
+                "unicodeName": "świętować.pl",
+                "state": "TransferPending",
+                "autoRenew": true,
+                "whoisProtected": false,
+                "createdOn": "2017-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": "2019-04-12T23:32:13.52Z"
+              }
+            ]
+          }
+        }
+      },
+
+
+      "200Email": {
+        "description": "A list of email services.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "monitors": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          { "$ref": "#/components/schemas/Email.emailBackup" },
+                          { "$ref": "#/components/schemas/Email.emailForward" },
+                          { "$ref": "#/components/schemas/Email.emailFullService" },
+                          { "$ref": "#/components/schemas/Email.emailSMTPOutboundRelay" },
+                          { "$ref": "#/components/schemas/Email.emailStoreForward" }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "emails": [
+              {
+                "id": 358362,
+                "name": "mydomain.com",
+                "unicodeName": "mydomain.com",
+                "state": "Complete",
+                "type": "EmailStoreForward",
+                "autoRenew": true,
+                "antiSpam": false,
+                "createdOn": "2014-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": "2019-04-12T23:32:13.52Z",
+                "etrnHost": "mail.myemailserver.com",
+                "etrnPort": 2525,
+                "etrnConnectionSecurity": "None",
+                "etrnRetryInterval": 10
+              },
+              {
+                "id": 365321,
+                "name": "organic.org",
+                "unicodeName": "organic.org",
+                "state": "AwaitingPayment",
+                "type": "EmailForward",
+                "autoRenew": true,
+                "antiSpam": false,
+                "createdOn": "2017-04-12T23:20:50.52Z",
+                "updatedOn": "2017-07-19T13:42:08.52Z",
+                "expires": null,
+                "catchAllAddress": "user@mydomain.com",
+                "plusAddressing": false,
+                "plusAddressingCharacter": "+",
+                "greyListing": false
+              }
+            ]
+          }
+        }
+      },
+      "200EmailGetById": {
+        "description": "Details of an email service.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/Email.emailBackup" },
+                    { "$ref": "#/components/schemas/Email.emailForward" },
+                    { "$ref": "#/components/schemas/Email.emailFullService" },
+                    { "$ref": "#/components/schemas/Email.emailSMTPOutboundRelay" },
+                    { "$ref": "#/components/schemas/Email.emailStoreForward" }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 358362,
+            "name": "mydomain.com",
+            "unicodeName": "mydomain.com",
+            "state": "Complete",
+            "type": "EmailStoreForward",
+            "autoRenew": true,
+            "antiSpam": false,
+            "createdOn": "2014-04-12T23:20:50.52Z",
+            "updatedOn": "2017-07-19T13:42:08.52Z",
+            "expires": "2019-04-12T23:32:13.52Z",
+            "etrnHost": "mail.myemailserver.com",
+            "etrnPort": 2525,
+            "etrnConnectionSecurity": "None",
+            "etrnRetryInterval": 10
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200EmailAccount": {
+        "description": "A list of email accounts.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "domains": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Email.emailAccount"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "emailAccounts": [
+              {
+                "id": 8253684,
+                "emailId": 358362,
+                "emailAddress": "jackie@mydomain.com",
+                "unicodeEmailAddress": "jackie@mydomain.com",
+                "state": "Active",
+                "useForwarding": true,
+                "forwardAddress": "jackie.chastian@myanotherdomain.com",
+                "keepOriginalMessage": false
+              },
+              {
+                "id": 6238824,
+                "emailId": 358362,
+                "emailAddress": "tom@mydomain.com",
+                "unicodeEmailAddress": "tom@mydomain.com",
+                "state": "Active",
+                "useForwarding": false,
+                "keepOriginalMessage": false
+              }
+            ]
+          }
+        }
+      },
+      "200EmailAccountGetById": {
+        "description": "Details of an email account.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/Email.emailAccount" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 8253684,
+            "emailId": 358362,
+            "emailAddress": "jackie@mydomain.com",
+            "unicodeEmailAddress": "jackie@mydomain.com",
+            "state": "Active",
+            "useForwarding": true,
+            "forwardAddress": "jackie.chastian@myanotherdomain.com",
+            "keepOriginalMessage": false
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200EmailDeliveryQueue": {
+        "description": "A list of messages in delivery queue.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "domains": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Email.emailDeliveryQueueMessage"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "domains": [
+              {
+                "uid": "9A0F4682B7A5",
+                "from": "tom@externaldomain.com",
+                "to": "jackie@mydomain.com",
+                "tries": 3,
+                "createdOn": "2017-04-12T23:20:50.52Z",
+                "nextRetryOn": "2017-04-12T23:28:50.52Z"
+              },
+              {
+                "uid": "9A0F4682B7A5",
+                "from": "deepak@externaldomain.com",
+                "to": "jackie@mydomain.com",
+                "tries": 0,
+                "createdOn": "2017-04-13T23:20:50.52Z"
+              },
+              {
+                "uid": "9A0F4682B7A5",
+                "from": "jackie@mydomain.com",
+                "to": "lauren@mydomain.com",
+                "tries": 19,
+                "createdOn": "2017-04-11T09:20:50.52Z",
+                "nextRetryOn": "2017-04-13T23:25:50.52Z"
+              }
+            ]
+          }
+        }
+      },
+      "200EmailBlacklist": {
+        "description": "A list of blacklist.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "blacklists": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Email.emailBlacklist"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "blacklists": [
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "EmailAddress",
+                "data": "tom@externaldomain.com",
+                "state": true
+              },
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "Domain",
+                "data": "externaldomain.com",
+                "state": true
+              },
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "IPAddress",
+                "data": "216.29.41.0/24",
+                "state": true
+              },
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "IPAddress",
+                "data": "216.160.207.10",
+                "state": false
+              }
+            ]
+          }
+        }
+      },
+      "200EmailBlacklistGetById": {
+        "description": "Details of a blacklist.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/Email.emailBlacklist" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 32236132,
+            "domainId": 84257892,
+            "domainName": "mydomain.com",
+            "type": "EmailAddress",
+            "data": "tom@externaldomain.com",
+            "state": false
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200EmailWhitelist": {
+        "description": "A list of whitelist.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "whitelists": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Email.emailWhitelist"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "whitelists": [
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "EmailAddress",
+                "data": "tom@externaldomain.com",
+                "state": true
+              },
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "Domain",
+                "data": "externaldomain.com",
+                "state": true
+              },
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "IPAddress",
+                "data": "216.29.41.0/24",
+                "state": true
+              },
+              {
+                "id": 32236132,
+                "domainId": 84257892,
+                "domainName": "mydomain.com",
+                "type": "IPAddress",
+                "data": "216.160.207.10",
+                "state": false
+              }
+            ]
+          }
+        }
+      },
+      "200EmailWhitelistGetById": {
+        "description": "Details of a whitelist.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/Email.emailWhitelist" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 32236132,
+            "domainId": 84257892,
+            "domainName": "mydomain.com",
+            "type": "EmailAddress",
+            "data": "tom@externaldomain.com",
+            "state": false
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+
+
+      "200MonitorLimit": {
+        "description": "Limits associated with monitoring.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                { "$ref": "#/components/schemas/Monitor.limit" }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "activeCount": 32,
+            "remainingCount": 68
+          },
+          "Failure": {
+            "statusCode": 503,
+            "type": "Quota Exception",
+            "message": "Failed."
+          }
+        }
+      },
+      "200Monitor": {
+        "description": "A list of monitors.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "monitors": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          { "$ref": "#/components/schemas/Monitor.monitorDNS" },
+                          { "$ref": "#/components/schemas/Monitor.monitorHTTP" },
+                          { "$ref": "#/components/schemas/Monitor.monitorKeyword" },
+                          { "$ref": "#/components/schemas/Monitor.monitorPing" },
+                          { "$ref": "#/components/schemas/Monitor.monitorPort" }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "default": {
+            "statusCode": 200,
+            "monitors": [
+              {
+                "id": 358362,
+                "name": "HTTP monitor for http://www.dynu.com",
+                "type": "HTTP",
+                "checkInterval": 10,
+                "state": "UP",
+                "paused": false,
+                "lastCheck": "2016-04-12T23:20:50.52Z",
+                "nextCheck": "2016-04-12T23:30:50.52Z",
+                "lastSuccessfulCheck": "2016-04-12T23:20:50.52Z",
+                "url": "http://www.dynu.com"
+              },
+              {
+                "id": 858657,
+                "name": "ns1.dynu.com",
+                "type": "DNS",
+                "checkInterval": 20,
+                "state": "NONE",
+                "paused": true,
+                "lastCheck": "2016-04-12T23:20:50.52Z",
+                "nextCheck": null,
+                "lastSuccessfulCheck": "2016-04-12T23:20:50.52Z",
+                "nameServer": "ns1.dynu.com",
+                "hostname": "monitoring.org"
+              }
+            ]
+          }
+        }
+      },
+      "200MonitorGetById": {
+        "description": "Details of a monitor.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                { "$ref": "#/components/schemas/apiResponse" },
+                {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/Monitor.monitorDNS" },
+                    { "$ref": "#/components/schemas/Monitor.monitorHTTP" },
+                    { "$ref": "#/components/schemas/Monitor.monitorKeyword" },
+                    { "$ref": "#/components/schemas/Monitor.monitorPing" },
+                    { "$ref": "#/components/schemas/Monitor.monitorPort" }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200,
+            "id": 358362,
+            "name": "HTTP monitor for http://www.dynu.com",
+            "type": "HTTP",
+            "checkInterval": 10,
+            "state": "UP",
+            "paused": false,
+            "lastCheck": "2016-04-12T23:20:50.52Z",
+            "nextCheck": "2016-04-12T23:30:50.52Z",
+            "lastSuccessfulCheck": "2016-04-12T23:20:50.52Z",
+            "url": "http://www.dynu.com"
+          },
+          "Failure": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "200MonitorAdd": {
+        "description": "The response to addition of new monitor operation.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200
+          },
+          "Parse Exception": {
+            "exception": {
+              "statusCode": 502,
+              "type": "Parse Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+
+      "200Ping": {
+        "description": "The response to ping operation.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Ping.pong"
+            }
+          }
+        },
+        "examples": {
+          "Test Ping": {
+            "statusCode": 200,
+            "message": "test"
+          }
+        }
+      },
+
+      "200": {
+        "description": "Success.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Success": {
+            "statusCode": 200
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication and/or authorized has failed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Authentication Exception": {
+            "exception": {
+              "statusCode": 401,
+              "type": "Authentication Exception",
+              "message": "Failed."
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Resource could not be found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Request Exception": {
+            "exception": {
+              "statusCode": 404,
+              "type": "Request Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "The operation failed on the server due to an unexpected error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Server Exception": {
+            "exception": {
+              "statusCode": 500,
+              "type": "Server Exception",
+              "message": "Failed."
+            }
+          }
+        }
+      },
+      "501": {
+        "description": "Arguments are missing or invalid.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Argument Exception": {
+            "exception": {
+              "statusCode": 501,
+              "type": "Argument Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "502": {
+        "description": "There was an error when parsing the request and its parameters.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Parse Exception": {
+            "exception": {
+              "statusCode": 502,
+              "type": "Parse Exception",
+              "message": "Invalid."
+            }
+          }
+        }
+      },
+      "503": {
+        "description": "An error was encountered due to quota restrictions.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/apiResponse"
+            }
+          }
+        },
+        "examples": {
+          "Quota Exception": {
+            "exception": {
+              "statusCode": 503,
+              "type": "Quota Exception",
+              "message": "Failed."
+            }
+          }
+        }
+      }
+    }
+    },
+
+  "servers": [
+    {
+      "description": "Dynu API",
+      "url": "https://api.dynu.com/v2"
+    }
+  ],
+
+  "COMMENTEDinfo": {
+    "description": "This is the documentation for Dynu API 2.0.\n",
+    "version": "2.0.0",
+    "title": "Dynu API"
+  }
+}

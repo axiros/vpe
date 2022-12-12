@@ -1,0 +1,440 @@
+[
+    "https://example.schemathesis.io/{basePath}/success",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/failure",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/payload",
+    "post",
+    {
+        "data": {
+            "age": 0,
+            "boolean": true,
+            "name": "",
+            "nested": [
+                0
+            ]
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/get_payload",
+    "get",
+    {
+        "data": {
+            "name": "John"
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/basic",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/empty",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/empty_string",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/multiple_failures",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "id": 0
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/slow",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/path_variable/",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/unsatisfiable",
+    "post",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/performance",
+    "post",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/invalid",
+    "post",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "id": 0
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/flaky",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "id": 0
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/recursive",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/multipart",
+    "post",
+    {
+        "data": {
+            "key": "",
+            "maybe": true,
+            "value": 0
+        },
+        "headers": {
+            "Content-Type": "multipart/form-data"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/upload_file",
+    "post",
+    {
+        "data": {
+            "data": "",
+            "note": ""
+        },
+        "headers": {
+            "Content-Type": "multipart/form-data"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/form",
+    "post",
+    {
+        "data": {
+            "first_name": "",
+            "last_name": ""
+        },
+        "headers": {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/teapot",
+    "post",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/text",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/text",
+    "post",
+    {
+        "headers": {
+            "Content-Type": "text/plain"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/cp866",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/csv",
+    "post",
+    {
+        "headers": {
+            "Content-Type": "text/csv"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/malformed_json",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/invalid_response",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/custom_format",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "id": 0
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/credit_card",
+    "post",
+    {
+        "data": {
+            "number": ""
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/invalid_path_parameter/0",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+{
+    "Exception": "'id'"
+}
+[
+    "https://example.schemathesis.io/{basePath}/headers",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/foo:bar",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/not_checked_auth",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/unexpected",
+    "post",
+    {
+        "data": {
+            "foo": ""
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/users/",
+    "post",
+    {
+        "data": {
+            "first_name": "",
+            "last_name": ""
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {},
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/users/",
+    "get",
+    {
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "code": 0,
+            "common": 0,
+            "user_id": ""
+        },
+        "timeout": 5
+    }
+]
+[
+    "https://example.schemathesis.io/{basePath}/users/",
+    "patch",
+    {
+        "data": {
+            "first_name": "",
+            "last_name": ""
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "params": {
+            "common": 0
+        },
+        "timeout": 5
+    }
+]
