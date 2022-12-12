@@ -175,8 +175,13 @@ def check_print_wanted(state, want_state):
     def add_state(v, want=want_state):
         if not want:
             return v
-        s = {k: v for k, v in state.items() if not k in {'__builtins__'}}
-        return {'state': to_dict(s), 'result': v}
+        r = [[k, v] for k, v in state.items() if not k in {'__builtins__'}]
+        c = {k: v for k, v in r if callable(v)}
+        a = {k: v for k, v in r if not callable(v)}
+        return {
+            'state': to_dict({'vars': a, 'callables': c}),
+            'result': v,
+        }
 
     for k in formatters:
         v = state.pop(k, None)
@@ -352,7 +357,7 @@ class swagger:
         _PTHPARAMS_
 
         # fmt:off
-        methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
+        methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
          _TOC_
         ) 
         # fmt:on
@@ -1030,10 +1035,11 @@ def ExecuteSelectedRange():
     def is_set(key, alw=always, block=block):
         a = ctx.state['always']
         if key in block or key in a:
-            a[key] = True
+            if alw:
+                a[key] = True
             return True
 
-    if is_set(':addstate'):
+    if is_set(':state'):
         add_state = True
     if is_set(':autodoc'):
         state['autodoc'] = True
@@ -1041,14 +1047,14 @@ def ExecuteSelectedRange():
         state.pop('autodoc', 0)
     if is_set(':clear'):
         clear_buffer = True
-    if is_set(':eval all'):
+    if is_set(':all'):
         all_ = '\n'.join([src_buf[i] for i in range(0, len(src_buf))])
         exec(all_, state, state)
     if is_set(':wrap ') and '{}' in block.split(':wrap ', 1)[1]:
         wrap = block.split(':wrap ', 1)[1].split('\n', 1)[0].strip()
     if is_set(':doc'):
         doc_call = True
-    if is_set(':exec single'):
+    if is_set(':single'):
         block = orig_line.strip()
         block = block[:-1] if block.strip().endswith(',') else block
 

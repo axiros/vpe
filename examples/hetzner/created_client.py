@@ -28,7 +28,7 @@ id = 0
 action_id = 0
 
 # fmt:off
-methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
+methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  '🟩', actions.get,
  '🟩', actions___id_.get,
  '🟩', certificates.get,
@@ -90,7 +90,7 @@ methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({}
  '🟪', load_balancers___id___actions__delete_service.post,
  '🟪', load_balancers___id___actions__detach_from_network.post,
  '🟪', load_balancers___id___actions__disable_public_interface.post,
- '🟪', load_balancers___id___actions__enable_public_interface.post,
+ '', load_balancers___id___actions__enable_public_interface.post,
  '🟪', load_balancers___id___actions__remove_target.post,
  '🟪', load_balancers___id___actions__update_service.post,
  '🟩', load_balancers___id___metrics.get,
@@ -5577,7 +5577,7 @@ class volumes___id___actions__resize:
         R.id = id
         R.body = Defs.components_schemas_resize_volume_request
 
-# ─────────────── Tools ────────────────────
+# ─────────────── Tools ──────────────────
 import requests, json, functools, inspect, os
 
 class Tools:

@@ -24,7 +24,7 @@ id = 0
 user_id = str_dflt
 
 # fmt:off
-methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
+methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  '🟩', success.get,
  '🟩', failure.get,
  '🟪', payload.post,

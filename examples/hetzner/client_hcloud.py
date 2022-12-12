@@ -30,7 +30,7 @@ id = '000'
 action_id = 0
 
 # fmt:off
-methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
+methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  '🟩', actions.get,
  '🟩', actions___id_.get,
  '🟩', certificates.get,
@@ -43,7 +43,7 @@ methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({}
  '🟪', certificates___id___actions__retry.post,
  '🟩', datacenters.get,
  '🟩', datacenters___id_.get,
- '🟩', firewalls.get,
+ '', firewalls.get,
  '🟪', firewalls.post,
  '🟥', firewalls___id_.delete,
  '🟩', firewalls___id_.get,
@@ -5579,7 +5579,7 @@ class volumes___id___actions__resize:
         R.id = id
         R.body = Defs.components_schemas_resize_volume_request
 
-# ────────────── Tools ─────────────────────
+# ───────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
 
 class Tools:
