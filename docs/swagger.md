@@ -213,8 +213,8 @@ We can now work with the Hetzner API.
 
 Screencast content
 - We query our ssh key id
-- Use it to parametrize a server create request (requiring an undo in the results window)
-- Query the existing server(s) (requiring a re-parametrization of the get request)
+- Create a server, using that key (requiring an undo in the results window, to see it again)
+- Query the existing server(s) (requiring a parametrization of the get request)
 
 
 [![asciicast](https://asciinema.org/a/jQE2lTcb3Rc94UB9Jh9iZAPKC.svg)](https://asciinema.org/a/jQE2lTcb3Rc94UB9Jh9iZAPKC)
