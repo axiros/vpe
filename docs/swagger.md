@@ -1,6 +1,7 @@
 # OpenAPI / Swagger Support
 
-Early phase. Manually tested against various swagger files, incl. the [petstore](https://petstore.swagger.io/) demo API. See examples folder.
+Early phase. Manually tested against various swagger files, incl. the [petstore](https://petstore.swagger.io/) demo API. 
+See the [examples folder](../examples/).
 
 [![asciicast](https://asciinema.org/a/c1LyPn7dnI7mHXMWAbMVqcRqH.svg)](https://asciinema.org/a/c1LyPn7dnI7mHXMWAbMVqcRqH)
 
