@@ -175,7 +175,8 @@ def check_print_wanted(state, want_state):
     def add_state(v, want=want_state):
         if not want:
             return v
-        r = [[k, v] for k, v in state.items() if not k in {'__builtins__'}]
+        hide = lambda k, v: k in {'__builtins__'} or hasattr(v, '__package__')
+        r = [[k, v] for k, v in state.items() if not hide(k, v)]
         c = {k: v for k, v in r if callable(v)}
         a = {k: v for k, v in r if not callable(v)}
         return {

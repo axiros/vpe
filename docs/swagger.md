@@ -224,6 +224,17 @@ Screencast content
 Note how we fold away methods we don't work with - by indenting them, then fold.  
 Jumping to the methods start is done by setting a mark `mm` (for `'m` to jump there).
 
+
+## Tips
+
+Evaluate this to show always all state variables, w/o the callables:
+
+```python
+# :always :state :clear
+hide = 'callable'
+```
+
+
 ## Tests
 
 In the example folder resides a `run_dirs.py <dirmatch>` which 
