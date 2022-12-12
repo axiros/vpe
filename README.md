@@ -28,7 +28,7 @@ This module adds
 
 ![](./docs/img/demo.gif)
 
-Further the module offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
+The module also offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
 
 ![](./docs/img/swagger.png)
 
