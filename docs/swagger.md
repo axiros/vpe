@@ -225,7 +225,25 @@ Note how we fold away methods we don't work with - by indenting them, then fold.
 Jumping to the methods start is done by setting a mark `mm` (for `'m` to jump there).
 
 
+
 ## Tips
+
+### Perf Tip
+
+For yet larger APIs, e.g. the [kubernetes API](../examples/k8s), the re-evaluation of the whole
+module for any request get's too slow:
+
+```
+~/repos/gh/axiros/vpe/examples/k8s main ❯ cat swagger.json| wc -l
+85588
+~/repos/gh/axiros/vpe/examples/k8s main ❯ cat created_client.py | wc -l
+27287
+~/repos/gh/axiros/vpe/examples/k8s main ❯
+```
+
+We recommand to remove the `:all` directive and just re-evaluate the changed definition or method classes, once you re-parametrize.
+
+### Misc
 
 Evaluate this to show always all state variables, w/o the callables:
 
