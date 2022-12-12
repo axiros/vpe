@@ -62,7 +62,7 @@ Supported (usually in comment blocks) are:
 - `:cmt <comment>`: Show the given comment string
 - `:doc`: Show the evaluated block in the result window
 - `:[no]autodoc`: The `:doc` directive is set/removed for all subsequent evaluations
-- `:[no]always`: When set all directives of this eval run are remembered for future runs, until `:noalways` is set
+- `:[no]always`: When set, then all directives of this eval run are remembered for future runs, until `:noalways` is set
 - `:single`: Only the line on the cursor is evaluated, even if within a bigger block (see swagger) 
 - `:state`: Add the evaluation state to result (shows all assigned variables)
 - `:wrap <code>`: The line is wrapped into code, replacing the string '{}' (see swagger)
