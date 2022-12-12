@@ -6,8 +6,7 @@
   - [Features](#features)
     - [Directives](#directives)
     - [Result Display](#result-display)
-    - [Simple Example](#simple-example)
-    - [Macros](#macros)
+    - [Predefined Blocks (Macros)](#predefined-blocks-macros)
   - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
   - [Installation](#installation)
     - [Requirements](#requirements)
@@ -22,7 +21,7 @@ This module adds
 - Output handling 
     - within a split window (a buffer, incl. undo)
     - as valid python (lsp support, e.g. for re-formatting)
-- Support for various evaluation and [output control directives](#directives)
+- Support for various [evaluation and output control directives](#directives)
 - Loadable predefined python code blocks
 - Hot reload of this module's code, w/o state loss
 - More convience regarding evaluation of lines within code blocks
