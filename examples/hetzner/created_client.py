@@ -44,7 +44,7 @@ methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  '🟩', firewalls.get,
  '🟪', firewalls.post,
  '🟥', firewalls___id_.delete,
- '', firewalls___id_.get,
+ '🟩', firewalls___id_.get,
  '🟧', firewalls___id_.put,
  '🟩', firewalls___id___actions.get,
  '🟩', firewalls___id___actions___action_id_.get,
@@ -90,7 +90,7 @@ methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  '🟪', load_balancers___id___actions__delete_service.post,
  '🟪', load_balancers___id___actions__detach_from_network.post,
  '🟪', load_balancers___id___actions__disable_public_interface.post,
- '', load_balancers___id___actions__enable_public_interface.post,
+ '🟪', load_balancers___id___actions__enable_public_interface.post,
  '🟪', load_balancers___id___actions__remove_target.post,
  '🟪', load_balancers___id___actions__update_service.post,
  '🟩', load_balancers___id___metrics.get,
@@ -114,7 +114,7 @@ methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  '🟥', placement_groups___id_.delete,
  '🟩', placement_groups___id_.get,
  '🟧', placement_groups___id_.put,
- '', pricing.get,
+ '🟩', pricing.get,
  '🟩', primary_ips.get,
  '🟪', primary_ips.post,
  '🟥', primary_ips___id_.delete,
@@ -1911,9 +1911,9 @@ class Defs:
     class components_schemas_ip_type:
         """#/components/schemas/ip_type"""
         class R:
-            description = 'The type of the IP'
-            enum = ['ipv4', 'ipv6']
-            type = 'string'
+            _attrs = ['__val__']
+            __val__ = {'enum': ['ipv4', 'ipv6'], 'type': 'string', 'descr': 'The type of the IP'}
+        R.__val__ = 'ipv4'
     class components_schemas_ipv4:
         """#/components/schemas/ipv4"""
         class R:
@@ -1992,9 +1992,9 @@ class Defs:
     class components_schemas_labels:
         """#/components/schemas/labels"""
         class R:
-            additionalProperties = {'type': 'string', 'pattern': '^(()|[a-z0-9A-Z]|([a-z0-9A-Z][a-z0-9A-Z\\._-]{0,61}[a-z0-9A-Z]))$'}
-            description = 'User-defined labels (key-value pairs)'
-            type = 'object'
+            _attrs = ['__val__']
+            __val__ = {'additionalProperties': {'type': 'string', 'pattern': '^(()|[a-z0-9A-Z]|([a-z0-9A-Z][a-z0-9A-Z\\._-]{0,61}[a-z0-9A-Z]))$'}, 'type': 'object', 'descr': 'User-defined labels (key-value pairs)'}
+        R.__val__ = {}
     class components_schemas_list_actions_for_certificate_response:
         """#/components/schemas/list_actions_for_certificate_response"""
         class R:
@@ -5577,8 +5577,9 @@ class volumes___id___actions__resize:
         R.id = id
         R.body = Defs.components_schemas_resize_volume_request
 
-# ─────────────── Tools ──────────────────
+# ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
+keyw = {'import', 'while', 'continue', 'async', 'from', 'raise', 'for', 'if', 'except', 'not'}
 
 class Tools:
     @staticmethod
@@ -5603,6 +5604,7 @@ class Tools:
             f = g(R, '_formData')
             if f:
                 data = {k: Tools.obj(g(R, k)) for k in f}
+                data = data['form'] if f == ['form'] else data
         return meth.__name__, pth, q, data, h
 
     @staticmethod
@@ -5612,20 +5614,20 @@ class Tools:
         if callable(def_):
             if inspect.isfunction(def_):
                 def_ = def_()
-        if is_(def_, str) and def_.startswith('obj:'):
-            def_ = getattr(Defs, def_[4:])
         if is_(def_, (float, int, bool, str)):
             return def_
         obj = Tools.obj
         if is_(def_, list):
             return [obj(def_[0])]
+        dict_ = lambda d: d.get('__val__', d)
         if is_(def_, dict):
-            return {k: obj(v) for k, v in def_.items()}
+            return dict_({k: obj(v) for k, v in def_.items()})
         R = g(def_, 'R', 0)
         if R:
             return obj(R)
         l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-        return {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        return dict_(r)
 
     @staticmethod
     def send(meth, *args):
@@ -5634,7 +5636,7 @@ class Tools:
         env = os.environ.get
         getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v
 
-        def repl(s, keyw={'for', 'async', 'from', 'if', 'import', 'while'}):
+        def repl(s):
             if isinstance(s, str):
                 for k in keyw:
                     s = s.replace(f'{k}__', k)
@@ -5642,9 +5644,9 @@ class Tools:
                 s = json.loads(repl(json.dumps(s)))
             return s
 
-        # if '__user_id' in str(meth): breakpoint() # FIXME BREAKPOINT
         try:
             methd, pth, params, data, h = Tools.build_req(meth)
+            params = repl(params)
             host = f'{API.host}'
             if not '://' in host:
                 host = 'https://' + host

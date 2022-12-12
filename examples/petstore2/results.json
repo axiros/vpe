@@ -147,7 +147,7 @@
             "id": 0,
             "petId": 0,
             "quantity": 0,
-            "shipDate": "2020-12-12",
+            "shipDate": "2020-12-12T%12:12:12Z",
             "status": "placed"
         },
         "headers": {

@@ -332,7 +332,7 @@ class Defs:
         R.recordType = 'A'
         R.state = True
         R.content = str_dflt
-        R.updatedOn = '2020-12-12'
+        R.updatedOn = '2020-12-12T%12:12:12Z'
     class components_schemas_DNS_dnsRecordA:
         """#/components/schemas/DNS.dnsRecordA"""
         class R:
@@ -461,8 +461,8 @@ class Defs:
         R.ipv6WildcardAlias = True
         R.allowZoneTransfer = True
         R.dnssec = True
-        R.createdOn = '2020-12-12'
-        R.updatedOn = '2020-12-12'
+        R.createdOn = '2020-12-12T%12:12:12Z'
+        R.updatedOn = '2020-12-12T%12:12:12Z'
     class components_schemas_DNS_hostname:
         """#/components/schemas/DNS.hostname"""
         class R:
@@ -498,7 +498,7 @@ class Defs:
         R.queryString = str_dflt
         R.userAgent = str_dflt
         R.ssl = True
-        R.updatedOn = '2020-12-12'
+        R.updatedOn = '2020-12-12T%12:12:12Z'
     class components_schemas_DNS_limit:
         """#/components/schemas/DNS.limit"""
         class R:
@@ -551,7 +551,7 @@ class Defs:
         R.hostname = hostname
         R.redirectType = 'PF'
         R.state = True
-        R.updatedOn = '2020-12-12'
+        R.updatedOn = '2020-12-12T%12:12:12Z'
         R.url = 'https://www.mydomain.com'
         R.host = 'www.mydomain.com'
         R.port = 8080
@@ -589,13 +589,13 @@ class Defs:
         R.state = 'AwaitingPayment'
         R.autoRenew = True
         R.whoisProtected = True
-        R.expiresOn = '2020-12-12'
-        R.createdOn = '2020-12-12'
-        R.updatedOn = '2020-12-12'
+        R.expiresOn = '2020-12-12T%12:12:12Z'
+        R.createdOn = '2020-12-12T%12:12:12Z'
+        R.updatedOn = '2020-12-12T%12:12:12Z'
         R.transferState = 'TRANSFERPENDINGAUTHCODE'
         R.transferAuthorizationCode = str_dflt
-        R.transferInitiatedOn = '2020-12-12'
-        R.transferUpdatedOn = '2020-12-12'
+        R.transferInitiatedOn = '2020-12-12T%12:12:12Z'
+        R.transferUpdatedOn = '2020-12-12T%12:12:12Z'
     class components_schemas_Email_email:
         """#/components/schemas/Email.email"""
         class R:
@@ -620,9 +620,9 @@ class Defs:
         R.type = 'EmailBackup'
         R.autoRenew = True
         R.antiSpam = True
-        R.expiresOn = '2020-12-12'
-        R.createdOn = '2020-12-12'
-        R.updatedOn = '2020-12-12'
+        R.expiresOn = '2020-12-12T%12:12:12Z'
+        R.createdOn = '2020-12-12T%12:12:12Z'
+        R.updatedOn = '2020-12-12T%12:12:12Z'
     class components_schemas_Email_emailAccount:
         """#/components/schemas/Email.emailAccount"""
         class R:
@@ -671,19 +671,19 @@ class Defs:
         """#/components/schemas/Email.emailDeliveryQueueMessage"""
         class R:
             type = 'object'
-            _attrs = ['uid', 'from', 'to', 'tries', 'createdOn', 'nextRetryOn']
+            _attrs = ['uid', 'to', 'tries', 'createdOn', 'nextRetryOn', 'from__']
             uid = {'type': 'string'}
-            from__ = {'type': 'string'}
             to = {'type': 'string'}
             tries = {'type': 'integer', 'format': 'int32'}
             createdOn = {'type': 'string', 'format': 'date-time', 'readOnly': True}
             nextRetryOn = {'type': 'string', 'format': 'date-time', 'readOnly': True}
+            from__ = {'type': 'string'}
         R.uid = str_dflt
-        R.from__ = str_dflt
         R.to = str_dflt
         R.tries = 0
-        R.createdOn = '2020-12-12'
-        R.nextRetryOn = '2020-12-12'
+        R.createdOn = '2020-12-12T%12:12:12Z'
+        R.nextRetryOn = '2020-12-12T%12:12:12Z'
+        R.from__ = str_dflt
     class components_schemas_Email_emailForward:
         """#/components/schemas/Email.emailForward"""
         class R:
@@ -746,9 +746,9 @@ class Defs:
         R.checkInterval = 10
         R.state = 'NONE'
         R.paused = True
-        R.lastCheck = '2020-12-12'
-        R.nextCheck = '2020-12-12'
-        R.lastSuccessfulCheck = '2020-12-12'
+        R.lastCheck = '2020-12-12T%12:12:12Z'
+        R.nextCheck = '2020-12-12T%12:12:12Z'
+        R.lastSuccessfulCheck = '2020-12-12T%12:12:12Z'
     class components_schemas_Monitor_monitorDNS:
         """#/components/schemas/Monitor.monitorDNS"""
         class R:
@@ -1434,6 +1434,7 @@ class ping:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
+keyw = {'for', 'while', 'except', 'if', 'async', 'not', 'raise', 'continue', 'import', 'from'}
 
 class Tools:
     @staticmethod
@@ -1458,6 +1459,7 @@ class Tools:
             f = g(R, '_formData')
             if f:
                 data = {k: Tools.obj(g(R, k)) for k in f}
+                data = data['form'] if f == ['form'] else data
         return meth.__name__, pth, q, data, h
 
     @staticmethod
@@ -1467,20 +1469,20 @@ class Tools:
         if callable(def_):
             if inspect.isfunction(def_):
                 def_ = def_()
-        if is_(def_, str) and def_.startswith('obj:'):
-            def_ = getattr(Defs, def_[4:])
         if is_(def_, (float, int, bool, str)):
             return def_
         obj = Tools.obj
         if is_(def_, list):
             return [obj(def_[0])]
+        dict_ = lambda d: d.get('__val__', d)
         if is_(def_, dict):
-            return {k: obj(v) for k, v in def_.items()}
+            return dict_({k: obj(v) for k, v in def_.items()})
         R = g(def_, 'R', 0)
         if R:
             return obj(R)
         l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-        return {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        return dict_(r)
 
     @staticmethod
     def send(meth, *args):
@@ -1489,7 +1491,7 @@ class Tools:
         env = os.environ.get
         getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v
 
-        def repl(s, keyw={'for', 'async', 'from', 'if', 'import', 'while'}):
+        def repl(s):
             if isinstance(s, str):
                 for k in keyw:
                     s = s.replace(f'{k}__', k)
@@ -1497,9 +1499,9 @@ class Tools:
                 s = json.loads(repl(json.dumps(s)))
             return s
 
-        # if '__user_id' in str(meth): breakpoint() # FIXME BREAKPOINT
         try:
             methd, pth, params, data, h = Tools.build_req(meth)
+            params = repl(params)
             host = f'{API.host}'
             if not '://' in host:
                 host = 'https://' + host

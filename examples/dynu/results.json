@@ -15,7 +15,7 @@
     {
         "data": {
             "allowZoneTransfer": true,
-            "createdOn": "2020-12-12",
+            "createdOn": "2020-12-12T%12:12:12Z",
             "dnssec": true,
             "group": "office",
             "id": 8358362,
@@ -30,7 +30,7 @@
             "token": "",
             "ttl": 90,
             "unicodeName": "",
-            "updatedOn": "2020-12-12"
+            "updatedOn": "2020-12-12T%12:12:12Z"
         },
         "headers": {
             "Content-Type": "application/json"
@@ -80,7 +80,7 @@
     {
         "data": {
             "allowZoneTransfer": true,
-            "createdOn": "2020-12-12",
+            "createdOn": "2020-12-12T%12:12:12Z",
             "dnssec": true,
             "group": "office",
             "id": 8358362,
@@ -95,7 +95,7 @@
             "token": "",
             "ttl": 90,
             "unicodeName": "",
-            "updatedOn": "2020-12-12"
+            "updatedOn": "2020-12-12T%12:12:12Z"
         },
         "headers": {
             "Content-Type": "application/json"

@@ -153,7 +153,7 @@
             "id": 10,
             "petId": 0,
             "quantity": 7,
-            "shipDate": "2020-12-12",
+            "shipDate": "2020-12-12T%12:12:12Z",
             "status": "approved"
         },
         "headers": {

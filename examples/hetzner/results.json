@@ -53,10 +53,7 @@
             "domain_names": [
                 ""
             ],
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "my website cert",
             "private_key": "-----BEGIN PRIVATE KEY-----\n...",
             "type": "uploaded"
@@ -95,10 +92,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "my website cert"
         },
         "headers": {
@@ -203,10 +197,7 @@
                     "type": "label_selector"
                 }
             ],
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "Corporate Intranet Protection",
             "rules": [
                 {
@@ -253,10 +244,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "new-name"
         },
         "headers": {
@@ -392,19 +380,10 @@
         "data": {
             "description": "Web Frontend",
             "home_location": "fsn1",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "Web Frontend",
             "server": 42,
-            "type": {
-                "description": "The type of the IP",
-                "enum": [
-                    "ipv4"
-                ],
-                "type": "string"
-            }
+            "type": "ipv4"
         },
         "headers": {
             "Content-Type": "application/json"
@@ -441,10 +420,7 @@
     {
         "data": {
             "description": "Web Frontend",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "Web Frontend"
         },
         "headers": {
@@ -584,10 +560,7 @@
     {
         "data": {
             "description": "My new Image description",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "type": "snapshot"
         },
         "headers": {
@@ -715,10 +688,7 @@
             "algorithm": {
                 "type": "least_connections"
             },
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "load_balancer_type": "lb11",
             "location": "",
             "name": "Web Frontend",
@@ -810,10 +780,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "new-name"
         },
         "headers": {
@@ -1129,10 +1096,7 @@
     {
         "data": {
             "ip_range": "10.0.0.0/16",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "mynet",
             "routes": [
                 {
@@ -1183,10 +1147,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "new-name"
         },
         "headers": {
@@ -1341,10 +1302,7 @@
     "post",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "my Placement Group",
             "type": "spread"
         },
@@ -1382,10 +1340,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "my Placement Group"
         },
         "headers": {
@@ -1433,18 +1388,9 @@
             "assignee_type": "server",
             "auto_delete": true,
             "datacenter": "fsn1-dc8",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "my-ip",
-            "type": {
-                "description": "The type of the IP",
-                "enum": [
-                    "ipv4"
-                ],
-                "type": "string"
-            }
+            "type": "ipv4"
         },
         "headers": {
             "Content-Type": "application/json"
@@ -1481,10 +1427,7 @@
     {
         "data": {
             "auto_delete": true,
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "my-ip"
         },
         "headers": {
@@ -1606,10 +1549,7 @@
                 }
             ],
             "image": "ubuntu-20.04",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "location": "nbg1",
             "name": "my-server",
             "networks": [
@@ -1660,10 +1600,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "my-server"
         },
         "headers": {
@@ -1814,10 +1751,7 @@
     {
         "data": {
             "description": "my image",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "type": "snapshot"
         },
         "headers": {
@@ -2043,10 +1977,7 @@
     "post",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "My ssh key",
             "public_key": "ssh-rsa AAAjjk76kgf...Xt"
         },
@@ -2084,10 +2015,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "My ssh key"
         },
         "headers": {
@@ -2122,10 +2050,7 @@
         "data": {
             "automount": true,
             "format": "xfs",
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "location": "nbg1",
             "name": "databases-storage",
             "server": 0,
@@ -2165,10 +2090,7 @@
     "put",
     {
         "data": {
-            "labels": {
-                "description": "User-defined labels (key-value pairs)",
-                "type": "object"
-            },
+            "labels": {},
             "name": "database-storage"
         },
         "headers": {

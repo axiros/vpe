@@ -465,6 +465,7 @@ class users___user_id_:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
+keyw = {'except', 'import', 'from', 'not', 'while', 'raise', 'async', 'if', 'for', 'continue'}
 
 class Tools:
     @staticmethod
@@ -499,20 +500,20 @@ class Tools:
         if callable(def_):
             if inspect.isfunction(def_):
                 def_ = def_()
-        if is_(def_, str) and def_.startswith('obj:'):
-            def_ = getattr(Defs, def_[4:])
         if is_(def_, (float, int, bool, str)):
             return def_
         obj = Tools.obj
         if is_(def_, list):
             return [obj(def_[0])]
+        dict_ = lambda d: d.get('__val__', d)
         if is_(def_, dict):
-            return {k: obj(v) for k, v in def_.items()}
+            return dict_({k: obj(v) for k, v in def_.items()})
         R = g(def_, 'R', 0)
         if R:
             return obj(R)
         l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-        return {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        return dict_(r)
 
     @staticmethod
     def send(meth, *args):
@@ -521,7 +522,7 @@ class Tools:
         env = os.environ.get
         getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v
 
-        def repl(s, keyw={'for', 'async', 'from', 'if', 'import', 'while'}):
+        def repl(s):
             if isinstance(s, str):
                 for k in keyw:
                     s = s.replace(f'{k}__', k)
@@ -529,9 +530,9 @@ class Tools:
                 s = json.loads(repl(json.dumps(s)))
             return s
 
-        # if '__user_id' in str(meth): breakpoint() # FIXME BREAKPOINT
         try:
             methd, pth, params, data, h = Tools.build_req(meth)
+            params = repl(params)
             host = f'{API.host}'
             if not '://' in host:
                 host = 'https://' + host
