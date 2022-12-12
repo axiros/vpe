@@ -171,14 +171,21 @@ def add_or_switch_to_window(buffername, remember_cur=False, b=None):
 
 
 # ------------------------------------------------------------------------------------------------ Result Formatting
-def check_print_wanted(m):
+def check_print_wanted(state, want_state):
+    def add_state(v, want=want_state):
+        if not want:
+            return v
+        s = {k: v for k, v in state.items() if not k in {'__builtins__'}}
+        return {'state': to_dict(s), 'result': v}
+
     for k in formatters:
-        v = m.pop(k, None)
+        v = state.pop(k, None)
         if v is not None:
+            v = add_state(v)
             vs = formatters[k](v)
             return f'{k} = {vs}'
-    clss = [k for k in m if not k[0] == '_' and k[0].upper() == k[0]]
-    clss = [m[k] for k in clss if is_(m[k], type)]
+    clss = [k for k in state if not k[0] == '_' and k[0].upper() == k[0]]
+    clss = [state[k] for k in clss if is_(state[k], type)]
 
     def check_cls(c):
         """class A: p= ... -> print p's value and delete the attr"""
@@ -192,7 +199,10 @@ def check_print_wanted(m):
     for c in clss:
         v = check_cls(c)
         if v:
-            return v
+            v = add_state(v)
+            return str(v)
+    if want_state:
+        return f'p = {add_state("")}'
 
 
 def to_dict(*a, **kw):
@@ -342,7 +352,7 @@ class swagger:
         _PTHPARAMS_
 
         # fmt:off
-        methods = lambda: ( # :clear :doc :eval file :exec single :wrap p = Tools.send({})
+        methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
          _TOC_
         ) 
         # fmt:on
@@ -1008,23 +1018,37 @@ def ExecuteSelectedRange():
 
     block = '\n'.join(block)
     state = ctx.state
+    ctx.state['always'] = ctx.state.get('always', {})
 
-    if ':autodoc' in block:
+    wrap = doc_call = ''
+    always = add_state = False
+    if ':noalways' in block:
+        ctx.state['always'].clear()
+    if ':always' in block:
+        always = True
+
+    def is_set(key, alw=always, block=block):
+        a = ctx.state['always']
+        if key in block or key in a:
+            a[key] = True
+            return True
+
+    if is_set(':addstate'):
+        add_state = True
+    if is_set(':autodoc'):
         state['autodoc'] = True
-    if ':noautodoc' in block:
+    if is_set(':noautodoc'):
         state.pop('autodoc', 0)
-    if ':clear' in block:
+    if is_set(':clear'):
         clear_buffer = True
-    if ':eval file' in block:
+    if is_set(':eval all'):
         all_ = '\n'.join([src_buf[i] for i in range(0, len(src_buf))])
         exec(all_, state, state)
-    wrap = doc_call = ''
-    if ':wrap ' in block and '{}' in block.split(':wrap ', 1)[1]:
+    if is_set(':wrap ') and '{}' in block.split(':wrap ', 1)[1]:
         wrap = block.split(':wrap ', 1)[1].split('\n', 1)[0].strip()
-    if ':doc' in block:
+    if is_set(':doc'):
         doc_call = True
-
-    if ':exec single' in block:
+    if is_set(':exec single'):
         block = orig_line.strip()
         block = block[:-1] if block.strip().endswith(',') else block
 
@@ -1047,7 +1071,7 @@ def ExecuteSelectedRange():
             dt = round(time.time() - t0, 2)
         except Exception as ex:
             state['y'] = f'Evaluation error:\n{type(ex)}\n{str(ex)}'
-        ress = check_print_wanted(state)   # res str
+        ress = check_print_wanted(state, add_state)
         # [b.append(l) for l in block.splitlines()]
     if doc_call or state.get('autodoc'):
         dt = f'[{dt}s]' if dt else ''

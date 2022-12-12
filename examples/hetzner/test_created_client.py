@@ -28,7 +28,7 @@ id = 0
 action_id = 0
 
 # fmt:off
-methods = lambda: ( # :clear :doc :eval file :exec single :wrap p = Tools.send({})
+methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
  '🟩', actions.get,
  '🟩', actions___id_.get,
  '🟩', certificates.get,

@@ -30,7 +30,7 @@ id = '000'
 action_id = 0
 
 # fmt:off
-methods = lambda: ( # :clear :doc :eval file :exec single :wrap p = Tools.send({})
+methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
  '🟩', actions.get,
  '🟩', actions___id_.get,
  '🟩', certificates.get,
@@ -4891,7 +4891,7 @@ class servers:
         R.name = str_dflt
         R.label_selector = str_dflt
         R.sort = 'id'
-        R.status = 'initializing'
+        R.status = ''
         R.page = 0
         R.per_page = 0
 
@@ -5579,7 +5579,7 @@ class volumes___id___actions__resize:
         R.id = id
         R.body = Defs.components_schemas_resize_volume_request
 
-# ─────────────── Tools ─────────────────────
+# ────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
 
 class Tools:

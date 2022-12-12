@@ -35,7 +35,7 @@ orderId = 0
 username = str_dflt
 
 # fmt:off
-methods = lambda: ( # :clear :doc :eval file :exec single :wrap p = Tools.send({})
+methods = lambda: ( # :clear :doc :eval all :exec single :wrap p = Tools.send({})
  '🟪', pet___petId___uploadImage.post,
  '🟪', pet.post,
  '🟧', pet.put,

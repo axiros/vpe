@@ -15,10 +15,22 @@
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
 <!--toc:end-->
 
-- Facilitates evaluation and display of python directly from vim.
+vim/neovim [can](https://vim.fandom.com/wiki/Execute_Python_from_within_current_file) 'hot evaluate' code using e.g. `:py print("hello")`. 
+
+This module adds
+
+- Output handling 
+    - within a split window (a buffer, incl. undo)
+    - as valid python (lsp support, e.g. for re-formatting)
+- Support for various evaluation and [output control directives](#directives)
+- Loadable predefined python code blocks
+- Hot reload of this module's code, w/o state loss
+- More convience regarding evaluation of lines within code blocks
+
 ![](./docs/img/demo.gif)
 
-- Offers built in support for interaction with Swagger/OpenAPI APIs
+Further the module offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
+
 ![](./docs/img/swagger.png)
 
 
@@ -49,9 +61,11 @@ Supported (usually in comment blocks) are:
 - `:clear`: The previous result is removed
 - `:cmt <comment>`: Show the given comment string
 - `:doc`: Show the evaluated block in the result window
-- `:eval file`: The whole source module is evaluated before the single line is
+- `:eval all`: The whole source module is evaluated before the single line is
 - `:exec single`: Only the line on the cursor is evaluated, even if within a bigger block (see swagger) 
 - `:[no]autodoc`: The `:doc` directive is set/removed for all subsequent evaluations
+- `:[no]always`: When set all directives of this eval run are remembered for future runs, until `:noalways` is set
+- `:state`: Add the evaluation state to result (shows all assigned variables)
 - `:wrap <code>`: The line is wrapped into code, replacing the string '{}' (see swagger)
 
 
@@ -60,10 +74,10 @@ Supported (usually in comment blocks) are:
 Assign the following variables and evaluate to influence how results are shown:
 
 - `p = <result>` or `y = <result>`: Pretty print or yaml dump any object, incl. attributes 
-- `filter="<list of match strings>": Recursively scans the result structure and only shows key OR
+- `filter="<list of match strings>"`: Recursively scans the result structure and only shows key OR
   values (substring-)matching any of the filter. 
   A filter value '1' results in all list reduced to their first item. 
-- `hide="<list of match strings>": Recursively scans the result structure and "x-out" values, whose
+- `hide="<list of match strings>"`: Recursively scans the result structure and "x-out" values, whose
   keys(!) match any of the hide strings. Intended to not show passwords and the like in demos.
 
 ```python
@@ -78,7 +92,11 @@ p = {'a': [{'foo': {'bar': 'xxx'}}, '...[2 items]]}
 ```
 
 
-### Macros
+### Predefined Blocks (Macros)
+
+Note: At this time this feature does NOT offer anything more than a good snippets tool, i.e. you
+probably do NOT need it. I was just adding it, in order to have those available on `cow style` machines
+without a sophisticated vim setup.
 
 If you hit the hotkey on an empty line we present a list of predefined code blocks, for quick adds
 into the source code window.
@@ -170,6 +188,8 @@ In order to run tests w/o vim, just touch an empty `vim.py` next to the module (
 
 
 ## Credits, Alternatives, Interesting Links
+
+First of all: vim, with python support.
 
 Inspiration from this: [vim-http-client](https://github.com/aquach/vim-http-client)
 

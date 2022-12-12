@@ -20,7 +20,7 @@ Early phase. Manually tested against various swagger files, incl. the [petstore]
   - 3  shows the whole requests object, with all attributes resolved
 5. Configure any authentication within `class API`. Environ variables are understood.
 6. Directives are at the end of the `methods` block, ready for change.
-    - Default: `# :clear :doc :eval file :exec single :wrap p = Tools.send({})`
+    - Default: `# :clear :doc :eval all :exec single :wrap p = Tools.send({})`
     - Remove the `:clear` to not loose output of previous runs
     - Set `:wrap p = ...` to `:wrap y= ...` to get output as yaml
 
