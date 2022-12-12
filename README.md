@@ -57,7 +57,7 @@ Supported (usually in comment blocks) are:
 
 ### Result Display
 
-Assign the following variables and evaluate to influence who results are shown:
+Assign the following variables and evaluate to influence how results are shown:
 
 - `p = <result>` or `y = <result>`: Pretty print or yaml dump any object, incl. attributes 
 - `filter="<list of match strings>": Recursively scans the result structure and only shows key OR
