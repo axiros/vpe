@@ -37,7 +37,7 @@ The module also offers [built in support](./docs/swagger.md) for interaction wit
 
 - Hit the hotkey (e.g. `,r`) on a line or visually selected range, which you want evaluated.
 - The line may be a filename or URL of a swagger definition, resulting in code generation for a
-  python requests based API client (see [here](./swagger.md))
+  python requests based API client (see [here](./docs/swagger.md))
 - When the evaluated block contains assignments to `p` or `y`, their values are shown pretty printed
   or as yaml within a vertical split window. As are evaluation errors.
 - If the evaluated line is part of a block (e.g. a line within a function), then the whole block is evaluated by default.
