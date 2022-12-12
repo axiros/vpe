@@ -51,6 +51,7 @@ Notes:
 - vim calls the python code syncronously, blocking. You have to kill the python process to unblock
   it, should your code block forever, while executing.
 
+
 ## Features
 
 ### Directives
@@ -115,6 +116,24 @@ macros = {'demo': d}
 ```
 
 [![asciicast](https://asciinema.org/a/057ewOGytqJDGEL6DF9Ck1hDw.svg)](https://asciinema.org/a/057ewOGytqJDGEL6DF9Ck1hDw)
+
+### Markdown Fenced Blocks
+
+Fenced code blocks are evaluated in total if you evaluate the first line, starting with 3 fences
+(also indented)
+
+```
+    ```python  :clear :always
+    import os
+    p = os.popen('uname -a').read()
+    ``
+
+```
+
+Since state is kept also cross buffers, you might e.g. define helper functions for presentations
+centrally, which you can later use in your presentation files.
+
+
 
 
 ## Interacting with Swagger APIs

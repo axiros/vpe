@@ -1017,30 +1017,38 @@ def ExecuteSelectedRange():
     orig_line = src_buf[nrs[0]]
     post_generate = False
     # just hotkey on a single line?
+    deindent = 0
     if len(nrs) == 1:
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         l = src_buf[nrs[0]].strip()
-        v = try_load_file_or_url(l)   # load swagger specs
-        if v:
-            v, post_generate = v
-            clear_all(buffer=src_buf)
-            into_src_buffer(src_buf, v)
-            clear_buffer = clear_help = True
-        elif l == '':
-            show_help = clear_buffer = True
-        elif l in macros:
-            vimcmd('delete')
-            vimcmd('delete')
-            v = macros[l]
-            into_src_buffer(src_buf, v)
-            clear_buffer = clear_help = True
-        else:
-            # move up:
-            while (src_buf[nrs[0]] + ' ')[0] in {' ', ']', '}', ')'}:
-                nrs.insert(0, nrs[0] - 1)
-            nrs = [nrs[0]]
+        # markdown code block?:
+        if l.startswith('```'):
+            deindent = len(orig_line.rstrip()) - len(l)
+            while not src_buf[nrs[-1] + 1].lstrip().startswith('```'):
+                nrs.append(nrs[-1] + 1)
 
-    # if there is just one selected, we now take the whole block:
+        else:
+            v = try_load_file_or_url(l)   # load swagger specs
+            if v:
+                v, post_generate = v
+                clear_all(buffer=src_buf)
+                into_src_buffer(src_buf, v)
+                clear_buffer = clear_help = True
+            elif l == '':
+                show_help = clear_buffer = True
+            elif l in macros:
+                vimcmd('delete')
+                vimcmd('delete')
+                v = macros[l]
+                into_src_buffer(src_buf, v)
+                clear_buffer = clear_help = True
+            else:
+                # move up:
+                while (src_buf[nrs[0]] + ' ')[0] in {' ', ']', '}', ')'}:
+                    nrs.insert(0, nrs[0] - 1)
+                nrs = [nrs[0]]
+
+    # if there is just one selected, we now take the whole block, i.e. move down:
     if len(nrs) == 1:
         try:
             while (src_buf[nrs[-1] + 1] + ' ')[0] in {' ', ']', '}', ')'}:
@@ -1048,7 +1056,9 @@ def ExecuteSelectedRange():
         except:
             pass
 
-    block = [src_buf[i] for i in nrs]
+    block = [src_buf[i][deindent:] for i in nrs]
+    if block[0].startswith('```'):
+        block[0] = '# ' + block[0]
 
     # find statements like clear or doc:
     bs, docs, l1 = list(block), ctx.docs, []
