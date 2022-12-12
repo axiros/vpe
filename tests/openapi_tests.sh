@@ -15,6 +15,7 @@ function main {
 
   dotest dynu
   dotest hetzner
+  dotest k8s
   dotest petstore2
   dotest petstore3
   dotest schemathesis

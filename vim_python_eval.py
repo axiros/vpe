@@ -46,7 +46,11 @@ def read_file(fn):
     return s
 
 
-apostr = lambda s, a="'", b='"': f"'{s.replace(a, b)}'" if is_(s, str) else s
+apostr = (
+    lambda s, a="'", b='"', c='\n', d='\\n': f"'{s.replace(a, b).replace(c, d)}'"
+    if is_(s, str)
+    else s
+)
 
 
 def lib(l, t={}):
@@ -323,7 +327,18 @@ class swagger:
     icos = dict(put='🟧', post='🟪', get='🟩', delete='🟥', dflt='🟫')
 
     # nasty details: when params are named e.g. async we must convert to "async__", then replace before send
-    forbidden_kw = {'async', 'for', 'if', 'while', 'from', 'import'}
+    forbidden_kw = {
+        'async',
+        'continue',
+        'not',
+        'for',
+        'if',
+        'while',
+        'from',
+        'import',
+        'except',
+        'raise',
+    }
     # path params. will be exposed globally
     pparams = {}
     # number of classes generated to that we can collapse after build:
@@ -332,11 +347,11 @@ class swagger:
     definitions = {}
     # while in def we can't ref other defs, must put into lambdas:
     in_def_block = False
-    now_datetime = time.strftime('%Y-%m-%d')
-    now_time = time.strftime('%Y-%m-%dT%H:%M:%SZ')
+    now_date = time.strftime('%Y-%m-%d')
+    now_datetime = time.strftime('%Y-%m-%dT%H:%M:%SZ')
     if os.environ.get('testmode'):   # avoid test diffs
-        now_datetime = '2020-12-12'
-        now_time = '2020-12-12T%12:12:12Z'
+        now_date = '2020-12-12'
+        now_datetime = '2020-12-12T%12:12:12Z'
     # the tooling:
     code = """
         # type: ignore
@@ -370,6 +385,7 @@ class swagger:
 
         # ─────────────── Tools ─────────────────────
         import requests, json, functools, inspect, os
+        keyw = %(forbidden_kw)s
 
         class Tools:
             @staticmethod
@@ -404,20 +420,20 @@ class swagger:
                 if callable(def_):
                     if inspect.isfunction(def_):
                         def_ = def_()
-                if is_(def_, str) and def_.startswith('obj:'):
-                    def_ = getattr(Defs, def_[4:])
                 if is_(def_, (float, int, bool, str)):
                     return def_
                 obj = Tools.obj
                 if is_(def_, list):
                     return [obj(def_[0])]
+                dict_ = lambda d: d.get('__val__', d)
                 if is_(def_, dict):
-                    return {k: obj(v) for k, v in def_.items()}
+                    return dict_({k: obj(v) for k, v in def_.items()})
                 R = g(def_, 'R', 0)
                 if R:
                     return obj(R)
                 l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-                return {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+                r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+                return dict_(r)
 
             @staticmethod
             def send(meth, *args):
@@ -426,7 +442,7 @@ class swagger:
                 env = os.environ.get
                 getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v
 
-                def repl(s, keyw={'for', 'async', 'from', 'if', 'import', 'while'}):
+                def repl(s):
                     if isinstance(s, str):
                         for k in keyw:
                             s = s.replace(f'{k}__', k)
@@ -434,9 +450,9 @@ class swagger:
                         s = json.loads(repl(json.dumps(s)))
                     return s
 
-                # if '__user_id' in str(meth): breakpoint() # FIXME BREAKPOINT
                 try:
                     methd, pth, params, data, h = Tools.build_req(meth)
+                    params = repl(params)
                     host = f'{API.host}'
                     if not '://' in host:
                         host = 'https://' + host
@@ -522,7 +538,7 @@ class swagger:
         else:
             d = swagger.get_ref(v)
             if not d:
-                breakpoint()   # FIXME BREAKPOINT
+                d = '{}'
         return ex or d, descr or k
 
     @staticmethod
@@ -536,10 +552,10 @@ class swagger:
     @staticmethod
     def by_str(k, v, ex, descr):
         f = v.get('format')
-        if f == 'date-time':
+        if f == 'datetime':
+            ex = ex or swagger.now_date
+        elif f == 'date-time':
             ex = ex or swagger.now_datetime
-        elif f == 'date':
-            ex = ex or swagger.now_time
         r = v.get('enum', ['str_dflt'])[0]
         r = apostr((ex or v.get('default', r)))
         r = r[1:-1] if r == "'str_dflt'" else r
@@ -598,6 +614,8 @@ class swagger:
 
     @staticmethod
     def prop(k, v, no_ref=False):
+        if k.startswith('$'):
+            k = 'dollar_' + k[1:]
         if not isinstance(v, dict):
             # schematics: '$response.body#/id'. not present in v3 it seems
             # only in response. so be... lazy:
@@ -656,16 +674,21 @@ class swagger:
             #     breakpoint()
             #     keep_ctx = True
             props = d.pop('properties', d.pop('parameters', {}))
+            if not props and 'type' in d:
+                # d like {'description': '...', 'type': 'string'} (k8s)
+                # i.e. this is a definition for a simple type
+                props = {'__val__': d}
+                d = {}
             add(f'{i}class {N}:')
             if N != n:
                 add(f'{i}{i}"""{n}"""')
             ins = len(r)
             ctx.cur_cls = []
             if props:
+                props = swagger.clean_dictkeys(props)
+
                 ctx.cur_cls.append(f'_attrs = {list(props.keys())}')
                 for k, v in props.items():
-                    if k in swagger.forbidden_kw:
-                        k += '__'
                     debug and out('   ', n, 'prop', k)
                     for line in swagger.prop(k, v):
                         add(f'{i*2}{line}')
@@ -677,6 +700,8 @@ class swagger:
                 for k, v in d.items():
                     if k == '$ref':
                         k = 'dollar_ref'
+                    else:
+                        k = swagger.repl_unallowed_pydef_chars(k)
                     # add non relevant props, e.g. required with _ = ... after class:
                     cl += f'\n{i*ind}{k} = {apostr(v)}'
             cl = swagger.build_details_cls(2, cl)
@@ -847,7 +872,7 @@ class swagger:
                 [find_refs(i) for i in d]
             if is_(d, dict):
                 for k, v in d.items():
-                    if k == '$ref':
+                    if k == '$ref' and isinstance(v, str):
                         swagger.definitions[v] = swagger.def_cls(v)
                     find_refs(v)
 
@@ -932,9 +957,24 @@ class swagger:
         return r, swagger.post_generate
 
     @staticmethod
+    def clean_dictkeys(d):
+        for k in list(d.keys()):
+            if k in swagger.forbidden_kw:
+                d[k + '__'] = d.pop(k)
+            else:
+                k1 = swagger.repl_unallowed_pydef_chars(k)
+                if k1 != k:
+                    d[k1] = d.pop(k)
+        return d
+
+    @staticmethod
     def param(p: dict, M: dict):
         # {'description': 'ID of pet to update', 'format': 'int64', 'in': 'path', 'name': 'petId', 'required': True, 'type': 'integer'}
+        p = swagger.clean_dictkeys(p)
         n = p['name']
+        n = swagger.repl_unallowed_pydef_chars(n)
+        if n in swagger.forbidden_kw:
+            n = n + '__'
         in_ = p['in']
         M.setdefault(in_, []).append(n)
         # sometimes missing
