@@ -14,7 +14,7 @@ timeout = 5
 
 class API:
     user, passw = '$user', '$password'
-    host = 'http://127.0.0.1:8000/'
+    host = 'http://127.0.0.1:8000'
     base = ''
     hdrs = {}
 
@@ -27171,7 +27171,7 @@ class version__:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'for', 'continue', 'import', 'if', 'async', 'raise', 'from', 'while', 'not', 'except'}
+keyw = {'from', 'raise', 'for', 'except', 'if', 'async', 'while', 'import', 'not', 'continue'}
 
 class Tools:
     @staticmethod

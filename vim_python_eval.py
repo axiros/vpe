@@ -752,7 +752,7 @@ class swagger:
                 h = r + h
             else:
                 h = 'http://127.0.0.1:8000' + h
-        return h
+        return h[:-1] if h.endswith('/') else h
 
     @staticmethod
     def try_load(s: str, url='n.a.'):
