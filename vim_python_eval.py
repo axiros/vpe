@@ -48,7 +48,7 @@ def read_file(fn):
 
 apostr = (
     lambda s, a="'", b='"', c='\n', d='\\n': f"'{s.replace(a, b).replace(c, d)}'"
-    if is_(s, str)
+    if is_(s, str) and (not s or s[0] not in {'"', "'"})
     else s
 )
 
@@ -461,6 +461,8 @@ class swagger:
                     kw = {'params': params, 'headers': h, 'timeout': timeout}
                     if getenv(API.passw):
                         kw['auth'] = (getenv(API.user), getenv(API.passw))
+                    if getattr(API, 'digest', 0):
+                        kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth']) 
                     if isinstance(data, (list, dict)):
                         kw['data'] = repl(data)
                     req = getattr(requests, methd)
@@ -582,7 +584,8 @@ class swagger:
 
     @staticmethod
     def by_array(k, v, ex, descr):
-        # if k == 'recordTypes': breakpoint()     # FIXME BREAKPOINT
+        if not isinstance(v, dict) or not 'items' in v:
+            return ex or descr or None, ''
         i = v['items']
         d = swagger.get_ref(i)
         if not d:
@@ -595,9 +598,11 @@ class swagger:
                 d = swagger.by_type(i)[1](k, i, ex, descr)[0]
         d = v.get('default', f'[{d}]')
         r = ex or d
+        if isinstance(r, str) and (not r or r[0] not in {'{', '['}):
+            r = apostr(r)
         sep = ''
         # given examples we simply take:
-        if is_(r, list) and not ex:
+        if ctx.openapi_ver < 2 and is_(r, list) and not ex:
             # https://swagger.io/docs/specification/2-0/describing-parameters/#query-parameters
             cf = v.get('collectionFormat', 'csv')
             if cf != 'multi':
@@ -634,7 +639,7 @@ class swagger:
                 v['descr'] = d
             else:
                 v = [apostr(d), v]
-        d = f'{k} = {v}'
+        d = f'{k} = {apostr(v)}'
         ctx.cur_cls.append(d)
         l = []
         d = ''
@@ -666,6 +671,7 @@ class swagger:
             # if n == 'IFormFile': breakpoint()   # FIXME BREAKPOINT
             N = swagger.definitions[n]
             d.pop('xml', 0)
+
             # Maybe we should gen those classes also for objects within methods?
             # try:
             #     assert d.pop('type') == 'object'
@@ -673,6 +679,7 @@ class swagger:
             #     print('breakpoint set')
             #     breakpoint()
             #     keep_ctx = True
+
             props = d.pop('properties', d.pop('parameters', {}))
             if not props and 'type' in d:
                 # d like {'description': '...', 'type': 'string'} (k8s)
@@ -686,7 +693,6 @@ class swagger:
             ctx.cur_cls = []
             if props:
                 props = swagger.clean_dictkeys(props)
-
                 ctx.cur_cls.append(f'_attrs = {list(props.keys())}')
                 for k, v in props.items():
                     debug and out('   ', n, 'prop', k)
@@ -777,6 +783,8 @@ class swagger:
         spec['givenurl'] = url
         spec['info'] = swagger.parse_infos_for_docstr(spec)
         spec['host'] = swagger.get_host(spec, url)
+        _: str = spec.get('openapi', spec.get('swagger', 2))
+        ctx.openapi_ver = int(_.upper().replace('V', '').split('.')[0])
         spec['forbidden_kw'] = swagger.forbidden_kw
 
         if not spec.get('basePath'):
@@ -789,7 +797,7 @@ class swagger:
             'params'   : None,    # dict of global params, in addition to path params parsed
             'sep'      : None,    # seperates lines in method list by this char
             'filter'   : None,    # only show keys/vals which match. '1': Show only first list item
-            'result'   : 1,       # 0: Show only req, no API hit; 1: only result; 2 : both; 3 : full req object
+            'result'   : 2,       # 0: Show only req, no API hit; 1: only result; 2 : both; 3 : full req object
             'str_dflt' : '',      # Sets default for all string params w/o an example
             'timeout'  : 5,       # Sets requests timeout
         }
@@ -919,7 +927,9 @@ class swagger:
                 if doc:
                     r += f'\n{i}{i}"""{doc}"""'
                 if pspec:
-                    ctx.cur_cls.append(f'_ = {pspec}')
+                    ctx.cur_cls.append(f'# = {pspec}')
+                    if len(ctx.cur_cls) == 1 and not params:
+                        ctx.cur_cls.append(f'pass')
                 r += '\n_REPL_'
                 for p in params:
                     for l in swagger.param(p, pspec):

@@ -204,6 +204,53 @@ This takes care to not loose your evaluation state over reloads.
 
 In order to run tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
 
+## Troubleshooting
+
+### A lib in my venv/conda env cannot be imported
+
+1. pynvim, the vim api we use, is usually installed into somewhere like  `~.local/lib/python3.9/site-packages/pynvim`.
+2. thy `python3` command of [n]vim searches your $PATH for the available python of that major
+   version. It might decide to use the wrong one, if your venv's version does not match.
+
+You can evaluate `p = sys.executable, sys.path` to get more information about the python in use
+within [n]vim.
+
+Example result:
+```python
+p = (
+    '/home/gk/miniconda3/envs/lc-python_py3.9/bin/python3',
+    [
+        '/home/gk/.config/nvim.gk',  # <- inserted at install of this module
+        (..)
+        '/home/gk/miniconda3/envs/lc-python_py3.9/lib/python39.zip',  # <- venv in use, 
+        '/home/gk/.local/lib/python3.9/site-packages',  # <- matching pynvim version
+        (..)
+        '_vim_path_',
+    ],
+)
+```
+
+=> You can try pip install the pynvim version for your python OR pull the venv up or down to the
+major you have for pynvim.
+
+### gevent monkey patch causes trouble
+
+If evaluated code wants to "monkey patch" the whole interpreter, then [n]vim fails with an error
+message about execution outside the main thread.
+
+Workaround:
+
+If you cannot avoid the monkey path, then try command out the check in nvim.py's request function:
+
+```python
+        # if (self._session._loop_thread is not None
+        #         and threading.current_thread() != self._session._loop_thread):
+        #     msg = ("Request from non-main thread.\n"...)
+        #     self.async_call(self._err_cb, msg)
+        #     raise NvimError("request from non-main thread")
+```
+
+
 
 ## Credits, Alternatives, Interesting Links
 

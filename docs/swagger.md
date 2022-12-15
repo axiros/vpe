@@ -58,7 +58,7 @@ These are understood, in addition to the always supported ones (e.g. `hide` or `
 'timeout'  : 5,       # Sets requests timeout
 ```
 
-Note that values in hdrs as API params may come from environ, e.g. `hdrs={'API-TOken': $token}`.
+Note that values in hdrs as API params may come from environ, e.g. `hdrs={'API-Token': $token}`.
 
 Here a demo against a DynDNS provider's API, illustrating the use of those parameters. 
 <a href="https://asciinema.org/a/QhCpFAsHjM5CELXzClXO67eVv" target="_blank"><img src="https://asciinema.org/a/QhCpFAsHjM5CELXzClXO67eVv.svg" /></a>
@@ -156,7 +156,10 @@ The parameters you do NOT want to send,
                 (...)
 ```
 
+### Authentication
 
+If API.passw is set, then by default requests is using BasicAuth.
+For digest, set `digest = True` into the API class.
 
 
 ## Command Line Usage
