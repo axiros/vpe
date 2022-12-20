@@ -19,7 +19,7 @@ class API:
     hdrs = {}
 
 
-hostname = 'test.mydomain.com'
+hostname = ''
 id = 8358362
 dnsRecordId = 758426278
 webRedirectId = 758426278

@@ -132,7 +132,8 @@ s = read_file(fn_m)
 m = {}
 if s:
     exec(s, m, m)
-macros.update(m['macros'])
+    if 'macros' in m:
+        macros.update(m['macros'])
 
 
 def help():
