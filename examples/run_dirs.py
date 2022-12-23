@@ -75,7 +75,7 @@ def run_dir(d, vpe, testmode):
 
 def main(match, testmode):
     os.chdir(here)
-    vpe = os.path.dirname(here) + '/vim_python_eval.py'
+    vpe = os.path.dirname(here) + '/plugin/vim_python_eval.py'
     for d in os.listdir(here):
         if match in d and os.path.isdir(d):
             run_dir(absp(d), vpe, testmode)
