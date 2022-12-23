@@ -1149,7 +1149,7 @@ def ExecuteSelectedRange():
 
     if ress:
         [res_buf.append(l) for l in ress.splitlines()]
-    vimcmd(':Format')
+    vimcmd(':silent lua vim.lsp.buf.format()')
     vimcmd(f'{len(res_buf)}j')
     res_buf = add_or_switch_to_window('previous')
     # vimcmd('delete') if clear_buffer else 0

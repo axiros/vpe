@@ -143,34 +143,17 @@ See [here](./docs/swagger.md)
 
 ## Installation
 
-Not (yet) a plugin.
+1. Install the plugin "axiros/vpe" 
+2. Configuration:
 
-1. Put the module into your file system
-2. Add this into your vimrc:
+Define a hotkey for invoking it, e.g.:
 
-```vim
-function! s:VPE(func_name, l1, l2) range
-" Executes functions from vim_python_eval.py
-python3 << EOL
-import os, sys
-D = f'{os.environ["HOME"]}/.config/nvim.gk'  # <--- ADAPT TO WHERE YOU HAVE THE MODULE
-if not D in sys.path:
-    sys.path.insert(0, D)
-    import vim_python_eval as vpe 
-vpe.ctx.L1 = int(vim.eval("a:l1"))
-vpe.ctx.L2 = int(vim.eval("a:l2"))
-getattr(vpe, vim.eval("a:func_name"))()
-EOL
-endfunction
-
-" Supports by line evals and also visual range eval:
-command! -range Evl <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
-nnoremap          ,r  :Evl<CR>
-xnoremap <silent> ,r  :Evl<CR>
+``````vim
+nnoremap          ,r  :Vpe<CR>
+xnoremap <silent> ,r  :Vpe<CR>
 ```
 
 This lazy loads the module on first use.
-
 
 ### Requirements
 
@@ -187,20 +170,8 @@ For filetype python we assume these requirements in your config:
 
 ## Developing
 
-If you want to play around / extend the module, you can have the module reloaded at every hotkey
-invocation.
-
-Add these lines into your vimrc, before the line `vpe.ctx.L1 = ...`:
-
-```python
-# For debugging (reload at code changes) you may want to uncomment:
-m = vpe.ctx.state
-sys.modules.pop('vim_python_eval')
-import vim_python_eval as vpe
-vpe.ctx.state = m
-```
-
-This takes care to not loose your evaluation state over reloads.
+Set `let g:vpe_reload=1` to enable reloading the module at every invokation. 
+State, e.g. evaluated imports, is kept in dict `ctx.state`.
 
 In order to run tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
 
