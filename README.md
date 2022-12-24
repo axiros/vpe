@@ -7,14 +7,14 @@
     - [Directives](#directives)
     - [Result Display](#result-display)
     - [Predefined Blocks (Macros)](#predefined-blocks-macros)
+    - [Markdown Fenced Blocks](#markdown-fenced-blocks)
   - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
   - [Installation](#installation)
-    - [Requirements](#requirements)
-  - [Developing](#developing)
-  - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
 <!--toc:end-->
 
-vim/neovim [can](https://vim.fandom.com/wiki/Execute_Python_from_within_current_file) 'hot evaluate' code using e.g. `:py print("hello")`. 
+vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")`. 
+
+[hot]: https://vim.fandom.com/wiki/Execute_Python_from_within_current_file
 
 This module adds
 
@@ -80,13 +80,16 @@ Assign the following variables and evaluate to influence how results are shown:
 - `hide="<list of match strings>"`: Recursively scans the result structure and "x-out" values, whose
   keys(!) match any of the hide strings. Intended to not show passwords and the like in demos.
 
-```python
+```python :clear
 filter = 'bar,1'
 hide = 'bar'
 m = {'u': 23, 'a': [{'foo': {'bar': 23, 'baz': 23}}, {'other': 42}]}
 p = m   # :doc
+```
 
-# result:
+result pane:
+
+```python
 # 2 keys filtered, matching [bar,1]
 p = {'a': [{'foo': {'bar': 'xxx'}}, '...[2 items]]}
 ```
@@ -143,10 +146,10 @@ See [here](./docs/swagger.md)
 
 ## Installation
 
-1. Install the plugin "axiros/vpe" 
+1. Install this plugin "axiros/vpe" 
 2. Configuration:
 
-Define a hotkey for invoking it, e.g.:
+Define a hotkey for invoking it in normal and visual mode, e.g.:
 
 ``````vim
 nnoremap          ,r  :Vpe<CR>
@@ -157,15 +160,12 @@ This lazy loads the module on first use.
 
 ### Requirements
 
-Should work for vim and neovim with python3 support.
-
-For filetype python we assume these requirements in your config:
-
-1. `set foldmethod=indent` should be set, since we collapse classes after creating swagger support
+- Should work for vim and neovim with python3 support.
+- Autoformatting of results only in neovim.
+- For filetype python we assume these requirements in your config:
+- `set foldmethod=indent` should be set, since we collapse classes after creating swagger support
    definitions.
-1. The module relies on the presence of a `:Format` command, which you typically get by adding LSP
-   support for python. If you have support for sth like `:Black` or `:Blue`, then add to your vimrc (for filetype python):  
-   `command Format :Black` 
+
 
 
 ## Developing
@@ -179,7 +179,7 @@ In order to run tests w/o vim, just touch an empty `vim.py` next to the module (
 
 ### A lib in my venv/conda env cannot be imported
 
-1. pynvim, the vim api we use, is usually installed into somewhere like  `~.local/lib/python3.9/site-packages/pynvim`.
+1. pynvim (or neovim), the vim api we use, is usually installed into somewhere like  `~.local/lib/python3.9/site-packages/pynvim`.
 2. thy `python3` command of [n]vim searches your $PATH for the available python of that major
    version. It might decide to use the wrong one, if your venv's version does not match.
 
@@ -189,19 +189,19 @@ within [n]vim.
 Example result:
 ```python
 p = (
-    '/home/gk/miniconda3/envs/lc-python_py3.9/bin/python3',
+    '/home/gk/nvim/bin/python3',
     [
-        '/home/gk/.config/nvim.gk',  # <- inserted at install of this module
-        (..)
-        '/home/gk/miniconda3/envs/lc-python_py3.9/lib/python39.zip',  # <- venv in use, 
-        '/home/gk/.local/lib/python3.9/site-packages',  # <- matching pynvim version
-        (..)
+        '/home/gk/.local/share/nvim/site/pack/packer/start/vpe/plugin',
+        '/home/gk/nvim/lib/python310.zip',
+        '/home/gk/nvim/lib/python3.10',
+        '/home/gk/nvim/lib/python3.10/lib-dynload',
+        '/home/gk/nvim/lib/python3.10/site-packages',
         '_vim_path_',
     ],
 )
 ```
 
-=> You can try pip install the pynvim version for your python OR pull the venv up or down to the
+=> You can try `pip install pynvim` or `pip install neovim` version for your python OR pull the venv up or down to the
 major you have for pynvim.
 
 ### gevent monkey patch causes trouble
@@ -225,7 +225,7 @@ If you cannot avoid the monkey path, then try command out the check in nvim.py's
 
 ## Credits, Alternatives, Interesting Links
 
-First of all: vim, with python support.
+(neo)vim with python support.
 
 Inspiration from this: [vim-http-client](https://github.com/aquach/vim-http-client)
 
@@ -236,3 +236,6 @@ OpenAPI:
 - Tools: https://openapi.tools/
 - Generation UI, with import function: https://www.apibldr.com/
 - Their default gen tool: https://github.com/OpenAPITools/openapi-generator
+
+
+
