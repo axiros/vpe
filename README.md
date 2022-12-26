@@ -151,7 +151,7 @@ See [here](./docs/swagger.md)
 
 Define a hotkey for invoking it in normal and visual mode, e.g.:
 
-``````vim
+```vim
 nnoremap          ,r  :Vpe<CR>
 xnoremap <silent> ,r  :Vpe<CR>
 ```
@@ -236,6 +236,5 @@ OpenAPI:
 - Tools: https://openapi.tools/
 - Generation UI, with import function: https://www.apibldr.com/
 - Their default gen tool: https://github.com/OpenAPITools/openapi-generator
-
 
 
