@@ -156,11 +156,13 @@ See [here](./docs/swagger.md)
 
 A function evaluating *anything* into a split window is also included within this plugin:
 
-Add `nnoremap  ,E  :EvalInto<CR>` into your mapping and get the evaluation result of the current
+Add `nnoremap  ,E  :EvalInto<CR>` to your mappings and get the evaluation result of the current
 line into a split window, named like the command:
-https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG
 
 [![asciicast](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG.svg)](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG)
+
+The function is using only built in vim mechanics: Basically `put=execute(getline('.'))` plus a few
+lines of buffername handling.
 
 Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe)
 
