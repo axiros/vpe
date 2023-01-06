@@ -9,21 +9,30 @@
     - [Predefined Blocks (Macros)](#predefined-blocks-macros)
     - [Markdown Fenced Blocks](#markdown-fenced-blocks)
   - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
+  - [Add On: EvalInto](#add-on-evalinto)
   - [Installation](#installation)
+    - [Requirements](#requirements)
+  - [Developing](#developing)
+  - [Troubleshooting](#troubleshooting)
+    - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
+    - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
+  - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
 <!--toc:end-->
 
 vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")`. 
 
+
+
 [hot]: https://vim.fandom.com/wiki/Execute_Python_from_within_current_file
 
-This module adds
+This plugin adds
 
 - Output handling 
-    - within a split window (a buffer, incl. undo)
+    - within a split window (a buffer, incl. undo history)
     - as valid python (lsp support, e.g. for re-formatting)
 - Support for various [evaluation and output control directives](#directives)
 - Loadable predefined python code blocks
-- Hot reload of this module's code, w/o state loss
+- Hot reload of this plugin's python module code, w/o state loss
 - More convience regarding evaluation of lines within code blocks
 
 ![](./docs/img/demo.gif)
@@ -143,6 +152,17 @@ centrally, which you can later use in your presentation files.
 
 See [here](./docs/swagger.md)
 
+## Add On: EvalInto
+
+A function evaluating *anything* into a split window is also included within this plugin:
+
+Add `nnoremap  ,E  :EvalInto<CR>` into your mapping and get the evaluation result of the current
+line into a split window, named like the command:
+https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG
+
+[![asciicast](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG.svg)](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG)
+
+Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe)
 
 ## Installation
 

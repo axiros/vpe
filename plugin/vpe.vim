@@ -1,5 +1,17 @@
 
 let s:script_path = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+function! s:EvalInto()
+  " Opens new window with eval result in it
+  let s:eicmd=getline('.')
+  let filename = 'result_eval_into'
+  rightbelow vsplit eval_into_res
+  execute 'file ' . s:eicmd
+  setlocal buftype=nofile nospell ft=fortran
+  ":bwipeout
+  :%d
+  put=execute(s:eicmd)
+endfunction
+
 function! s:VPE(func_name, l1, l2) range
 "" Executes functions from py_api.py
 if exists('vpe_reload')
@@ -29,5 +41,6 @@ getattr(vpe, vim.eval("a:func_name"))()
 EOL
 endfunction
 
-command! -range Vpe <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
+command! -range PythonEval <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
+command! EvalInto call s:EvalInto()
 
