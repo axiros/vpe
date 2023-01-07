@@ -1,15 +1,30 @@
-
 let s:script_path = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+
 function! s:EvalInto()
+  " Just an add on, for eval any into buffer, using vim funcs "only":
   " Opens new window with eval result in it
-  let s:eicmd=getline('.')
+
+  "  if a:cmd =~ '^!'
+  "     execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
+  let cmd = getline('.')
+  redir => output
+  execute cmd
+  redir END
+  if output ==# '' 
+    put! = 'no output'
+    return
+  endif
+ 
   let filename = 'result_eval_into'
   rightbelow vsplit eval_into_res
-  execute 'file ' . s:eicmd
-  setlocal buftype=nofile nospell ft=fortran
-  ":bwipeout
+  execute 'file ' . cmd
+  setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile nospell ft=fortran
+  " call setline(1, split(output, "\n"))
+  " put! = 'Result: ' .  cmd
+  " put = '----'
+  " :bwipeout
   :%d
-  put=execute(s:eicmd)
+  put=execute(cmd)
 endfunction
 
 function! s:VPE(func_name, l1, l2) range
@@ -42,5 +57,5 @@ EOL
 endfunction
 
 command! -range PythonEval <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
-command! EvalInto call s:EvalInto()
+command! EvalInto silent call s:EvalInto()
 
