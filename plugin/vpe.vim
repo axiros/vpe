@@ -25,7 +25,7 @@ function! s:EvalInto()
   " put = '----'
   " :bwipeout
   :%d
-  put=execute(cmd)
+  put=output
 endfunction
 
 function! s:VPE(func_name, l1, l2) range
