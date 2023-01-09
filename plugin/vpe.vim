@@ -7,6 +7,7 @@ function! s:EvalInto()
   "  if a:cmd =~ '^!'
   "     execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
   let cmd = getline('.')
+  let ft=&filetype
   redir => output
   execute cmd
   redir END
@@ -18,7 +19,7 @@ function! s:EvalInto()
   let filename = 'result_eval_into'
   rightbelow vsplit eval_into_res
   execute 'file ' . cmd
-  setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile nospell ft=fortran
+  setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile nospell ft=ft
   " call setline(1, split(output, "\n"))
   " put! = 'Result: ' .  cmd
   " put = '----'
