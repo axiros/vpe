@@ -1061,9 +1061,9 @@ def ExecuteSelectedRange():
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         l = src_buf[nrs[0]].strip()
 
-        if l.strip().startswith(':'):
+        if len(l) > 3 and l[0] == l[1] == ':':
             # emoji? we support eval on `:smile.heart.plane`
-            match = l[1:].split(' ', 1)[0].strip().replace(':', '')
+            match = l[1:-1].split(' ', 1)[0].strip().replace(':', '')
             match = match.replace('.', '|')
             os.system(f'notify-send "{match}"')
             cmd = f"emoji-fzf preview --prepend | grep -E  '{match}' "
