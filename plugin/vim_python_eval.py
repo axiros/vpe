@@ -2,12 +2,18 @@
 """
 Tools to make use of python API.
 
-API funcs are in Capitals. Currently only "ExecuteSelectedRange" - evaluating selected python code.
+API funcs are in Capitals. Currently only "ExecuteSelectedRange" -
+evaluating selected python code.
 
 Most code is for swagger definition parsing, in namespace class "swagger".
 """
 
-import sys, os, json, importlib, time, string
+import sys
+import os
+import json
+import importlib
+import time
+import string
 from functools import partial as P
 from copy import deepcopy
 
@@ -15,7 +21,7 @@ debug = False
 is_ = isinstance
 try:
     import vim
-except:
+except Exception:
     # we can still parse swagger
     print('no vim api importable', file=sys.stderr)
 
@@ -41,33 +47,34 @@ def read_file(fn):
     try:
         with open(fn) as fd:
             s = fd.read()
-    except:
+    except Exception:
         s = ''
     return s
 
 
-apostr = (
-    lambda s, a="'", b='"', c='\n', d='\\n': f"'{s.replace(a, b).replace(c, d)}'"
-    if is_(s, str) and (not s or s[0] not in {'"', "'"})
-    else s
-)
+def apostr(s, a="'", b='"', c='\n', d='\\n'):
+    return (
+        f"'{s.replace(a, b).replace(c, d)}'"
+        if is_(s, str) and (not s or s[0] not in {'"', "'"})
+        else s
+    )
 
 
-def lib(l, t={}):
+def lib(libname, t={}):
     """we don't always require all libs"""
     c = ctx.state['_loaded_libs']
-    v = c.get(l, l)
+    v = c.get(libname, libname)
     if not is_(v, str):
         return v
-    if not t.get(l):
+    if not t.get(libname):
         try:
-            t[l] = True
-            c[l] = importlib.import_module(l)
-            return c[l]
-        except:
+            t[libname] = True
+            c[libname] = importlib.import_module(libname)
+            return c[libname]
+        except Exception:
             pass
     s = '\n' + '-' * 40 + '\n'
-    print(f'{s}Please: pip install {l}{s}\n')
+    print(f'{s}Please: pip install {libname}{s}\n')
 
 
 # Avoiding the infomous python indent bug for Treesitter...
@@ -76,7 +83,7 @@ BRKT = {'{', '['}
 
 def log(s, **kw):
     """for debug only"""
-    with open('/tmp/py_api', 'a') as fd:
+    with open(f'/tmp/vpe', 'a') as fd:
         s = f'{s} {kw}\n'
         fd.write(s)
 
@@ -96,7 +103,7 @@ class R:
     # :cmt pastebin example
     url = 'http://httpbin.org/post'
     data = { "mydata": { "hello": "world" }}
-    p = Post(url, data=data).text 
+    p = Post(url, data=data).text
     # y = Post(url, data=data)
 
 """
@@ -138,11 +145,15 @@ if s:
 
 def help():
     """Display available macros"""
+
     r = 'Enter letter and hit evaluation hotkey on it:\n\n'
     for m, v in macros.items():
         v = '# ' + v.lstrip().split('\n', 1)[0].replace('if ', '')
         r += f'{m}: {v}\n'
     r += '\n\nResults you get by assigning "p" or "y" in code blocks.'
+    r += '\n\n# Easter Eggs: Evaluate:'
+    r += '\n- :smile.happy (req. pip emoji-fzf)'
+    r += '\n\n# ' + __file__
     return r
 
 
@@ -150,11 +161,15 @@ def help():
 
 
 def clear_all(buffer):
-    del buffer[0 : len(buffer)]
+    del buffer[0: len(buffer)]
 
 
-buf = lambda: vim.current.buffer
-vimcmd = lambda cmd: vim.command(cmd)
+def buf():
+    return vim.current.buffer
+
+
+def vimcmd(cmd):
+    return vim.command(cmd)
 
 
 def add_or_switch_to_window(buffername, remember_cur=False, b=None):
@@ -169,7 +184,7 @@ def add_or_switch_to_window(buffername, remember_cur=False, b=None):
     bid = vim.eval(f'bufwinnr("{buffername}")')
     if bid == '-1':
         vimcmd(f'rightbelow vsplit {buffername}')
-        vimcmd(f'setlocal buftype=nofile nospell')
+        vimcmd('setlocal buftype=nofile nospell')
     else:
         vimcmd(f'{bid}wincmd w')
     return vim.current.buffer
@@ -180,7 +195,10 @@ def check_print_wanted(state, want_state):
     def add_state(v, want=want_state):
         if not want:
             return v
-        hide = lambda k, v: k in {'__builtins__'} or hasattr(v, '__package__')
+
+        def hide(k, v):
+            return k in {'__builtins__'} or hasattr(v, '__package__')
+
         r = [[k, v] for k, v in state.items() if not hide(k, v)]
         c = {k: v for k, v in r if callable(v)}
         a = {k: v for k, v in r if not callable(v)}
@@ -271,7 +289,7 @@ def _to_dict(obj, depth=0, maxd=5, have=None):
     if is_(obj, str) and obj and obj.lstrip()[0] in BRKT:
         try:
             obj = json.loads(obj)
-        except:
+        except Exception:
             pass
 
     if is_(obj, (dict, set, list, int, float, bool, str)):
@@ -281,7 +299,7 @@ def _to_dict(obj, depth=0, maxd=5, have=None):
         if obj in have:
             return str(obj)
         have.add(obj)
-    except Exception as ex:
+    except Exception:
         return str(obj)
     if callable(obj):
         return str(obj)
@@ -309,11 +327,16 @@ def to_y(o):
 
 formatters['y'] = to_y
 
-deindent = lambda s, spec={}: s.replace(f'\n{" "*8}', '\n') % spec
+
+def deindent(s, spec={}):
+    return s.replace(f'\n{" " * 8}', '\n') % spec
+
 
 # ------------------------------------------------------------------------------------------------ Being smart about one liners
 pyallwd = set(string.digits + string.ascii_letters + '_')
 # Currently only about swagger defs:
+
+
 def try_load_file_or_url(url):
     s = read_file(url)
     h = {'http', 'https'}
@@ -432,8 +455,10 @@ class swagger:
                 R = g(def_, 'R', 0)
                 if R:
                     return obj(R)
-                l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-                r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+                l = g(def_, '_attrs', [
+                      i for i in dir(def_) if not i[0] == '_'])
+                r = {k: obj(g(def_, k))
+                            for k in l if not is_(g(def_, k), dict)}
                 return dict_(r)
 
             @staticmethod
@@ -463,7 +488,7 @@ class swagger:
                     if getenv(API.passw):
                         kw['auth'] = (getenv(API.user), getenv(API.passw))
                     if getattr(API, 'digest', 0):
-                        kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth']) 
+                        kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth'])
                     if isinstance(data, (list, dict)):
                         kw['data'] = repl(data)
                     req = getattr(requests, methd)
@@ -477,7 +502,7 @@ class swagger:
                     r = {'status': req.status_code}
                     try:
                         r['resp'] = json.loads(req.text)
-                    except:
+                    except Exception:
                         r['resp'] = req.text
                 except Exception as ex:
                     r = {'Exception': str(ex)}
@@ -585,7 +610,7 @@ class swagger:
 
     @staticmethod
     def by_array(k, v, ex, descr):
-        if not isinstance(v, dict) or not 'items' in v:
+        if not isinstance(v, dict) or 'items' not in v:
             return ex or descr or None, ''
         i = v['items']
         d = swagger.get_ref(i)
@@ -765,7 +790,7 @@ class swagger:
     def try_load(s: str, url='n.a.'):
         """s the content of a swagger definition file"""
         s = s.encode().decode('utf-8-sig')
-        if not s or (not 'swagger' in s and not 'openapi' in s):
+        if not s or ('swagger' not in s and 'openapi' not in s):
             return
         try:
             if s.strip()[0] in BRKT:
@@ -773,7 +798,7 @@ class swagger:
             else:
                 spec = lib('yaml').safe_load(s)
             assert isinstance(spec, dict)
-        except:
+        except Exception:
             return
         # sp = mod.SwaggerParser(swagger_dict=d) # swagger parser did not cut it for us :-/
         # allows to predefine globals:
@@ -849,7 +874,7 @@ class swagger:
                             'application/json',
                             'multipart/form-data',
                             'application/x-www-form-urlencoded',
-                            #'application/octet-stream',
+                            # 'application/octet-stream',
                         ]:
                             r = rb.pop(f, 0)
                             if r:
@@ -930,7 +955,7 @@ class swagger:
                 if pspec:
                     ctx.cur_cls.append(f'# = {pspec}')
                     if len(ctx.cur_cls) == 1 and not params:
-                        ctx.cur_cls.append(f'pass')
+                        ctx.cur_cls.append('pass')
                 r += '\n_REPL_'
                 for p in params:
                     for l in swagger.param(p, pspec):
@@ -957,7 +982,7 @@ class swagger:
         # but still we are in a block, so that directives are found and evaled
         sep = '\n '
         _ = ctx.state.get('sep')
-        if _ != None:
+        if _ is not None:
             _ = f"'{_}'" if is_(_, str) else _
             sep = f'\n {_},{sep}'
         r = r.replace('_TOC_', sep.join(toc))
@@ -1005,6 +1030,19 @@ class swagger:
         vimcmd('/methods')
 
 
+def into_src_buffer(sb, lines):
+    """sometimes we modify the source buffer. macros, swagger, ..."""
+    if isinstance(lines, str):
+        lines = lines.strip().splitlines()
+    for l in lines:
+        l1 = l.strip()
+        if l1.startswith('vim:'):
+            vimcmd(f'{len(sb)}j')
+            vimcmd(l1.split('vim:', 1)[1].strip())
+        else:
+            sb.append(l)
+
+
 def ExecuteSelectedRange():
     """Called method when hotkey is pressed in vim"""
     src_buf = vim.current.buffer
@@ -1012,16 +1050,6 @@ def ExecuteSelectedRange():
     # check if we are within a block and go up:
     # we do this only if there is no visual range selected
     show_help = clear_buffer = clear_help = False
-
-    def into_src_buffer(sb, lines):
-        """sometimes we modify the source buffer. macros, swagger, ..."""
-        for l in lines.strip().splitlines():
-            l1 = l.strip()
-            if l1.startswith('vim:'):
-                vimcmd(f'{len(sb)}j')
-                vimcmd(l1.split('vim:', 1)[1].strip())
-            else:
-                sb.append(l)
 
     # for hotkey on single lines we evaluate a few convenience statements
     # and extend the selected range the top of the block:
@@ -1032,7 +1060,23 @@ def ExecuteSelectedRange():
     if len(nrs) == 1:
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         l = src_buf[nrs[0]].strip()
-        # markdown code block?:
+
+        if l.strip().startswith(':'):
+            # emoji? we support eval on `:smile.heart.plane`
+            match = l[1:].split(' ', 1)[0].strip().replace(':', '')
+            match = match.replace('.', '|')
+            os.system(f'notify-send "{match}"')
+            cmd = f"emoji-fzf preview --prepend | grep -E  '{match}' "
+            cmd += " | awk -v ORS= '{ print $1 }'"
+            res = os.popen(cmd).read().strip()
+            if res:
+                l = []
+                while res:
+                    l.append(res[:40])
+                    res = res[40:]
+                return into_src_buffer(src_buf, l)
+
+            # markdown code block?:
         if l.startswith('```'):
             deindent = len(orig_line.rstrip()) - len(l)
             while not src_buf[nrs[-1] + 1].lstrip().startswith('```'):
@@ -1064,7 +1108,7 @@ def ExecuteSelectedRange():
         try:
             while (src_buf[nrs[-1] + 1] + ' ')[0] in {' ', ']', '}', ')'}:
                 nrs.append(nrs[-1] + 1)
-        except:
+        except Exception:
             pass
 
     block = [src_buf[i][deindent:] for i in nrs]
@@ -1149,6 +1193,7 @@ def ExecuteSelectedRange():
 
     if ress:
         [res_buf.append(l) for l in ress.splitlines()]
+    vimcmd(':lua vim.notify=print') # lsp errs all the time on fails 
     vimcmd(':silent lua vim.lsp.buf.format()')
     vimcmd(f'{len(res_buf)}j')
     res_buf = add_or_switch_to_window('previous')
