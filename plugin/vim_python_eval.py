@@ -1061,20 +1061,23 @@ def ExecuteSelectedRange():
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         l = src_buf[nrs[0]].strip()
 
-        if len(l) > 3 and l[0] == l[1] == ':':
+        if l[0] == ':':
             # emoji? we support eval on `:smile.heart.plane`
-            match = l[1:-1].split(' ', 1)[0].strip().replace(':', '')
+            match = l[1:].split(' ', 1)[0].strip().replace(':', '')
             match = match.replace('.', '|')
             os.system(f'notify-send "{match}"')
             cmd = f"emoji-fzf preview --prepend | grep -E  '{match}' "
             cmd += " | awk -v ORS= '{ print $1 }'"
             res = os.popen(cmd).read().strip()
+            # os.system(f'notify-send "{res}"')
             if res:
-                l = []
+                res_buf = add_or_switch_to_window(
+                    'results.py', remember_cur=True
+                )
                 while res:
-                    l.append(res[:40])
-                    res = res[40:]
-                return into_src_buffer(src_buf, l)
+                    res_buf.append(res[:20])
+                    res = res[20:]
+                return
 
             # markdown code block?:
         if l.startswith('```'):
@@ -1182,7 +1185,7 @@ def ExecuteSelectedRange():
             exec(block, state, state)
             dt = round(time.time() - t0, 2)
         except Exception as ex:
-            state['y'] = f'Evaluation error:\n{type(ex)}\n{str(ex)}'
+            state['y'] = f'Python Evaluation Error:\n{type(ex)}\n{str(ex)}'
         ress = check_print_wanted(state, add_state)
         # [b.append(l) for l in block.splitlines()]
     if doc_call or state.get('autodoc'):
@@ -1193,7 +1196,7 @@ def ExecuteSelectedRange():
 
     if ress:
         [res_buf.append(l) for l in ress.splitlines()]
-    vimcmd(':lua vim.notify=print') # lsp errs all the time on fails 
+    vimcmd(':lua vim.notify=print')   # lsp errs all the time on fails
     vimcmd(':silent lua vim.lsp.buf.format()')
     vimcmd(f'{len(res_buf)}j')
     res_buf = add_or_switch_to_window('previous')
