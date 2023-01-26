@@ -1095,9 +1095,6 @@ def ExecuteSelectedRange():
             # sometimes cmd is first line (:!date)
             if cmd in s.split('\n', 1)[0]:
                 s = s.split(cmd, 1)[1].strip()
-            with open('/tmp/a', 'w') as fd:
-                fd.write(s)
-
             if '\n' in s:
                 return [src_buf.append(i) for i in s.splitlines()]
             src_buf[nrs[0]] = s
