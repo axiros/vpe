@@ -1061,9 +1061,9 @@ def ExecuteSelectedRange():
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         l = src_buf[nrs[0]].strip()
 
-        if l[0] == ':':
-            # emoji? we support eval on `:smile.heart.plane`
-            match = l[1:].split(' ', 1)[0].strip().replace(':', '')
+        if l.startswith('::'):
+            # emoji? we support eval on `::smile.heart.plane`
+            match = l[2:].split(' ', 1)[0].strip().replace(':', '')
             match = match.replace('.', '|')
             os.system(f'notify-send "{match}"')
             cmd = f"emoji-fzf preview --prepend | grep -E  '{match}' "
@@ -1079,6 +1079,29 @@ def ExecuteSelectedRange():
                     res = res[20:]
                 return
 
+        if l[0] == ':':
+            # this is a command. replace line if single line, else append
+            cmd = l[1:].strip()
+            fn = '/tmp/vi.r.%s' % os.environ['USER']
+            os.unlink(fn) if os.path.exists(fn) else 0
+            # vimcmd(f':write | redir >> {fn} | :{cmd} | redir END | edit')
+            vimcmd(f'redir >> {fn}')
+            vimcmd(f'silent {cmd}')
+            vimcmd('redir END')
+            s = read_file(fn).strip()
+            if not s:
+                vimcmd(f'lua vim.notify("{cmd}")')
+                return
+            # sometimes cmd is first line (:!date)
+            if cmd in s.split('\n', 1)[0]:
+                s = s.split(cmd, 1)[1].strip()
+            with open('/tmp/a', 'w') as fd:
+                fd.write(s)
+
+            if '\n' in s:
+                return [src_buf.append(i) for i in s.splitlines()]
+            src_buf[nrs[0]] = s
+            return
             # markdown code block?:
         if l.startswith('```'):
             deindent = len(orig_line.rstrip()) - len(l)
