@@ -10,6 +10,8 @@
     - [Markdown Fenced Blocks](#markdown-fenced-blocks)
   - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
   - [Add On: EvalInto](#add-on-evalinto)
+    - [Into Split Window](#into-split-window)
+    - [Into Current Buffer](#into-current-buffer)
   - [Installation](#installation)
     - [Requirements](#requirements)
   - [Developing](#developing)
@@ -18,6 +20,7 @@
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
 <!--toc:end-->
+
 
 vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")`. 
 
