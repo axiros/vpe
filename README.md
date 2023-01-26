@@ -154,6 +154,8 @@ See [here](./docs/swagger.md)
 
 ## Add On: EvalInto
 
+### Into Split Window
+
 A function evaluating *anything* into a split window is also included within this plugin:
 
 Add `nnoremap  ,E  :EvalInto<CR>` to your mappings and get the evaluation result of the current
@@ -165,6 +167,16 @@ The function is using only built in vim mechanics: Basically `put=execute(getlin
 lines of buffername handling.
 
 Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe)
+
+### Into Current Buffer
+
+`,r` on a line starting with ':' evaluates the result into the buffer.
+
+- If the result is a single line we replace the cmd line with it.
+- Otherwise we append the result
+
+[![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
+
 
 ## Installation
 

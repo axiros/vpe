@@ -1095,8 +1095,11 @@ def ExecuteSelectedRange():
             # sometimes cmd is first line (:!date)
             if cmd in s.split('\n', 1)[0]:
                 s = s.split(cmd, 1)[1].strip()
+                with open(fn, 'w') as fd:
+                    fd.write(s)
             if '\n' in s:
-                return [src_buf.append(i) for i in s.splitlines()]
+                # insert below cursor:
+                return vimcmd(f'.-0read {fn}')
             src_buf[nrs[0]] = s
             return
             # markdown code block?:
