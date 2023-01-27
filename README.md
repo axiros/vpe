@@ -12,6 +12,7 @@
   - [Add On: EvalInto](#add-on-evalinto)
     - [Into Split Window](#into-split-window)
     - [Into Current Buffer](#into-current-buffer)
+      - [Examples](#examples)
   - [Installation](#installation)
     - [Requirements](#requirements)
   - [Developing](#developing)
@@ -179,6 +180,17 @@ Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe
 - Otherwise we append the result
 
 [![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
+
+#### Examples
+
+Open this file in vi and hit `,r` on these lines (`P` the usual lua table dump function):
+
+    :lua P(require('telescope.mappings').default_mappings)
+    :hi
+    :!ls -lta /
+    :history
+
+You get the idea.
 
 
 ## Installation
