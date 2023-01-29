@@ -1045,6 +1045,7 @@ def into_src_buffer(sb, lines):
 
 def ExecuteSelectedRange():
     """Called method when hotkey is pressed in vim"""
+    # os.system(f'notify-send {ctx.L1}')
     src_buf = vim.current.buffer
     nrs = list(range(ctx.L1 - 1, ctx.L2))
     # check if we are within a block and go up:
@@ -1061,27 +1062,17 @@ def ExecuteSelectedRange():
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         l = src_buf[nrs[0]].strip()
 
-        if l.startswith('::'):
-            # emoji? we support eval on `::smile.heart.plane`
-            match = l[2:].split(' ', 1)[0].strip().replace(':', '')
-            match = match.replace('.', '|')
-            os.system(f'notify-send "{match}"')
-            cmd = f"emoji-fzf preview --prepend | grep -E  '{match}' "
-            cmd += " | awk -v ORS= '{ print $1 }'"
-            res = os.popen(cmd).read().strip()
-            # os.system(f'notify-send "{res}"')
-            if res:
-                res_buf = add_or_switch_to_window(
-                    'results.py', remember_cur=True
-                )
-                while res:
-                    res_buf.append(res[:20])
-                    res = res[20:]
-                return
-
         if l[0] == ':':
             # this is a command. replace line if single line, else append
             cmd = l[1:].strip()
+            # we support :vpe @foo -> jump to the line with @foo and execute that one (handy in md)
+            if cmd.startswith('vpe @'):
+                match = cmd.split('vpe @', 1)[1].strip()
+                for i in range(nrs[0] + 1, len(src_buf)):
+                    if f'@{match}' in src_buf[i]:
+                        ctx.L1 = ctx.L2 = i + 1
+                        return ExecuteSelectedRange()
+                raise Exception(f'Not found in buffer: "@{match}"')
             fn = '/tmp/vi.r.%s' % os.environ['USER']
             os.unlink(fn) if os.path.exists(fn) else 0
             # vimcmd(f':write | redir >> {fn} | :{cmd} | redir END | edit')
@@ -1102,7 +1093,8 @@ def ExecuteSelectedRange():
                 return vimcmd(f'.-0read {fn}')
             src_buf[nrs[0]] = s
             return
-            # markdown code block?:
+
+        # markdown code block?:
         if l.startswith('```'):
             deindent = len(orig_line.rstrip()) - len(l)
             while not src_buf[nrs[-1] + 1].lstrip().startswith('```'):
@@ -1161,6 +1153,7 @@ def ExecuteSelectedRange():
     always = add_state = False
     if ':noalways' in block:
         ctx.state['always'].clear()
+
     if ':always' in block:
         always = True
 
@@ -1171,6 +1164,9 @@ def ExecuteSelectedRange():
                 a[key] = True
             return True
 
+    silent = False
+    if is_set(':silent'):
+        silent = True
     if is_set(':state'):
         add_state = True
     if is_set(':autodoc'):
@@ -1193,11 +1189,15 @@ def ExecuteSelectedRange():
     if wrap:
         block = wrap.replace('{}', block)
     dt = ''
-    res_buf: list = add_or_switch_to_window('results.py', remember_cur=True)
     if not state:
         state.update(globals())
-    if clear_buffer or state.get('autodoc'):
-        clear_all(buffer=res_buf)
+    res_buf = None
+    if not silent:
+        res_buf: list = add_or_switch_to_window(
+            'results.py', remember_cur=True
+        )
+        if clear_buffer or state.get('autodoc'):
+            clear_all(buffer=res_buf)
     if show_help:
         ress = help()
     elif clear_help:
@@ -1206,6 +1206,7 @@ def ExecuteSelectedRange():
         try:
             t0 = time.time()
             exec(block, state, state)
+            post_generate = state.get('post_generate', post_generate)
             dt = round(time.time() - t0, 2)
         except Exception as ex:
             state['y'] = f'Python Evaluation Error:\n{type(ex)}\n{str(ex)}'
@@ -1214,16 +1215,17 @@ def ExecuteSelectedRange():
     if doc_call or state.get('autodoc'):
         dt = f'[{dt}s]' if dt else ''
         [docs.insert(0, f'# {i} {dt}') for i in block.splitlines()]
-    [res_buf.append(l) for l in docs]
-    docs.clear()
+    if not silent:
+        [res_buf.append(l) for l in docs]
+        docs.clear()
 
-    if ress:
-        [res_buf.append(l) for l in ress.splitlines()]
-    vimcmd(':lua vim.notify=print')   # lsp errs all the time on fails
-    vimcmd(':silent lua vim.lsp.buf.format()')
-    vimcmd(f'{len(res_buf)}j')
-    res_buf = add_or_switch_to_window('previous')
-    # vimcmd('delete') if clear_buffer else 0
+        if ress:
+            [res_buf.append(l) for l in ress.splitlines()]
+        vimcmd(':lua vim.notify=print')   # lsp errs all the time on fails
+        vimcmd(':silent lua vim.lsp.buf.format()')
+        vimcmd(f'{len(res_buf)}j')
+        res_buf = add_or_switch_to_window('previous')
+        # vimcmd('delete') if clear_buffer else 0
     if post_generate:
         post_generate(src_buf, res_buf)
 
