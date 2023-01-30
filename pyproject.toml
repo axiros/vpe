@@ -1,0 +1,30 @@
+[tool.ruff]
+# Never enforce `E501` (line length violations).
+# E741	ambiguous-variable-name	
+ignore = ["E501",  "E741"]
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+line-length = 90
+[tool.blue]
+line-length = 90
+

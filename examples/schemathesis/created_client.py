@@ -3,11 +3,11 @@
 # type: ignore
 '''
 Example API
-openapi.json
+swagger openapi.json
 
 An API to test Schemathesis, 1.0.0, 3.0.2
 '''
-result = 1
+result = 2
 str_dflt = ''
 timeout = 5
 # -
@@ -96,7 +96,8 @@ class success:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class failure:
     pth = "/failure"
@@ -104,7 +105,8 @@ class failure:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class payload:
     pth = "/payload"
@@ -113,7 +115,7 @@ class payload:
         """ """
         class R:
             _body = ['body'];
-            _ = {'requestBody': {'content': {}}, 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'age': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True}, 'boolean': {'type': 'boolean'}, 'nested': {'type': 'array', 'items': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True, 'maximum': 10, 'exclusiveMaximum': True}}}, 'required': ['name'], 'example': {'name': 'John'}, 'additionalProperties': False}}}}}, 'mime': 'application/json'}
+            # = {'requestBody': {'content': {}}, 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'age': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True}, 'boolean': {'type': 'boolean'}, 'nested': {'type': 'array', 'items': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True, 'maximum': 10, 'exclusiveMaximum': True}}}, 'required': ['name'], 'example': {'name': 'John'}, 'additionalProperties': False}}}}}, 'mime': 'application/json'}
             name = {'type': 'string'}
             age = {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True}
             boolean = {'type': 'boolean'}
@@ -128,7 +130,7 @@ class get_payload:
         """ """
         class R:
             _body = ['body'];
-            _ = {'requestBody': {'content': {}}, 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'age': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True}, 'boolean': {'type': 'boolean'}, 'nested': {'type': 'array', 'items': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True, 'maximum': 10, 'exclusiveMaximum': True}}}, 'required': ['name'], 'example': {'name': 'John'}, 'additionalProperties': False}}}}}, 'mime': 'application/json'}
+            # = {'requestBody': {'content': {}}, 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'age': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True}, 'boolean': {'type': 'boolean'}, 'nested': {'type': 'array', 'items': {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True, 'maximum': 10, 'exclusiveMaximum': True}}}, 'required': ['name'], 'example': {'name': 'John'}, 'additionalProperties': False}}}}}, 'mime': 'application/json'}
             name = {'type': 'string'}
             age = {'type': 'integer', 'minimum': 0, 'exclusiveMinimum': True}
             boolean = {'type': 'boolean'}
@@ -142,7 +144,8 @@ class basic:
     class get:
         """ """
         class R:
-            _ = {'security': [{'basicAuth': []}], 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'secret': {'type': 'integer'}}}}}}}}
+            # = {'security': [{'basicAuth': []}], 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'secret': {'type': 'integer'}}}}}}}}
+            pass
 
 class empty:
     pth = "/empty"
@@ -150,7 +153,8 @@ class empty:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class empty_string:
     pth = "/empty_string"
@@ -158,7 +162,8 @@ class empty_string:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class multiple_failures:
     pth = "/multiple_failures"
@@ -167,7 +172,7 @@ class multiple_failures:
         """ """
         class R:
             _query = ['id'];
-            _ = {'responses': {'200': {'description': 'OK'}}}
+            # = {'responses': {'200': {'description': 'OK'}}}
             id = {'type': 'integer'}
         R.id = id
 
@@ -177,7 +182,8 @@ class slow:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class path_variable___key_:
     pth = "/path_variable/{key}"
@@ -186,7 +192,7 @@ class path_variable___key_:
         """ """
         class R:
             _path = ['key'];
-            _ = {'responses': {'200': {'description': 'OK'}}}
+            # = {'responses': {'200': {'description': 'OK'}}}
             key = {'type': 'string', 'minLength': 1}
         R.key = key
 
@@ -197,7 +203,7 @@ class unsatisfiable:
         """ """
         class R:
             _body = ['body'];
-            _ = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
+            # = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
             body = {'allOf': [{'type': 'integer'}, {'type': 'string'}]}
         R.body = str_dflt
 
@@ -208,7 +214,7 @@ class performance:
         """ """
         class R:
             _body = ['body'];
-            _ = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
+            # = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
             body = {'type': 'integer'}
         R.body = 0
 
@@ -219,7 +225,7 @@ class invalid:
         """ """
         class R:
             _query = ['id'];
-            _ = {'responses': {'200': {'description': 'OK'}}}
+            # = {'responses': {'200': {'description': 'OK'}}}
             id = {'type': 'int'}
         R.id = id
 
@@ -230,7 +236,7 @@ class flaky:
         """ """
         class R:
             _query = ['id'];
-            _ = {'responses': {'200': {'description': 'OK'}}}
+            # = {'responses': {'200': {'description': 'OK'}}}
             id = {'type': 'integer'}
         R.id = id
 
@@ -240,7 +246,8 @@ class recursive:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': Defs.x_definitions_Node}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': Defs.x_definitions_Node}}}}}
+            pass
 
 class multipart:
     pth = "/multipart"
@@ -249,7 +256,7 @@ class multipart:
         """ """
         class R:
             _formData = ['form']; _mime = 'multipart/form-data';
-            _ = {'requestBody': {'required': True, 'content': {}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'multipart/form-data'}
+            # = {'requestBody': {'required': True, 'content': {}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'multipart/form-data'}
             key = {'type': 'string'}
             value = {'type': 'integer'}
             maybe = {'type': 'boolean'}
@@ -263,7 +270,7 @@ class upload_file:
         """ """
         class R:
             _formData = ['form']; _mime = 'multipart/form-data';
-            _ = {'requestBody': {'required': True, 'content': {}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'multipart/form-data'}
+            # = {'requestBody': {'required': True, 'content': {}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'multipart/form-data'}
             data = {'type': 'string', 'format': 'binary'}
             note = {'type': 'string'}
             form = {'type': 'object', 'properties': {'data': {'type': 'string', 'format': 'binary'}, 'note': {'type': 'string'}}, 'required': ['data', 'note']}
@@ -276,7 +283,7 @@ class form:
         """ """
         class R:
             _formData = ['form']; _mime = 'application/x-www-form-urlencoded';
-            _ = {'requestBody': {'required': True, 'content': {}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/x-www-form-urlencoded'}
+            # = {'requestBody': {'required': True, 'content': {}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/x-www-form-urlencoded'}
             first_name = {'type': 'string'}
             last_name = {'type': 'string'}
             form = {'additionalProperties': False, 'type': 'object', 'properties': {'first_name': {'type': 'string'}, 'last_name': {'type': 'string'}}, 'required': ['first_name', 'last_name']}
@@ -288,7 +295,8 @@ class teapot:
     class post:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}}}
+            pass
 
 class text:
     pth = "/text"
@@ -296,13 +304,14 @@ class text:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
     class post:
         """ """
         class R:
             _mime = 'text/plain';
-            _ = {'requestBody': {'content': {'text/plain': {'schema': {'type': 'string'}}}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'text/plain'}
+            # = {'requestBody': {'content': {'text/plain': {'schema': {'type': 'string'}}}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'text/plain'}
             content = {'name': 'content', 'type': 'string', 'mime': 'text/plain', 'in': 'mimetype'}
         R.content = str_dflt
 
@@ -312,7 +321,8 @@ class cp866:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'text/plain': {'schema': {'type': 'integer'}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'text/plain': {'schema': {'type': 'integer'}}}}}}
+            pass
 
 class csv:
     pth = "/csv"
@@ -321,7 +331,7 @@ class csv:
         """ """
         class R:
             _mime = 'text/csv';
-            _ = {'requestBody': {'required': True, 'content': {'text/csv': {'schema': {'type': 'array', 'items': {'additionalProperties': False, 'type': 'object', 'properties': {'first_name': {'type': 'string', 'pattern': '\\A[A-Za-z]*\\Z'}, 'last_name': {'type': 'string', 'pattern': '\\A[A-Za-z]*\\Z'}}, 'required': ['first_name', 'last_name']}}}}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'text/csv'}
+            # = {'requestBody': {'required': True, 'content': {'text/csv': {'schema': {'type': 'array', 'items': {'additionalProperties': False, 'type': 'object', 'properties': {'first_name': {'type': 'string', 'pattern': '\\A[A-Za-z]*\\Z'}, 'last_name': {'type': 'string', 'pattern': '\\A[A-Za-z]*\\Z'}}, 'required': ['first_name', 'last_name']}}}}}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'text/csv'}
             content = {'name': 'content', 'type': 'string', 'mime': 'text/csv', 'in': 'mimetype'}
         R.content = str_dflt
 
@@ -331,7 +341,8 @@ class malformed_json:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class invalid_response:
     pth = "/invalid_response"
@@ -339,7 +350,8 @@ class invalid_response:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class custom_format:
     pth = "/custom_format"
@@ -348,7 +360,7 @@ class custom_format:
         """ """
         class R:
             _query = ['id'];
-            _ = {'responses': {'200': {'description': 'OK'}}}
+            # = {'responses': {'200': {'description': 'OK'}}}
             id = {'type': 'string', 'format': 'digits'}
         R.id = id
 
@@ -359,7 +371,7 @@ class credit_card:
         """ """
         class R:
             _body = ['body'];
-            _ = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
+            # = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
             number = {'type': 'string', 'format': 'credit_card_number'}
             body = {'type': 'object', 'properties': {'number': {'type': 'string', 'format': 'credit_card_number'}}, 'required': ['number'], 'additionalProperties': False}
         R.body = dict(number = str_dflt)
@@ -371,7 +383,7 @@ class invalid_path_parameter___id_:
         """ """
         class R:
             _path = ['id'];
-            _ = {'responses': {'200': {'description': 'OK'}}}
+            # = {'responses': {'200': {'description': 'OK'}}}
             id = {'type': 'integer'}
         R.id = id
 
@@ -381,7 +393,8 @@ class missing_path_parameter___id_:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class headers:
     pth = "/headers"
@@ -389,7 +402,8 @@ class headers:
     class get:
         """ """
         class R:
-            _ = {'security': [{'api_key': []}], 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object'}}}, 'headers': {'X-Custom-Header': {'description': 'Custom header', 'schema': {'type': 'integer'}}}}, 'default': {'description': 'Default response'}}}
+            # = {'security': [{'api_key': []}], 'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object'}}}, 'headers': {'X-Custom-Header': {'description': 'Custom header', 'schema': {'type': 'integer'}}}}, 'default': {'description': 'Default response'}}}
+            pass
 
 class foo_bar:
     pth = "/foo:bar"
@@ -397,7 +411,8 @@ class foo_bar:
     class get:
         """ """
         class R:
-            _ = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            # = {'responses': {'200': {'description': 'OK', 'content': {'application/json': {'schema': {'type': 'object', 'properties': {'success': {'type': 'boolean'}}, 'required': ['success']}}}}, 'default': {'description': 'Default response', 'content': {'application/json': {'schema': {}}}}}}
+            pass
 
 class not_checked_auth:
     pth = "/not_checked_auth"
@@ -405,7 +420,8 @@ class not_checked_auth:
     class get:
         """ """
         class R:
-            _ = {'security': [{'heisenAuth': []}], 'responses': {'200': {'description': 'OK'}}}
+            # = {'security': [{'heisenAuth': []}], 'responses': {'200': {'description': 'OK'}}}
+            pass
 
 class unexpected:
     pth = "/unexpected"
@@ -414,7 +430,7 @@ class unexpected:
         """ """
         class R:
             _body = ['body'];
-            _ = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
+            # = {'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}}, 'mime': 'application/json'}
             foo = {'type': 'string', 'minLength': 5}
             body = {'type': 'object', 'properties': {'foo': {'type': 'string', 'minLength': 5}}, 'required': ['foo'], 'additionalProperties': False}
         R.body = dict(foo = str_dflt)
@@ -426,7 +442,7 @@ class users__:
         """ """
         class R:
             _body = ['body'];
-            _ = {'requestBody': {'content': {}, 'required': True}, 'responses': {'201': Defs.components_responses_ResponseWithLinks}, 'mime': 'application/json'}
+            # = {'requestBody': {'content': {}, 'required': True}, 'responses': {'201': Defs.components_responses_ResponseWithLinks}, 'mime': 'application/json'}
             first_name = {'type': 'string', 'minLength': 3}
             last_name = {'type': 'string', 'minLength': 3}
             body = {'type': 'object', 'properties': {'first_name': {'type': 'string', 'minLength': 3}, 'last_name': {'type': 'string', 'minLength': 3}}, 'required': ['first_name', 'last_name'], 'additionalProperties': False}
@@ -439,7 +455,7 @@ class users___user_id_:
         """ """
         class R:
             _query = ['common', 'code', 'user_id']; _path = ['user_id'];
-            _ = {'operationId': 'getUser', 'responses': {'200': {'description': 'OK', 'links': {'UpdateUserById': {'operationRef': '#/paths/~1users~1{user_id}/patch', 'parameters': {'user_id': '$response.body#/id'}, 'requestBody': {'first_name': 'foo', 'last_name': 'bar'}}}}, '404': {'description': 'Not found'}}}
+            # = {'operationId': 'getUser', 'responses': {'200': {'description': 'OK', 'links': {'UpdateUserById': {'operationRef': '#/paths/~1users~1{user_id}/patch', 'parameters': {'user_id': '$response.body#/id'}, 'requestBody': {'first_name': 'foo', 'last_name': 'bar'}}}}, '404': {'description': 'Not found'}}}
             common = {'type': 'integer'}
             user_id = {'type': 'string'}
             code = {'type': 'integer'}
@@ -453,7 +469,7 @@ class users___user_id_:
         """ """
         class R:
             _query = ['common']; _path = ['user_id']; _body = ['body'];
-            _ = {'operationId': 'updateUser', 'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}, '404': {'description': 'Not found'}}, 'mime': 'application/json'}
+            # = {'operationId': 'updateUser', 'requestBody': {'content': {}, 'required': True}, 'responses': {'200': {'description': 'OK'}, '404': {'description': 'Not found'}}, 'mime': 'application/json'}
             common = {'type': 'integer'}
             user_id = {'type': 'string'}
             first_name = {'type': 'string', 'minLength': 3}
@@ -465,7 +481,7 @@ class users___user_id_:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'except', 'import', 'from', 'not', 'while', 'raise', 'async', 'if', 'for', 'continue'}
+keyw = {'if', 'not', 'import', 'except', 'continue', 'for', 'async', 'raise', 'while', 'from'}
 
 class Tools:
     @staticmethod
@@ -511,8 +527,10 @@ class Tools:
         R = g(def_, 'R', 0)
         if R:
             return obj(R)
-        l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-        r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        l = g(def_, '_attrs', [
+              i for i in dir(def_) if not i[0] == '_'])
+        r = {k: obj(g(def_, k))
+                    for k in l if not is_(g(def_, k), dict)}
         return dict_(r)
 
     @staticmethod
@@ -541,6 +559,8 @@ class Tools:
             kw = {'params': params, 'headers': h, 'timeout': timeout}
             if getenv(API.passw):
                 kw['auth'] = (getenv(API.user), getenv(API.passw))
+            if getattr(API, 'digest', 0):
+                kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth'])
             if isinstance(data, (list, dict)):
                 kw['data'] = repl(data)
             req = getattr(requests, methd)
@@ -554,7 +574,7 @@ class Tools:
             r = {'status': req.status_code}
             try:
                 r['resp'] = json.loads(req.text)
-            except:
+            except Exception:
                 r['resp'] = req.text
         except Exception as ex:
             r = {'Exception': str(ex)}

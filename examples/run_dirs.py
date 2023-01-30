@@ -1,7 +1,12 @@
 #!/usr/bin/env python
-import sys, os
+import sys
+import os
 
-absp = lambda d: os.path.abspath(d)
+
+def absp(d):
+    return os.path.abspath(d)
+
+
 here = os.path.dirname(absp(__file__))
 d_tests = here + '/test_res'
 os.environ['testmode'] = 'true'
@@ -40,7 +45,7 @@ def run(what, cmd):
 
 
 def run_dir(d, vpe, testmode):
-    s = [f'{d}/{i}' for i in os.listdir(d) if i.endswith('.json')]
+    s = [f'{d}/{i}' for i in os.listdir(d) if i.endswith('.json') and not 'results' in i]
     s = [read_file(i) for i in s]
     s = [i for i in s if 'openapi' in i or 'swagger' in i]
     if not s:
@@ -51,9 +56,7 @@ def run_dir(d, vpe, testmode):
     os.makedirs(d_tests, exist_ok=True)
     os.chdir(d_tests)
     write_file('openapi.json', s)
-    run('Generating client', f'"{vpe}" openapi.json')
-    s = read_file('client_openapi.py')
-    write_file('client_openapi.py', s)
+    run('Generating client', f'"{vpe}" swagger openapi.json')
     run('Running all API methods', './client_openapi.py > results.json')
     s = read_file('results.json')
     p = read_file('client_openapi.py')

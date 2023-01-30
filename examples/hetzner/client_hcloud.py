@@ -3,7 +3,7 @@
 # type: ignore
 '''
 Hetzner Cloud API
-swagger openapi.json
+swagger ./hcloud.json
 
 contact:
   url: https://docs.hetzner.cloud/
@@ -12,6 +12,8 @@ openapi: 3.0.3
 version: 4ea4924-dirty
 
 '''
+hdrs = {'Authorization': '$bearer'}
+params = {'id': '000'}
 result = 2
 str_dflt = ''
 timeout = 5
@@ -21,10 +23,10 @@ class API:
     user, passw = '$user', '$password'
     host = 'https://api.hetzner.cloud/v1'
     base = ''
-    hdrs = {}
+    hdrs = {'Authorization': '$bearer'}
 
 
-id = 0
+id = '000'
 action_id = 0
 
 # fmt:off
@@ -5580,7 +5582,7 @@ class volumes___id___actions__resize:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'if', 'import', 'async', 'continue', 'from', 'for', 'except', 'raise', 'while', 'not'}
+keyw = {'from', 'for', 'continue', 'while', 'except', 'import', 'raise', 'async', 'not', 'if'}
 
 class Tools:
     @staticmethod

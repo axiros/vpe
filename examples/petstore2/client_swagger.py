@@ -3,7 +3,7 @@
 # type: ignore
 '''
 Swagger Petstore
-swagger openapi.json
+swagger swagger.json
 
 contact:
   email: apiteam@swagger.io
@@ -95,7 +95,7 @@ class Defs:
         R.id = 0
         R.petId = petId
         R.quantity = 0
-        R.shipDate = '2020-12-12T%12:12:12Z'
+        R.shipDate = '2023-01-29T23:12:48Z'
         R.status = 'placed'
         R.complete = True
     class definitions_Pet:
@@ -361,7 +361,7 @@ class user:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'from', 'import', 'raise', 'continue', 'while', 'not', 'for', 'except', 'if', 'async'}
+keyw = {'from', 'while', 'for', 'async', 'except', 'raise', 'import', 'if', 'continue', 'not'}
 
 class Tools:
     @staticmethod

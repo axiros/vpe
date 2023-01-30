@@ -4,89 +4,26 @@ Tools to make use of python API.
 
 API funcs are in Capitals. Currently only "ExecuteSelectedRange" -
 evaluating selected python code.
-
-Most code is for swagger definition parsing, in namespace class "swagger".
 """
 
-import sys
-import os
-import json
-import importlib
-import time
-import string
+from importlib import import_module
 from functools import partial as P
-from copy import deepcopy
+import time
+import json
+import os
+import sys
 
-debug = False
-is_ = isinstance
-try:
-    import vim
-except Exception:
-    # we can still parse swagger
-    print('no vim api importable', file=sys.stderr)
+here = os.path.abspath(os.path.dirname(__file__))
+if here not in sys.path:
+    sys.path.append(here)
 
-out = P(print, file=sys.stderr)
+from share import log, read_file, ctx, is_, debug, notify   # noqa
+from share import out, lib, BRKT, vim, vimcmd   # noqa
+from share import vimcmdr   # noqa
 
-
-class ctx:
-    """Interface for the caller, setting us up
-    Also transfers state over debug module reloads.
-    """
-
-    cur_cls: list = []
-    cur_buffer = None
-    prev_buffer = None
-    L1 = 0   # selected first line in vim source buffer
-    L2 = 0
-    # transferred even over module reloads:
-    state = {'_loaded_libs': {'yaml': 'pyyaml'}}
-    docs = []
-
-
-def read_file(fn):
-    try:
-        with open(fn) as fd:
-            s = fd.read()
-    except Exception:
-        s = ''
-    return s
-
-
-def apostr(s, a="'", b='"', c='\n', d='\\n'):
-    return (
-        f"'{s.replace(a, b).replace(c, d)}'"
-        if is_(s, str) and (not s or s[0] not in {'"', "'"})
-        else s
-    )
-
-
-def lib(libname, t={}):
-    """we don't always require all libs"""
-    c = ctx.state['_loaded_libs']
-    v = c.get(libname, libname)
-    if not is_(v, str):
-        return v
-    if not t.get(libname):
-        try:
-            t[libname] = True
-            c[libname] = importlib.import_module(libname)
-            return c[libname]
-        except Exception:
-            pass
-    s = '\n' + '-' * 40 + '\n'
-    print(f'{s}Please: pip install {libname}{s}\n')
-
-
-# Avoiding the infomous python indent bug for Treesitter...
-BRKT = {'{', '['}
-
-
-def log(s, **kw):
-    """for debug only"""
-    with open(f'/tmp/vpe', 'a') as fd:
-        s = f'{s} {kw}\n'
-        fd.write(s)
-
+ctx.mods = [
+    i.rsplit('.py', 1)[0] for i in os.listdir(here + '/modules') if i.endswith('.py')
+]
 
 # ------------------------------------------------------------------------------------------------ "macros"
 # some predefined code blocks, extensible by user:
@@ -166,10 +103,6 @@ def clear_all(buffer):
 
 def buf():
     return vim.current.buffer
-
-
-def vimcmd(cmd):
-    return vim.command(cmd)
 
 
 def add_or_switch_to_window(buffername, remember_cur=False, b=None):
@@ -328,706 +261,28 @@ def to_y(o):
 formatters['y'] = to_y
 
 
-def deindent(s, spec={}):
-    return s.replace(f'\n{" " * 8}', '\n') % spec
-
-
-# ------------------------------------------------------------------------------------------------ Being smart about one liners
-pyallwd = set(string.digits + string.ascii_letters + '_')
-# Currently only about swagger defs:
-
-
 def try_load_file_or_url(url):
-    s = read_file(url)
+    # Currently only about swagger defs:
+    mod = url.split(' ')[0]
+    if mod not in ctx.mods:
+        return
+
+    # this is a conventional feat: enrich the state beforehand:
+    # see e.g. examples hetzner
+    s = read_file('./mods.py')
+    if s:
+        m = {}
+        exec(s, m, m)
+        ctx.state.update(m)
+    url = url.split(mod, 1)[1].strip()
+    mod = ctx.mod = import_module(f'modules.{mod}')
+    notify(mod)
     h = {'http', 'https'}
+    s = read_file(url)
     if not s and url.split(':', 1)[0] in h:   # and url.endswith('.json'):
         s = lib('requests').get(url).text
-    return swagger.try_load(s, url=url)
 
-
-class swagger:
-    """namespace for all swagger handling related funcs"""
-
-    icos = dict(put='🟧', post='🟪', get='🟩', delete='🟥', dflt='🟫')
-
-    # nasty details: when params are named e.g. async we must convert to "async__", then replace before send
-    forbidden_kw = {
-        'async',
-        'continue',
-        'not',
-        'for',
-        'if',
-        'while',
-        'from',
-        'import',
-        'except',
-        'raise',
-    }
-    # path params. will be exposed globally
-    pparams = {}
-    # number of classes generated to that we can collapse after build:
-    clses = 0
-    # all definitions:
-    definitions = {}
-    # while in def we can't ref other defs, must put into lambdas:
-    in_def_block = False
-    now_date = time.strftime('%Y-%m-%d')
-    now_datetime = time.strftime('%Y-%m-%dT%H:%M:%SZ')
-    if os.environ.get('testmode'):   # avoid test diffs
-        now_date = '2020-12-12'
-        now_datetime = '2020-12-12T%12:12:12Z'
-    # the tooling:
-    code = """
-        # type: ignore
-        '''
-        %(title)s
-        %(givenurl)s
-
-        %(info)s
-        '''
-        %(pre_params)s
-        # -
-
-        class API:
-            user, passw = '$user', '$password'
-            host = '%(host)s'
-            base = '%(basePath)s'
-            hdrs = %(hdrs)s
-
-        _PTHPARAMS_
-
-        # fmt:off
-        methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
-         _TOC_
-        ) 
-        # fmt:on
-
-
-        """
-
-    tools_code = """
-
-        # ─────────────── Tools ─────────────────────
-        import requests, json, functools, inspect, os
-        keyw = %(forbidden_kw)s
-
-        class Tools:
-            @staticmethod
-            def build_req(meth):
-                data, h, q = None, API.hdrs, {}
-                g = lambda o, k, d=None: getattr(o, k, d)
-                c = globals()[meth.__qualname__.split('.', 1)[0]]
-                R = g(meth, 'R')
-                if R:
-                    h['Content-Type'] = m = g(R, '_mime', 'application/json')
-                    if not 'form' in m and not 'json' in m and g(R, 'content'):
-                        data = R.content
-                    p = {a: g(R, a) for a in g(R, '_path', ())}
-                    pth = c.pth.format(**p)
-                    for a in g(R, '_query', ()):
-                        v = g(R, a)
-                        if v is not None:
-                            q[a] = g(R, a)
-                    b = g(R, 'body')
-                    if b:
-                        data = Tools.obj(b)
-                    f = g(R, '_formData')
-                    if f:
-                        data = {k: Tools.obj(g(R, k)) for k in f}
-                        data = data['form'] if f == ['form'] else data
-                return meth.__name__, pth, q, data, h
-
-            @staticmethod
-            def obj(def_, is_=isinstance, g=getattr):
-                if is_(def_, tuple):
-                    return def_[0]
-                if callable(def_):
-                    if inspect.isfunction(def_):
-                        def_ = def_()
-                if is_(def_, (float, int, bool, str)):
-                    return def_
-                obj = Tools.obj
-                if is_(def_, list):
-                    return [obj(def_[0])]
-                dict_ = lambda d: d.get('__val__', d)
-                if is_(def_, dict):
-                    return dict_({k: obj(v) for k, v in def_.items()})
-                R = g(def_, 'R', 0)
-                if R:
-                    return obj(R)
-                l = g(def_, '_attrs', [
-                      i for i in dir(def_) if not i[0] == '_'])
-                r = {k: obj(g(def_, k))
-                            for k in l if not is_(g(def_, k), dict)}
-                return dict_(r)
-
-            @staticmethod
-            def send(meth, *args):
-                if args:
-                    meth = args[0]   # ico in line
-                env = os.environ.get
-                getenv = lambda v: env(v[1:], '') if (v and v[0] == '$') else v
-
-                def repl(s):
-                    if isinstance(s, str):
-                        for k in keyw:
-                            s = s.replace(f'{k}__', k)
-                    else:
-                        s = json.loads(repl(json.dumps(s)))
-                    return s
-
-                try:
-                    methd, pth, params, data, h = Tools.build_req(meth)
-                    params = repl(params)
-                    host = f'{API.host}'
-                    if not '://' in host:
-                        host = 'https://' + host
-                    url = repl(f'{host}{API.base}{pth}')
-                    h = {k: getenv(v) for k, v in h.items()}
-                    kw = {'params': params, 'headers': h, 'timeout': timeout}
-                    if getenv(API.passw):
-                        kw['auth'] = (getenv(API.user), getenv(API.passw))
-                    if getattr(API, 'digest', 0):
-                        kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth'])
-                    if isinstance(data, (list, dict)):
-                        kw['data'] = repl(data)
-                    req = getattr(requests, methd)
-                    if result == 0:   # no send
-                        return [url, methd, kw]
-                    if 'json' in h.get('Content-Type') and data is not None:
-                        kw['data'] = json.dumps(kw['data'])
-                    req = req(url, **kw)
-                    if result == 3:
-                        return req   # show all
-                    r = {'status': req.status_code}
-                    try:
-                        r['resp'] = json.loads(req.text)
-                    except Exception:
-                        r['resp'] = req.text
-                except Exception as ex:
-                    r = {'Exception': str(ex)}
-                if result == 2:
-                    r.update(dict(kw))
-                    r['url'] = url
-                return r
-
-
-    """
-
-    @staticmethod
-    def repl_unallowed_pydef_chars(s):
-        # seen this:
-        # "ValueTuple[ListResultDto[FlexiformWithSubmitterNameAndTemplateNameDto],Int32]": {
-        #   "type": "object",
-        #   "properties": {
-        #     "item1": {
-        #       "$ref": "#/definitions/ListResultDto[FlexiformWithSubmitterNameAndTemplateNameDto]"
-        return ''.join([c if c in pyallwd else '_' for c in s])
-
-    @staticmethod
-    def by_type(v: dict):
-        if '$ref' in v:
-            return 'ref', swagger.by_obj
-        # sometimes missing:
-        t = v.get('type', v.get('format', 'string'))
-        if t == 'string':
-            return t, swagger.by_str
-        if 'int' in t:
-            return t, swagger.by_int
-        if 'bool' in t:
-            return t, swagger.by_bool
-        if 'number' in t:
-            return t, swagger.by_number
-        if 'arr' in t:
-            return t, swagger.by_array
-        if t == 'file':
-            return t, swagger.by_file
-        if t == 'object':
-            swagger.by_obj
-        if t == 'object':
-            return t, swagger.by_obj
-        return t, swagger.by_obj
-
-    @staticmethod
-    def by_obj(k, v, ex, descr):
-        # https://stackoverflow.com/questions/46472543/specifying-multiple-types-for-additionalproperties-through-swagger-openapi?rq=1
-        p = v.get('properties')
-        a = v.get('additionalProperties')
-        if p:
-            d = []
-            for k1, v1 in p.items():
-                v2 = swagger.prop(k1, v1)[-1]
-                if v2.startswith('R.'):
-                    v2 = v2[2:]
-                d.append(v2)
-            d = 'dict(%s)' % ', '.join(d)
-        elif a:
-            d = '{}'
-        else:
-            d = swagger.get_ref(v)
-            if not d:
-                d = '{}'
-        return ex or d, descr or k
-
-    @staticmethod
-    def by_int(k, v, ex, descr):
-        return ex or v.get('default', 0), descr or k
-
-    @staticmethod
-    def by_number(k, v, ex, descr):
-        return ex or v.get('default', 0.0), descr or k
-
-    @staticmethod
-    def by_str(k, v, ex, descr):
-        f = v.get('format')
-        if f == 'datetime':
-            ex = ex or swagger.now_date
-        elif f == 'date-time':
-            ex = ex or swagger.now_datetime
-        r = v.get('enum', ['str_dflt'])[0]
-        r = apostr((ex or v.get('default', r)))
-        r = r[1:-1] if r == "'str_dflt'" else r
-        return r, descr or k
-
-    @staticmethod
-    def by_bool(k, v, ex, descr):
-        return ex or v.get('default', True), descr or k
-
-    @staticmethod
-    def by_file(k, v, ex, descr):
-        # TODO file upload not yet working, user must manually read in the content:
-        return ex or v.get('default', "'~/my_file'"), descr or k
-
-    @staticmethod
-    def get_ref(i):
-        r = i.get('$ref')
-        if not r:
-            return
-        d = swagger.def_cls(r)
-        if swagger.in_def_block:
-            return f'lambda: Defs.{d}'
-        return f'Defs.{swagger.definitions.get(r)}'
-
-    @staticmethod
-    def by_array(k, v, ex, descr):
-        if not isinstance(v, dict) or 'items' not in v:
-            return ex or descr or None, ''
-        i = v['items']
-        d = swagger.get_ref(i)
-        if not d:
-            if i.get('example'):
-                d = i['example']
-                # be robust against ill defined {'example': 'value of any type'}
-                if is_(d, str) and (not d or d[0] not in {'"', "'"}):
-                    d = f"'{d}'"
-            else:
-                d = swagger.by_type(i)[1](k, i, ex, descr)[0]
-        d = v.get('default', f'[{d}]')
-        r = ex or d
-        if isinstance(r, str) and (not r or r[0] not in {'{', '['}):
-            r = apostr(r)
-        sep = ''
-        # given examples we simply take:
-        if ctx.openapi_ver < 2 and is_(r, list) and not ex:
-            # https://swagger.io/docs/specification/2-0/describing-parameters/#query-parameters
-            cf = v.get('collectionFormat', 'csv')
-            if cf != 'multi':
-                if cf == 'csv':
-                    r, sep = ','.join(r), ','
-                elif cf == 'pipes':
-                    r, sep = '|'.join(r), '|'
-                elif cf == 'tsv':
-                    r, sep = '\t'.join(r), 'tab'
-                elif cf == 'ssv':
-                    r, sep = ' '.join(r), 'space'
-        sep = f'sep: {sep}. ' if sep else ''
-        return r, sep + (descr or k)
-
-    @staticmethod
-    def prop(k, v, no_ref=False):
-        if k.startswith('$'):
-            k = 'dollar_' + k[1:]
-        if not isinstance(v, dict):
-            # schematics: '$response.body#/id'. not present in v3 it seems
-            # only in response. so be... lazy:
-            v = {'in': 'body', 'name': k, 'type': 'string', 'example': str(v)}
-        else:
-            v = dict(v)
-        v.update(v.get('schema', {}))
-        if not is_(v, dict):
-            return [f'{k} = {apostr(v)}']
-        t, cast = swagger.by_type(v)
-        d = v.pop('description', '')
-        r, d = cast(k, v, ex=v.get('example'), descr=d)
-        v = v if v else ''
-        if d and d != k:
-            if is_(v, dict):
-                v['descr'] = d
-            else:
-                v = [apostr(d), v]
-        d = f'{k} = {apostr(v)}'
-        ctx.cur_cls.append(d)
-        l = []
-        d = ''
-        if k in swagger.pparams and not no_ref:
-            r = k
-        cma = ',' if isinstance(r, dict) else ''
-        l.append(f'R.{k} = {r}{cma}'.replace('\n', '\\n'))
-        return l
-
-    @staticmethod
-    def def_cls(ref):
-        return swagger.repl_unallowed_pydef_chars(ref[2:])
-
-    @staticmethod
-    def build_components(spec):
-        """Setting up the Definitions class Tree"""
-        debug and out('Building components and definitions')
-        swagger.in_def_block = True
-        r, i = ['class Defs:'], '    '
-        add = r.append
-
-        for n in sorted(swagger.definitions.keys()):
-            # n like '#/components/links/UpdateUserById'
-            d, parts = spec, n.split('/')[1:]
-            while parts:
-                part = parts.pop(0)
-                d = d[part]
-            debug and out('definition', n)
-            # if n == 'IFormFile': breakpoint()   # FIXME BREAKPOINT
-            N = swagger.definitions[n]
-            d.pop('xml', 0)
-
-            # Maybe we should gen those classes also for objects within methods?
-            # try:
-            #     assert d.pop('type') == 'object'
-            # except Exception as ex:
-            #     print('breakpoint set')
-            #     breakpoint()
-            #     keep_ctx = True
-
-            props = d.pop('properties', d.pop('parameters', {}))
-            if not props and 'type' in d:
-                # d like {'description': '...', 'type': 'string'} (k8s)
-                # i.e. this is a definition for a simple type
-                props = {'__val__': d}
-                d = {}
-            add(f'{i}class {N}:')
-            if N != n:
-                add(f'{i}{i}"""{n}"""')
-            ins = len(r)
-            ctx.cur_cls = []
-            if props:
-                props = swagger.clean_dictkeys(props)
-                ctx.cur_cls.append(f'_attrs = {list(props.keys())}')
-                for k, v in props.items():
-                    debug and out('   ', n, 'prop', k)
-                    for line in swagger.prop(k, v):
-                        add(f'{i*2}{line}')
-            elif not props and not d:
-                add(f'{i}{i}"empty"')
-            cl = ''
-            if d:
-                ind = 3
-                for k, v in d.items():
-                    if k == '$ref':
-                        k = 'dollar_ref'
-                    else:
-                        k = swagger.repl_unallowed_pydef_chars(k)
-                    # add non relevant props, e.g. required with _ = ... after class:
-                    cl += f'\n{i*ind}{k} = {apostr(v)}'
-            cl = swagger.build_details_cls(2, cl)
-            r.insert(ins, cl)
-        swagger.in_def_block = False
-        r = '\n'.join(r)
-        r = swagger.repl_defs(r, 'lambda: ')
-        return r
-
-    @staticmethod
-    def repl_defs(r, pre=''):
-        for k, v in swagger.definitions.items():
-            r = r.replace(f"{{'$ref': '{k}'}}", f'{pre}Defs.{v}')
-            r = r.replace(f"'{k}'", f'{pre}Defs.{v}')
-        return r
-
-    @staticmethod
-    def parse_infos_for_docstr(spec):
-        i = spec.get('info', {})
-        i['openapi'] = spec.get('openapi', i.get('swagger', '?'))
-        spec['title'] = i.pop('title', 'Swagger API Tester')
-        if not any([j for j in i.values() if is_(j, (dict, list))]):
-            return json.dumps(list(i.values()))[1:-1].replace('"', '')
-        return lib('yaml').safe_dump(i)
-
-    @staticmethod
-    def build_details_cls(ind, pre=''):
-        C = ctx.cur_cls
-        if not C and not pre:
-            return ''
-        i = '    ' * ind
-        r = [f'{i}class R:']
-        i += '    '
-        if pre:
-            r.append(f'{i}{pre.strip()}')
-        [r.append(f'{i}{l}') for l in C]
-        return '\n'.join(r)
-
-    @staticmethod
-    def get_host(spec, url):
-        h = ctx.state.get('host')
-        if h:
-            return h
-        h = spec.get('host', spec.get('servers', [{'url': '/'}])[0]['url'])
-        if h.startswith('/'):
-            if url.startswith('http'):
-                r = url[:9] + url[9:].split('/', 1)[0]
-                h = r + h
-            else:
-                h = 'http://127.0.0.1:8000' + h
-        return h[:-1] if h.endswith('/') else h
-
-    @staticmethod
-    def try_load(s: str, url='n.a.'):
-        """s the content of a swagger definition file"""
-        s = s.encode().decode('utf-8-sig')
-        if not s or ('swagger' not in s and 'openapi' not in s):
-            return
-        try:
-            if s.strip()[0] in BRKT:
-                spec = json.loads(s)
-            else:
-                spec = lib('yaml').safe_load(s)
-            assert isinstance(spec, dict)
-        except Exception:
-            return
-        # sp = mod.SwaggerParser(swagger_dict=d) # swagger parser did not cut it for us :-/
-        # allows to predefine globals:
-        spec['params'] = ctx.state.get('params', {})
-        for p, v in spec['params'].items():
-            swagger.pparams[p] = f'{p} = {apostr(v)}'
-        spec['hdrs'] = ctx.state.get('hdrs', {})
-        spec['givenurl'] = url
-        spec['info'] = swagger.parse_infos_for_docstr(spec)
-        spec['host'] = swagger.get_host(spec, url)
-        _: str = spec.get('openapi', spec.get('swagger', 2))
-        ctx.openapi_ver = int(_.upper().replace('V', '').split('.')[0])
-        spec['forbidden_kw'] = swagger.forbidden_kw
-
-        if not spec.get('basePath'):
-            spec['basePath'] = ''
-        # fmt:off
-        pp = {
-            'hdrs'     : None,    # headers
-            'hide'     : None,    # hide='foo,bar' =>  values for those keys are x-ed out
-            'noicos'   : None,    # do not show the colored req method icons
-            'params'   : None,    # dict of global params, in addition to path params parsed
-            'sep'      : None,    # seperates lines in method list by this char
-            'filter'   : None,    # only show keys/vals which match. '1': Show only first list item
-            'result'   : 2,       # 0: Show only req, no API hit; 1: only result; 2 : both; 3 : full req object
-            'str_dflt' : '',      # Sets default for all string params w/o an example
-            'timeout'  : 5,       # Sets requests timeout
-        }
-        # fmt:on
-        pp = [(k, ctx.state.get(k, pp[k])) for k in sorted(pp)]
-        pp = [f'{k} = {apostr(v)}' for k, v in pp if v is not None]
-        spec['pre_params'] = '\n'.join(pp)   # render them into src buffer
-        r = deindent(swagger.code, spec)
-        tools_cls = deindent(swagger.tools_code, spec)
-        paths = spec['paths']
-
-        def new_pparam(p, _=swagger.pparams):
-            if p['name'] in _:
-                return
-            ctx.cur_cls = []
-            v = swagger.prop(p['name'], p, no_ref=True)[-1]
-            v = v.split('#', 1)[0].strip()   # comments differ => omit
-            _[p['name']] = v
-
-        def prepare_spec(methods, spec):
-            """
-            Walks the methods to
-            - find path parameters, (will be global)
-            - convert requestBody to swagger's params
-            - find refs
-            """
-            for m in methods:
-                #  "/users/{user_id}": method in schemathesis has top level params
-                top_level_params = m.pop('parameters', [])
-                for p1 in m.values():
-                    params = p1['parameters'] = p1.get('parameters', [])
-                    [params.insert(0, dict(f)) for f in top_level_params]
-                    for p in params:
-                        if p.get('in') == 'path':
-                            new_pparam(p)
-                    rb = p1.get('requestBody', {})
-                    # cross ref to requestBody component:
-                    ref = rb.get('$ref')
-                    if ref:
-                        m, parts = spec, ref.split('/')[1:]
-                        while parts:
-                            m = m[parts.pop(0)]
-                        rb.update(deepcopy(m))
-                    rb = rb.get('content')
-                    if rb:
-                        ct = ''
-                        for f in [
-                            'application/json',
-                            'multipart/form-data',
-                            'application/x-www-form-urlencoded',
-                            # 'application/octet-stream',
-                        ]:
-                            r = rb.pop(f, 0)
-                            if r:
-                                n = 'body' if 'json' in f else 'form'
-                                i = 'body' if 'json' in f else 'formData'
-                                r.update({'name': n, 'in': i})
-                                ct = f
-                                break
-                        if not ct and rb:
-                            # 'text/csv' or 'image/png' or 'application/octet-stream'
-                            k = list(rb.keys())[0]
-                            ct = k
-                            r = {
-                                'name': 'content',
-                                'type': 'string',
-                                'mime': k,
-                                'in': 'mimetype',
-                            }
-                        if ct:
-                            params.append(r)
-                            p1['mime'] = ct
-
-        prepare_spec(paths.values(), spec)
-
-        refs = set()
-
-        def find_refs(d, refs=refs):
-            if is_(d, list):
-                [find_refs(i) for i in d]
-            if is_(d, dict):
-                for k, v in d.items():
-                    if k == '$ref' and isinstance(v, str):
-                        swagger.definitions[v] = swagger.def_cls(v)
-                    find_refs(v)
-
-        find_refs(spec)
-        if swagger.definitions:
-            swagger.clses += 1
-            r += swagger.build_components(spec)
-
-        toc = []
-
-        def extract_path_params(p):
-            for k in swagger.pparams:
-                p = p.replace('{%s}' % k, f'_{k}_')
-            return p
-
-        i = '    '
-        pre = r
-        r = ''
-        for pth in paths:
-            debug and out('path', pth)
-            swagger.clses += 1
-            P = paths[pth]
-            p_orig = pth
-            # '/pet/{petId}/uploadImage'
-            p = extract_path_params(pth)
-            pn = f'{p[1:].replace("/", "__")}'
-            pn = swagger.repl_unallowed_pydef_chars(pn)
-            r += f'\n\nclass {pn}:'
-            r += f'\n{i}pth = "{p_orig}"'
-            methods = paths[p_orig].keys()
-            for m in methods:
-                ctx.cur_cls = []
-                # m = post, get, put, ...:
-                debug and out(f'     {m}')
-                if ctx.state.get('noicos'):
-                    toc.append(f'{pn}.{m},')
-                else:
-                    ico = swagger.icos.get(m, swagger.icos['dflt'])
-                    toc.append(f"'{ico}', {pn}.{m},")
-                r += f'\n\n{i}class {m}:'
-                pspec = P[m]
-                params = pspec.pop('parameters', [])
-                doc = f'{pspec.pop("description", "")} {pspec.pop("summary", "")}'
-                if doc:
-                    r += f'\n{i}{i}"""{doc}"""'
-                if pspec:
-                    ctx.cur_cls.append(f'# = {pspec}')
-                    if len(ctx.cur_cls) == 1 and not params:
-                        ctx.cur_cls.append('pass')
-                r += '\n_REPL_'
-                for p in params:
-                    for l in swagger.param(p, pspec):
-                        r += f'\n{i}{i}{l}'
-                s = ''
-                for k in 'query', 'formData', 'path', 'body', 'mime':
-                    l = pspec.get(k)
-                    if not l:
-                        continue
-                    if k == 'mime':
-                        if l == 'application/json':   # omit default
-                            continue
-                        l = apostr(l)
-                    s += f'_{k} = {l}; '
-                s = f'\n{i*3}{s}' if s else s
-                s = swagger.build_details_cls(2, s)
-                r = r.replace('_REPL_', s)
-        r = swagger.repl_defs(r)
-        r = pre + r
-        P = ['']
-        for p, d in swagger.pparams.items():
-            P.append(d)
-        # we indent methods ONE space, so that fold all does not close them:
-        # but still we are in a block, so that directives are found and evaled
-        sep = '\n '
-        _ = ctx.state.get('sep')
-        if _ is not None:
-            _ = f"'{_}'" if is_(_, str) else _
-            sep = f'\n {_},{sep}'
-        r = r.replace('_TOC_', sep.join(toc))
-        r = r.replace('_PTHPARAMS_', '\n'.join(P).replace('\nR.', '\n'))
-        r += tools_cls
-        # r += '\nTools.send(pet___petId_.get)'
-
-        return r, swagger.post_generate
-
-    @staticmethod
-    def clean_dictkeys(d):
-        for k in list(d.keys()):
-            if k in swagger.forbidden_kw:
-                d[k + '__'] = d.pop(k)
-            else:
-                k1 = swagger.repl_unallowed_pydef_chars(k)
-                if k1 != k:
-                    d[k1] = d.pop(k)
-        return d
-
-    @staticmethod
-    def param(p: dict, M: dict):
-        # {'description': 'ID of pet to update', 'format': 'int64', 'in': 'path', 'name': 'petId', 'required': True, 'type': 'integer'}
-        p = swagger.clean_dictkeys(p)
-        n = p['name']
-        n = swagger.repl_unallowed_pydef_chars(n)
-        if n in swagger.forbidden_kw:
-            n = n + '__'
-        in_ = p['in']
-        M.setdefault(in_, []).append(n)
-        # sometimes missing
-        p['type'] = p.get('type', p.get('format', 'string'))
-        v = p.get('schema', p)
-        l = swagger.prop(n, v)
-        return l
-
-    @staticmethod
-    def post_generate(scb, rb):
-        vimcmd(':1')
-        for i in range(swagger.clses + 2):
-            vimcmd('/\\nclass')
-            vimcmd('normal 2j')
-            vimcmd('foldclose')
-        vimcmd(':1')
-        vimcmd('/methods')
+    return mod.try_load(s, url=url)
 
 
 def into_src_buffer(sb, lines):
@@ -1046,8 +301,8 @@ def into_src_buffer(sb, lines):
 def ExecuteSelectedRange():
     """Called method when hotkey is pressed in vim"""
     # os.system(f'notify-send {ctx.L1}')
-    src_buf = vim.current.buffer
-    nrs = list(range(ctx.L1 - 1, ctx.L2))
+    src_buf = ctx.src_buf = vim.current.buffer
+    nrs = list(range(ctx.L1 - 1, ctx.L2))   # lines start with 1, buffer is a list -> 0
     # check if we are within a block and go up:
     # we do this only if there is no visual range selected
     show_help = clear_buffer = clear_help = False
@@ -1060,59 +315,41 @@ def ExecuteSelectedRange():
     deindent = 0
     if len(nrs) == 1:
         # in general, if not special handling is wanted we move up until the block starts, then go down:
-        l = src_buf[nrs[0]].strip()
+        line = src_buf[nrs[0]].strip()
 
-        if l[0] == ':':
+        if line[0] == ':':
             # this is a command. replace line if single line, else append
-            cmd = l[1:].strip()
-            # we support :vpe @foo -> jump to the line with @foo and execute that one (handy in md)
-            if cmd.startswith('vpe @'):
-                match = cmd.split('vpe @', 1)[1].strip()
-                for i in range(nrs[0] + 1, len(src_buf)):
-                    if f'@{match}' in src_buf[i]:
-                        ctx.L1 = ctx.L2 = i + 1
+            cmd = line[1:].strip()
+            # we support :@foo bar -> jump to the line with '@foo bar' in it and execute that one (handy in md)
+            if cmd.startswith('@'):
+                match = cmd[1:]
+                for line in range(nrs[0] + 1, len(src_buf)):
+                    if f'@{match}' in src_buf[line]:
+                        ctx.L1 = ctx.L2 = line + 1
                         return ExecuteSelectedRange()
                 raise Exception(f'Not found in buffer: "@{match}"')
-            fn = '/tmp/vi.r.%s' % os.environ['USER']
-            os.unlink(fn) if os.path.exists(fn) else 0
-            # vimcmd(f':write | redir >> {fn} | :{cmd} | redir END | edit')
-            vimcmd(f'redir >> {fn}')
-            vimcmd(f'silent {cmd}')
-            vimcmd('redir END')
-            s = read_file(fn).strip()
-            if not s:
-                vimcmd(f'lua vim.notify("{cmd}")')
-                return
-            # sometimes cmd is first line (:!date)
-            if cmd in s.split('\n', 1)[0]:
-                s = s.split(cmd, 1)[1].strip()
-                with open(fn, 'w') as fd:
-                    fd.write(s)
-            if '\n' in s:
-                # insert below cursor:
-                return vimcmd(f'.-0read {fn}')
-            src_buf[nrs[0]] = s
-            return
+
+            return vimcmdr(cmd, silent=False, title=False)
 
         # markdown code block?:
-        if l.startswith('```'):
-            deindent = len(orig_line.rstrip()) - len(l)
+        if line.startswith('```'):
+            deindent = len(orig_line.rstrip()) - len(line)
             while not src_buf[nrs[-1] + 1].lstrip().startswith('```'):
                 nrs.append(nrs[-1] + 1)
 
         else:
-            v = try_load_file_or_url(l)   # load swagger specs
+            v = try_load_file_or_url(line)   # load swagger specs
             if v:
                 v, post_generate = v
                 clear_all(buffer=src_buf)
                 into_src_buffer(src_buf, v)
                 clear_buffer = clear_help = True
-            elif l == '':
+            elif line == '':
                 show_help = clear_buffer = True
-            elif l in macros:
+            elif line in macros:
                 vimcmd('delete')
                 vimcmd('delete')
-                v = macros[l]
+                v = macros[line]
                 into_src_buffer(src_buf, v)
                 clear_buffer = clear_help = True
             else:
@@ -1136,14 +373,14 @@ def ExecuteSelectedRange():
     # find statements like clear or doc:
     bs, docs, l1 = list(block), ctx.docs, []
     while bs:
-        l = bs.pop()   # bottom to top
-        l = l.strip()
-        l = (l[1:] if l.startswith('#') else l).strip()
-        if l.startswith(':cmt '):
-            docs.insert(0, '# ' + l.split(':cmt ', 1)[1].strip())
-        elif l == ':doc':
+        line = bs.pop()   # bottom to top
+        line = line.strip()
+        line = (line[1:] if line.startswith('#') else line).strip()
+        if line.startswith(':cmt '):
+            docs.insert(0, '# ' + line.split(':cmt ', 1)[1].strip())
+        elif line == ':doc':
             docs.insert(0, l1)
-        l1 = l
+        l1 = line
 
     block = '\n'.join(block)
     state = ctx.state
@@ -1159,12 +396,14 @@ def ExecuteSelectedRange():
 
     def is_set(key, alw=always, block=block):
         a = ctx.state['always']
-        if key in block or key in a:
+        if key in a or key in block:
             if alw:
                 a[key] = True
             return True
 
-    silent = False
+    silent = here = False
+    if is_set(':here'):
+        here = True
     if is_set(':silent'):
         silent = True
     if is_set(':state'):
@@ -1193,11 +432,10 @@ def ExecuteSelectedRange():
         state.update(globals())
     res_buf = None
     if not silent:
-        res_buf: list = add_or_switch_to_window(
-            'results.py', remember_cur=True
-        )
-        if clear_buffer or state.get('autodoc'):
-            clear_all(buffer=res_buf)
+        if not here:
+            res_buf: list = add_or_switch_to_window('results.py', remember_cur=True)
+            if clear_buffer or state.get('autodoc'):
+                clear_all(buffer=res_buf)
     if show_help:
         ress = help()
     elif clear_help:
@@ -1205,7 +443,13 @@ def ExecuteSelectedRange():
     else:
         try:
             t0 = time.time()
+            state['vim'] = state.get('vim', vim)
+            state['cmd'] = state.get('cmd', vimcmdr)
+            state['ctx'] = state.get('ctx', ctx)
             exec(block, state, state)
+            state.pop('ctx')
+            # postgen from assigns i guess not needed, he can directly run vim commands
+            # but swagger  does deliver a post gen, which IS needed
             post_generate = state.get('post_generate', post_generate)
             dt = round(time.time() - t0, 2)
         except Exception as ex:
@@ -1215,58 +459,40 @@ def ExecuteSelectedRange():
     if doc_call or state.get('autodoc'):
         dt = f'[{dt}s]' if dt else ''
         [docs.insert(0, f'# {i} {dt}') for i in block.splitlines()]
-    if not silent:
-        [res_buf.append(l) for l in docs]
-        docs.clear()
 
-        if ress:
-            [res_buf.append(l) for l in ress.splitlines()]
-        vimcmd(':lua vim.notify=print')   # lsp errs all the time on fails
-        vimcmd(':silent lua vim.lsp.buf.format()')
-        vimcmd(f'{len(res_buf)}j')
-        res_buf = add_or_switch_to_window('previous')
+    if not silent:
+        if not here:
+            [res_buf.append(l) for l in docs]
+            docs.clear()
+
+            if ress:
+                [res_buf.append(l) for l in ress.splitlines()]
+            vimcmd(':lua vim.notify=print')   # lsp errs all the time on fails
+            vimcmd(':silent lua vim.lsp.buf.format()')
+            vimcmd(f'{len(res_buf)}j')
+            res_buf = add_or_switch_to_window('previous')
+        else:
+            fn = '/tmp/vi.here.%s' % os.environ['USER']
+            with open(fn, 'w') as fd:
+                fd.write(str(ress))
+            if ctx.L1 == len(src_buf):
+                src_buf.append('')
+            vimcmd(f'.+1read {fn}')
         # vimcmd('delete') if clear_buffer else 0
     if post_generate:
         post_generate(src_buf, res_buf)
 
 
 if __name__ == '__main__':
-    # testing. call the module with a swagger file
+    # we are callable directly as well, executing what's supported in try_load_file_or_url
     debug, a = True, sys.argv
-    if len(a) == 1:
-        print('call me on a swagger definition file or url.')
+    if len(a) < 3:
+        print(f'Call me with <module name> <file or url>. Modules: {ctx.mods}')
         sys.exit(1)
-    s = read_file('./mods.py')
-    if s:
-        m = {}
-        exec(s, m, m)
-        ctx.state.update(m)
+    res = try_load_file_or_url(' '.join(sys.argv[1:]))
 
-    fn = a[1].rsplit('/', 1)[-1]
-    r = try_load_file_or_url(fn)[0]
     if not sys.stdout.isatty():
-        sys.exit(print(r))
-    for s in 'json', 'yaml', 'yml':
-        fn = fn.replace(f'.{s}', '')
-    fn = f'client_{fn}'   # I like to tab complete...
-    fn += '.py'
-    s = """
-        if __name__ == '__main__':
-            import sys, os
-            match = '' if len(sys.argv) == 1 else sys.argv[1]
-            a, result = ([1], 0) if 'testmode' in os.environ else ([0], 2)
-            for m in methods():
-                if callable(m) and match in m.__qualname__:
-                    print(f'Calling {m.__qualname__}', file=sys.stderr)
-                    if not a[0]:
-                        y = input('Ok [y/a(lways)/N/q]? ').lower()
-                        if y == 'q': sys.exit(0)
-                        if y == 'a': a[0] = 1
-                        if y not in {'y', 'a'}: continue
-                    print(json.dumps(Tools.send(m), indent=4, sort_keys=True))
-    """
-    r = '#!/usr/bin/env python\n' + r
-    r += '\n' + deindent(s)
-    open(fn, 'w').write(r)
-    os.system(f'chmod +x "{fn}"')
-    print(f'Have written: {fn}')
+        sys.exit(print(res[0]))
+    f = getattr(ctx.mod, 'cli_post', 0)
+    if f:
+        f(res)

@@ -1,33 +1,41 @@
 # OpenAPI / Swagger Support
 
-Early phase. Manually tested against various swagger files, incl. the [petstore](https://petstore.swagger.io/) demo API. 
-See the [examples folder](../examples/).
+Early phase. Manually tested against various swagger files, incl. the [petstore](https://petstore.swagger.io/) demo API.
+
+See the [examples folder](../examples/) - the openapi test script runs them all.
 
 [![asciicast](https://asciinema.org/a/c1LyPn7dnI7mHXMWAbMVqcRqH.svg)](https://asciinema.org/a/c1LyPn7dnI7mHXMWAbMVqcRqH)
 
-1. After potential pre-parametrization, hit the hotkey on a Swagger definition URL or filename =>
-  - All RPCs are listed, with references to parameter definitions (components).
-  - Path parameters are extracted and configured globally on module level (e.g. `petId` in the
-    example).
-  - Definitions are wrapped into a `class Defs`
-  - API Methods as top level classes, referencing definitions.
-  - Tools for actual sending the requests within `class Tools` at the end - i.e. the module is
-    completely self contained, requiring only pyaml if you want yaml output.
+Note: In the recording, the 'swagger' keyword was not required before the url. Meanwhile it is, see:
+
+## Usage
+
+1. On CLI: vpe <swagger|openapi> <url or file>
+2. VI: After potential pre-parametrization, hit the hotkey on a line with "swagger <Swagger definition URL or filename>" =>
+
+- All RPCs are listed, with references to parameter definitions (components).
+- Path parameters are extracted and configured globally on module level (e.g. `petId` in the
+  example).
+- Definitions are wrapped into a `class Defs`
+- API Methods as top level classes, referencing definitions.
+- Tools for actual sending the requests within `class Tools` at the end - i.e. the module is
+  completely self contained, requiring only pyaml if you want yaml output.
+
 3. You can now parametrize and then send requests to the endpoint by hitting the hotkey on the methods.
 4. Set `results` to
-  - 0  in order to  only see request parameters w/o actually sending it
-  - 1  (default) to see the responses only
-  - 2  for both
-  - 3  shows the whole requests object, with all attributes resolved
+
+- 0 in order to only see request parameters w/o actually sending it
+- 1 (default) to see the responses only
+- 2 for both
+- 3 shows the whole requests object, with all attributes resolved
+
 5. Configure any authentication within `class API`. Environ variables are understood.
 6. Directives are at the end of the `methods` block, ready for change.
-    - Default: `# :clear :doc :all :single :wrap p = Tools.send({})`
-    - Remove the `:clear` to not loose output of previous runs
-    - Set `:wrap p = ...` to `:wrap y= ...` to get output as yaml
+   - Default: `# :clear :doc :all :single :wrap p = Tools.send({})`
+   - Remove the `:clear` to not loose output of previous runs
+   - Set `:wrap p = ...` to `:wrap y= ...` to get output as yaml
 
 If you have downloaded a swagger definition into a file, press the hotkey on the filename
-
-
 
 ## Source Layout and Navigation
 
@@ -44,8 +52,8 @@ If you have downloaded a swagger definition into a file, press the hotkey on the
 Before evaluating the link to a swagger definition file, resulting in source module build, you may
 parametrize the build by evaluating some other conventional assignments.
 
-
 These are understood, in addition to the always supported ones (e.g. `hide` or `filter`):
+
 ```python
 'hdrs'     : None,    # headers
 'hide'     : None,    # hide='foo,bar' =>  values for those keys are x-ed out
@@ -60,7 +68,7 @@ These are understood, in addition to the always supported ones (e.g. `hide` or `
 
 Note that values in hdrs as API params may come from environ, e.g. `hdrs={'API-Token': $token}`.
 
-Here a demo against a DynDNS provider's API, illustrating the use of those parameters. 
+Here a demo against a DynDNS provider's API, illustrating the use of those parameters.
 <a href="https://asciinema.org/a/QhCpFAsHjM5CELXzClXO67eVv" target="_blank"><img src="https://asciinema.org/a/QhCpFAsHjM5CELXzClXO67eVv.svg" /></a>
 
 Note that the API server was a bit... slow at time of recording, we had to raise the request
@@ -78,10 +86,10 @@ Example:
 ![](./img/rcls.png)
 
 If you want to parametrize the `id` of that server delete API method you can
+
 - set id globally, since `R.id` is set the the (global) `id`.
 - set it in the method itself, e.g. `R.id = "foo"`, then w/o effect on all other methods using the
   global `id`
-
 
 CAUTION: dict values (rare) have to be "postfixed" with a comma, e.g.:
 
@@ -93,8 +101,8 @@ class some_api_path:
         R.labels = {'customer': 'bar'}, # <-- Comma for dicts(!)
 ```
 
-
 ### Defining WHICH parameters to send
+
 Often not all parameters defined are required / wanted to send.
 
 Example:
@@ -111,7 +119,7 @@ Jump to it with `gd` and set the parameters there like shown:
         class R:
             required = ['name', 'server_type', 'image']
             (... all infos about the component)
- 
+
         # R.automount = True
         # R.datacenter = 'nbg1-dc3'
         # R.firewalls = [{'firewall': 38}]
@@ -132,10 +140,11 @@ Jump to it with `gd` and set the parameters there like shown:
 
 ```
 
-The parameters you do NOT want to send, 
+The parameters you do NOT want to send,
 
 - EITHER: just comment out (as shown)
-- OR: remove from the nested `R` class' _attrs list:
+- OR: remove from the nested `R` class' \_attrs list:
+
 ```python
 
     class components_schemas_create_server_request:
@@ -161,13 +170,11 @@ The parameters you do NOT want to send,
 If API.passw is set, then by default requests is using BasicAuth.
 For digest, set `digest = True` into the API class.
 
-
 ## Command Line Usage
 
 You may call the module on a swagger file as well, generating the API module.
 
 You can pre-parametrize generation via a file `mods.py` in cwd.
-
 
 ## Tutorial: Working with a Huge API
 
@@ -194,7 +201,7 @@ Now we build the module and format it on the cli:
 ```
 ~/r/gh/ax/vpe/e/hetzner main +1 !4 ?10 ❯ alias vpe
 vpe=/home/gk/repos/gh/axiros/vpe/vim_python_eval.py
-~/r/gh/ax/vpe/e/hetzner main +1 !4 ?10 ❯ vpe hcloud.json
+~/r/gh/ax/vpe/e/hetzner main +1 !4 ?10 ❯ vpe swagger hcloud.json
 no vim api importable
 Building components and definitions
 definition #/components/schemas/action
@@ -216,18 +223,15 @@ All done! ✨ 🍰 ✨
 We can now work with the Hetzner API.
 
 Screencast content
+
 - We query our ssh key id
 - Create a server, using that key (requiring an undo in the results window, to see it again)
 - Query the existing server(s) (requiring a parametrization of the get request)
 
-
 [![asciicast](https://asciinema.org/a/jQE2lTcb3Rc94UB9Jh9iZAPKC.svg)](https://asciinema.org/a/jQE2lTcb3Rc94UB9Jh9iZAPKC)
-
 
 Note how we fold away methods we don't work with - by indenting them, then fold.  
 Jumping to the methods start is done by setting a mark `mm` (for `'m` to jump there).
-
-
 
 ## Tips
 
@@ -255,15 +259,13 @@ Evaluate this to show always all state variables, w/o the callables:
 hide = 'callable'
 ```
 
-
 ## Tests
 
-In the example folder resides a `run_dirs.py <dirmatch>` which 
-- goes into the matching directorie(s) and finds the swagger def. files 
+In the example folder resides a `run_dirs.py <dirmatch>` which
+
+- goes into the matching directorie(s) and finds the swagger def. files
 - builds the client
 - runs ALL methods of the client with `result = 0`, i.e. only creates (with defaults), but does not send the requests
 - records the result into `result.json`
 
 The `tests/openapi_tests.sh` script does only check if those remain unchanged after code changes.
-
-

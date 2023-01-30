@@ -3,11 +3,11 @@
 # type: ignore
 '''
 Swagger API Tester
-openapi.json
+swagger openapi.json
 
 3.0.0
 '''
-result = 1
+result = 2
 str_dflt = ''
 timeout = 5
 # -
@@ -19,7 +19,7 @@ class API:
     hdrs = {}
 
 
-hostname = ''
+hostname = 'test.mydomain.com'
 id = 8358362
 dnsRecordId = 758426278
 webRedirectId = 758426278
@@ -813,13 +813,14 @@ class dns:
     class get:
         """ Get a list of domains for DNS service."""
         class R:
-            _ = {'tags': ['dns'], 'operationId': 'dnsGet', 'responses': {'200': Defs.components_responses_200DNSDomain, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsGet', 'responses': {'200': Defs.components_responses_200DNSDomain, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
     class post:
         """ Add a new DNS service."""
         class R:
             _body = ['body'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns'], 'operationId': 'dnsPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             body = Defs.components_schemas_DNS_domain
         R.body = Defs.components_schemas_DNS_domain
 
@@ -830,7 +831,7 @@ class dns__getroot___hostname_:
         """ Get the root domain name based on a hostname."""
         class R:
             _path = ['hostname'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsGetrootHostnameGet', 'responses': {'200': Defs.components_responses_200DNSHostnameGetGetrootByHostname, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsGetrootHostnameGet', 'responses': {'200': Defs.components_responses_200DNSHostnameGetGetrootByHostname, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             hostname = {'type': 'string', 'example': 'test.mydomain.com'}
         R.hostname = hostname
 
@@ -841,7 +842,7 @@ class dns__record___hostname_:
         """ Get DNS records based on a hostname and resource record type."""
         class R:
             _query = ['recordType']; _path = ['hostname'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsRecordHostnameGetRecordType', 'responses': {'200': Defs.components_responses_200DNSRecord, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsRecordHostnameGetRecordType', 'responses': {'200': Defs.components_responses_200DNSRecord, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             hostname = {'type': 'string', 'example': 'test.mydomain.com'}
             recordType = {'type': 'string', 'enum': ['A', 'AAAA', 'CAA', 'CNAME', 'HINFO', 'LOC', 'MX', 'NS', 'PTR', 'PF', 'RP', 'SPF', 'TXT', 'UF', 'URI'], 'example': 'TXT'}
         R.hostname = hostname
@@ -854,7 +855,7 @@ class dns___id_:
         """ Get details of a domain for DNS service."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdGet', 'responses': {'200': Defs.components_responses_200DNSDomainGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdGet', 'responses': {'200': Defs.components_responses_200DNSDomainGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 8358362}
         R.id = id
 
@@ -862,7 +863,7 @@ class dns___id_:
         """ Update an existing DNS service."""
         class R:
             _path = ['id']; _body = ['body'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 1583628575}
             body = Defs.components_schemas_DNS_domain
         R.id = id
@@ -872,7 +873,7 @@ class dns___id_:
         """ Remove domain from DNS service."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -883,7 +884,7 @@ class dns___id___dnssec:
         """ DS record of DNSSEC for DNS service."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdDNSSECGet', 'responses': {'200': Defs.components_responses_200DNSDNSSECGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdDNSSECGet', 'responses': {'200': Defs.components_responses_200DNSDNSSECGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 1583624578}
         R.id = id
 
@@ -894,7 +895,7 @@ class dns___id___dnssec__enable:
         """ Enable DNSSEC for DNS service."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdDNSSECEnableId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdDNSSECEnableId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362457}
         R.id = id
 
@@ -905,7 +906,7 @@ class dns___id___dnssec__disable:
         """ Disable DNSSEC for DNS service."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdDNSSECDisableGet', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdDNSSECDisableGet', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 1583624587}
         R.id = id
 
@@ -916,7 +917,7 @@ class dns___id___record:
         """ Get a list of DNS records for DNS service."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdRecordGet', 'responses': {'200': Defs.components_responses_200DNSRecord, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdRecordGet', 'responses': {'200': Defs.components_responses_200DNSRecord, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836275}
         R.id = id
 
@@ -924,7 +925,7 @@ class dns___id___record:
         """ Add a new DNS record for DNS service."""
         class R:
             _path = ['id']; _body = ['body'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdRecordPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSRecordGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdRecordPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSRecordGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836275}
             body = {'oneOf': [Defs.components_schemas_DNS_dnsRecordA, Defs.components_schemas_DNS_dnsRecordAAAA, Defs.components_schemas_DNS_dnsRecordCAA, Defs.components_schemas_DNS_dnsRecordCNAME, Defs.components_schemas_DNS_dnsRecordHINFO, Defs.components_schemas_DNS_dnsRecordLOC, Defs.components_schemas_DNS_dnsRecordMX, Defs.components_schemas_DNS_dnsRecordNS, Defs.components_schemas_DNS_dnsRecordPTR, Defs.components_schemas_DNS_dnsRecordRP, Defs.components_schemas_DNS_dnsRecordSOA, Defs.components_schemas_DNS_dnsRecordSPF, Defs.components_schemas_DNS_dnsRecordSRV, Defs.components_schemas_DNS_dnsRecordSSHFP, Defs.components_schemas_DNS_dnsRecordTLSA, Defs.components_schemas_DNS_dnsRecordTXT, Defs.components_schemas_DNS_dnsRecordURI], 'example': {'nodeName': 'mail', 'recordType': 'A', 'ttl': 300, 'state': True, 'group': '', 'ipv4Address': '204.25.79.214'}}
         R.id = id
@@ -937,7 +938,7 @@ class dns___id___record___dnsRecordId_:
         """ Get details of a DNS record for DNS service."""
         class R:
             _path = ['id', 'dnsRecordId'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdRecordDnsRecordIdGet', 'responses': {'200': Defs.components_responses_200DNSRecordGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdRecordDnsRecordIdGet', 'responses': {'200': Defs.components_responses_200DNSRecordGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836278}
             dnsRecordId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
         R.id = id
@@ -947,7 +948,7 @@ class dns___id___record___dnsRecordId_:
         """ Update an existing DNS record for DNS service."""
         class R:
             _path = ['id', 'dnsRecordId']; _body = ['body'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdRecordDnsRecordIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSRecordGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdRecordDnsRecordIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSRecordGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 1583628575}
             dnsRecordId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
             body = {'oneOf': [Defs.components_schemas_DNS_dnsRecordA, Defs.components_schemas_DNS_dnsRecordAAAA, Defs.components_schemas_DNS_dnsRecordCAA, Defs.components_schemas_DNS_dnsRecordCNAME, Defs.components_schemas_DNS_dnsRecordHINFO, Defs.components_schemas_DNS_dnsRecordLOC, Defs.components_schemas_DNS_dnsRecordMX, Defs.components_schemas_DNS_dnsRecordNS, Defs.components_schemas_DNS_dnsRecordPTR, Defs.components_schemas_DNS_dnsRecordRP, Defs.components_schemas_DNS_dnsRecordSOA, Defs.components_schemas_DNS_dnsRecordSPF, Defs.components_schemas_DNS_dnsRecordSRV, Defs.components_schemas_DNS_dnsRecordSSHFP, Defs.components_schemas_DNS_dnsRecordTLSA, Defs.components_schemas_DNS_dnsRecordTXT, Defs.components_schemas_DNS_dnsRecordURI], 'example': {'nodeName': 'mail', 'recordType': 'A', 'ttl': 300, 'state': True, 'group': '', 'ipv4Address': '204.25.79.214'}}
@@ -959,7 +960,7 @@ class dns___id___record___dnsRecordId_:
         """ Remove a DNS record from DNS service."""
         class R:
             _path = ['id', 'dnsRecordId'];
-            _ = {'tags': ['dns'], 'operationId': 'dnsIdRecordDnsRecordIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIdRecordDnsRecordIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 789245718}
             dnsRecordId = {'type': 'integer', 'format': 'int32', 'example': 754258952}
         R.id = id
@@ -972,7 +973,7 @@ class dns___id___webredirect:
         """ Get a list of web redirects."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectGet', 'responses': {'200': Defs.components_responses_200WebRedirect, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectGet', 'responses': {'200': Defs.components_responses_200WebRedirect, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836275}
         R.id = id
 
@@ -980,7 +981,7 @@ class dns___id___webredirect:
         """ Add a new web redirect."""
         class R:
             _path = ['id']; _body = ['body'];
-            _ = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200WebRedirectGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200WebRedirectGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836275}
             body = {'$ref': Defs.components_schemas_DNS_webRedirect, 'example': {'domainId': 123456789, 'nodeName': 'www', 'redirectType': 'PF', 'state': True, 'host': 'www.myotherdomain.com', 'port': 8080, 'includeQueryString': True}}
         R.id = id
@@ -993,7 +994,7 @@ class dns___id___webRedirect___webRedirectId_:
         """ Get details of the web redirect."""
         class R:
             _path = ['id', 'webRedirectId'];
-            _ = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectWebRedirectIdGet', 'responses': {'200': Defs.components_responses_200WebRedirectGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectWebRedirectIdGet', 'responses': {'200': Defs.components_responses_200WebRedirectGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836278}
             webRedirectId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
         R.id = id
@@ -1003,7 +1004,7 @@ class dns___id___webRedirect___webRedirectId_:
         """ Update an existing web redirect."""
         class R:
             _path = ['id', 'webRedirectId']; _body = ['body'];
-            _ = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectWebRedirectIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200WebRedirectGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectWebRedirectIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200WebRedirectGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 583628575}
             webRedirectId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
             body = {'$ref': Defs.components_schemas_DNS_webRedirect, 'example': {'nodeName': 'www', 'redirectType': 'PF', 'state': True, 'port': 8080, 'useDynamicIPv4Address': True, 'useDynamicIPv6Address': True, 'cloak': True}}
@@ -1015,7 +1016,7 @@ class dns___id___webRedirect___webRedirectId_:
         """ Remove a web redirect."""
         class R:
             _path = ['id', 'webRedirectId'];
-            _ = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectWebRedirectIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns', 'webredirect'], 'operationId': 'dnsIdWebRedirectWebRedirectIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 789245718}
             webRedirectId = {'type': 'integer', 'format': 'int32', 'example': 542589526}
         R.id = id
@@ -1027,7 +1028,8 @@ class dns__ipUpdateHistory:
     class get:
         """ Get a list of IP address updates."""
         class R:
-            _ = {'tags': ['dns'], 'operationId': 'dnsIPUpdateHistoryGet', 'responses': {'200': Defs.components_responses_200DNSIPUpdateHistory, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns'], 'operationId': 'dnsIPUpdateHistoryGet', 'responses': {'200': Defs.components_responses_200DNSIPUpdateHistory, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
 class dns__group:
     pth = "/dns/group"
@@ -1035,13 +1037,14 @@ class dns__group:
     class get:
         """ Get a list of groups to which hosts are assigned to."""
         class R:
-            _ = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupGet', 'responses': {'200': Defs.components_responses_200DNSGroup, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupGet', 'responses': {'200': Defs.components_responses_200DNSGroup, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
     class post:
         """ Add a new group."""
         class R:
             _body = ['body'];
-            _ = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSGroupGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSGroupGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             body = {'$ref': Defs.components_schemas_DNS_dnsGroup, 'example': {'groupName': 'work'}}
         R.body = {'groupName': 'work'},
 
@@ -1052,7 +1055,7 @@ class dns__group___id_:
         """ Update an existing group."""
         class R:
             _path = ['id']; _body = ['body'];
-            _ = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSGroupGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200DNSGroupGetById, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362857}
             body = {'$ref': Defs.components_schemas_DNS_dnsGroup, 'example': {'id': 35836285753, 'groupName': 'work', 'groupPassword': 'A8ce83cl31'}}
         R.id = id
@@ -1062,7 +1065,7 @@ class dns__group___id_:
         """ Remove a group."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns', 'group'], 'operationId': 'dnsGroupIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1072,7 +1075,8 @@ class dns__limit:
     class get:
         """ Limits associated with hostnames."""
         class R:
-            _ = {'tags': ['dns', 'limit'], 'operationId': 'dnsLimitGet', 'responses': {'200': Defs.components_responses_200DNSLimit, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns', 'limit'], 'operationId': 'dnsLimitGet', 'responses': {'200': Defs.components_responses_200DNSLimit, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
 class dns___id___limit:
     pth = "/dns/{id}/limit"
@@ -1081,7 +1085,7 @@ class dns___id___limit:
         """ Limits associated with DNS records."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['dns', 'limit'], 'operationId': 'dnsRecordLimitGet', 'responses': {'200': Defs.components_responses_200DNSRecordLimit, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['dns', 'limit'], 'operationId': 'dnsRecordLimitGet', 'responses': {'200': Defs.components_responses_200DNSRecordLimit, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836275}
         R.id = id
 
@@ -1091,7 +1095,8 @@ class domain:
     class get:
         """ Get a list of domains for domain registration service."""
         class R:
-            _ = {'tags': ['domain'], 'operationId': 'domainGet', 'responses': {'200': Defs.components_responses_200Domain, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainGet', 'responses': {'200': Defs.components_responses_200Domain, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
 class domain___id_:
     pth = "/domain/{id}"
@@ -1100,7 +1105,7 @@ class domain___id_:
         """ Get details of a domain registration domain."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainGetId', 'responses': {'200': Defs.components_responses_200DomainGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainGetId', 'responses': {'200': Defs.components_responses_200DomainGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1111,7 +1116,7 @@ class domain___id___autorenewEnable:
         """ Enable autorenewal for a domain."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainAutorenewEnableGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainAutorenewEnableGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1122,7 +1127,7 @@ class domain___id___autorenewDisable:
         """ Disable autorenewal for a domain."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainAutorenewDisableGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainAutorenewDisableGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1133,7 +1138,7 @@ class domain___id___lock:
         """ Lock a domain."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainLockGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainLockGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1144,7 +1149,7 @@ class domain___id___unlock:
         """ Unlock a domain."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainUnlockGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainUnlockGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1155,7 +1160,7 @@ class domain___id___nameServer:
         """ Get a list of name servers for a domain."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainNameServerGet', 'responses': {'200': Defs.components_responses_200DomainNameServer, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainNameServerGet', 'responses': {'200': Defs.components_responses_200DomainNameServer, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1163,7 +1168,7 @@ class domain___id___nameServer:
         """ Delete a name server of a domain."""
         class R:
             _query = ['nameServer']; _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainNameServerDeleteGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainNameServerDeleteGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
             nameServer = {'type': 'string', 'example': 'ns3.dynu.com'}
         R.id = id
@@ -1176,7 +1181,7 @@ class domain___id___nameServer__add:
         """ Add a name server to a domain."""
         class R:
             _query = ['nameServer']; _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainNameServerAddGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainNameServerAddGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
             nameServer = {'type': 'string', 'example': 'ns3.dynu.com'}
         R.id = id
@@ -1189,7 +1194,7 @@ class domain___id___nameServer__primary:
         """ Make a name server the primary name server of a domain."""
         class R:
             _query = ['nameServer']; _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainNameServerPrimaryGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainNameServerPrimaryGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
             nameServer = {'type': 'string', 'example': 'ns1.dynu.com'}
         R.id = id
@@ -1202,7 +1207,7 @@ class domain___id___cancel:
         """ Cancel a domain."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['domain'], 'operationId': 'domainCancelGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['domain'], 'operationId': 'domainCancelGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1212,7 +1217,8 @@ class email:
     class get:
         """ Get a list of email services."""
         class R:
-            _ = {'tags': ['email'], 'operationId': 'emailGet', 'responses': {'200': Defs.components_responses_200Email, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailGet', 'responses': {'200': Defs.components_responses_200Email, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
 class email___id_:
     pth = "/email/{id}"
@@ -1221,7 +1227,7 @@ class email___id_:
         """ Get details of an email service."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['email'], 'operationId': 'emailGetId', 'responses': {'200': Defs.components_responses_200EmailGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailGetId', 'responses': {'200': Defs.components_responses_200EmailGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1232,7 +1238,7 @@ class email___id___deliveryQueue:
         """ Get a list of messages in delivery queue."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['email'], 'operationId': 'emailDeliveryQueueGet', 'responses': {'200': Defs.components_responses_200EmailDeliveryQueue, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailDeliveryQueueGet', 'responses': {'200': Defs.components_responses_200EmailDeliveryQueue, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1243,7 +1249,7 @@ class email___id___blacklist:
         """ Get a list of blacklist."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['email'], 'operationId': 'emailBlacklistGet', 'responses': {'200': Defs.components_responses_200EmailBlacklist, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailBlacklistGet', 'responses': {'200': Defs.components_responses_200EmailBlacklist, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1251,7 +1257,7 @@ class email___id___blacklist:
         """ Add a new blacklist for email service."""
         class R:
             _path = ['id']; _body = ['body'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdBlacklistPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailBlacklistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['email'], 'operationId': 'emailIdBlacklistPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailBlacklistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836275}
             body = {'$ref': Defs.components_schemas_Email_emailBlacklist, 'example': {'type': 'EmailAddress', 'data': 'bademail@externaldomain.com', 'state': True}}
         R.id = id
@@ -1264,7 +1270,7 @@ class email___id___blacklist___blacklistId_:
         """ Get details of a blacklist for email service."""
         class R:
             _path = ['id', 'blacklistId'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdBlacklistBlacklistIdGet', 'responses': {'200': Defs.components_responses_200EmailBlacklistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailIdBlacklistBlacklistIdGet', 'responses': {'200': Defs.components_responses_200EmailBlacklistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836278}
             blacklistId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
         R.id = id
@@ -1274,7 +1280,7 @@ class email___id___blacklist___blacklistId_:
         """ Update details of an existing blacklist for email service."""
         class R:
             _path = ['id', 'blacklistId']; _body = ['body'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdBlacklistBlacklistIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailBlacklistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['email'], 'operationId': 'emailIdBlacklistBlacklistIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailBlacklistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836278}
             blacklistId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
             body = {'$ref': Defs.components_schemas_Email_emailBlacklist, 'example': {'type': 'EmailAddress', 'data': 'bademail@externaldomain.com', 'state': True}}
@@ -1286,7 +1292,7 @@ class email___id___blacklist___blacklistId_:
         """ Remove a blacklist from email service."""
         class R:
             _path = ['id', 'blacklistId'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdBlacklistBlacklistIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailIdBlacklistBlacklistIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 578924571}
             blacklistId = {'type': 'integer', 'format': 'int32', 'example': 754258952}
         R.id = id
@@ -1299,7 +1305,7 @@ class email___id___whitelist:
         """ Get a list of whitelist."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['email'], 'operationId': 'emailWhitelistGet', 'responses': {'200': Defs.components_responses_200EmailWhitelist, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailWhitelistGet', 'responses': {'200': Defs.components_responses_200EmailWhitelist, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1307,7 +1313,7 @@ class email___id___whitelist:
         """ Add a new whitelist for email service."""
         class R:
             _path = ['id']; _body = ['body'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdWhitelistPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailWhitelistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['email'], 'operationId': 'emailIdWhitelistPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailWhitelistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836275}
             body = {'$ref': Defs.components_schemas_Email_emailWhitelist, 'example': {'type': 'EmailAddress', 'data': 'bademail@externaldomain.com', 'state': True}}
         R.id = id
@@ -1320,7 +1326,7 @@ class email___id___whitelist___whitelistId_:
         """ Get details of a whitelist for email service."""
         class R:
             _path = ['id', 'whitelistId'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdWhitelistWhitelistIdGet', 'responses': {'200': Defs.components_responses_200EmailWhitelistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailIdWhitelistWhitelistIdGet', 'responses': {'200': Defs.components_responses_200EmailWhitelistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836278}
             whitelistId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
         R.id = id
@@ -1330,7 +1336,7 @@ class email___id___whitelist___whitelistId_:
         """ Update details of an existing whitelist for email service."""
         class R:
             _path = ['id', 'whitelistId']; _body = ['body'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdWhitelistWhitelistIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailWhitelistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['email'], 'operationId': 'emailIdWhitelistWhitelistIdPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200EmailWhitelistGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             id = {'type': 'integer', 'format': 'int32', 'example': 35836278}
             whitelistId = {'type': 'integer', 'format': 'int32', 'example': 758426278}
             body = {'$ref': Defs.components_schemas_Email_emailWhitelist, 'example': {'type': 'EmailAddress', 'data': 'bademail@externaldomain.com', 'state': True}}
@@ -1342,7 +1348,7 @@ class email___id___whitelist___whitelistId_:
         """ Remove a whitelist from email service."""
         class R:
             _path = ['id', 'whitelistId'];
-            _ = {'tags': ['email'], 'operationId': 'emailIdWhitelistWhitelistIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['email'], 'operationId': 'emailIdWhitelistWhitelistIdDelete', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 789245718}
             whitelistId = {'type': 'integer', 'format': 'int32', 'example': 754258952}
         R.id = id
@@ -1354,7 +1360,8 @@ class monitor__limit:
     class get:
         """ Limits associated with monitoring."""
         class R:
-            _ = {'tags': ['monitor', 'limit'], 'operationId': 'monitorLimitGet', 'responses': {'200': Defs.components_responses_200MonitorLimit, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['monitor', 'limit'], 'operationId': 'monitorLimitGet', 'responses': {'200': Defs.components_responses_200MonitorLimit, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
 class monitor:
     pth = "/monitor"
@@ -1362,13 +1369,14 @@ class monitor:
     class get:
         """ Get a list of monitors."""
         class R:
-            _ = {'tags': ['monitor'], 'operationId': 'monitorGet', 'responses': {'200': Defs.components_responses_200Monitor, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['monitor'], 'operationId': 'monitorGet', 'responses': {'200': Defs.components_responses_200Monitor, '401': Defs.components_responses_401, '500': Defs.components_responses_500}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            pass
 
     class post:
         """ Add a new monitor."""
         class R:
             _body = ['body'];
-            _ = {'tags': ['monitor'], 'operationId': 'monitorAddPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200MonitorAdd, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
+            # = {'tags': ['monitor'], 'operationId': 'monitorAddPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200MonitorAdd, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502, '503': Defs.components_responses_503}, 'security': [{'apiKey': []}, {'oauth2': []}], 'mime': 'application/json'}
             body = {'oneOf': [Defs.components_schemas_Monitor_monitorDNS, Defs.components_schemas_Monitor_monitorHTTP, Defs.components_schemas_Monitor_monitorKeyword, Defs.components_schemas_Monitor_monitorPing, Defs.components_schemas_Monitor_monitorPort], 'example': {'name': 'HTTP monitor for www.dynu.com', 'type': 'HTTP', 'checkInterval': 10, 'url': 'https://www.dynu.com', 'authenticationType': 'NONE'}}
         R.body = {'name': 'HTTP monitor for www.dynu.com', 'type': 'HTTP', 'checkInterval': 10, 'url': 'https://www.dynu.com', 'authenticationType': 'NONE'},
 
@@ -1379,7 +1387,7 @@ class monitor___id_:
         """ Get details of a monitor."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['monitor'], 'operationId': 'monitorGetId', 'responses': {'200': Defs.components_responses_200MonitorGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['monitor'], 'operationId': 'monitorGetId', 'responses': {'200': Defs.components_responses_200MonitorGetById, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1387,7 +1395,7 @@ class monitor___id_:
         """ Delete a monitor."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['monitor'], 'operationId': 'monitorDeleteGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['monitor'], 'operationId': 'monitorDeleteGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1398,7 +1406,7 @@ class monitor___id___pause:
         """ Pause a monitor."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['monitor'], 'operationId': 'monitorPauseGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['monitor'], 'operationId': 'monitorPauseGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1409,7 +1417,7 @@ class monitor___id___unpause:
         """ Unpause a monitor."""
         class R:
             _path = ['id'];
-            _ = {'tags': ['monitor'], 'operationId': 'monitorUnpauseGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
+            # = {'tags': ['monitor'], 'operationId': 'monitorUnpauseGetId', 'responses': {'200': Defs.components_responses_200, '401': Defs.components_responses_401, '500': Defs.components_responses_500, '502': Defs.components_responses_502}, 'security': [{'apiKey': []}, {'oauth2': []}]}
             id = {'type': 'integer', 'format': 'int32', 'example': 358362}
         R.id = id
 
@@ -1420,7 +1428,7 @@ class ping:
         """ Ping the API server to obtain the pong response."""
         class R:
             _query = ['message'];
-            _ = {'tags': ['ping'], 'operationId': 'pingGet', 'responses': {'200': Defs.components_responses_200Ping, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': []}
+            # = {'tags': ['ping'], 'operationId': 'pingGet', 'responses': {'200': Defs.components_responses_200Ping, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': []}
             message = {'type': 'string', 'example': 'test'}
         R.message = 'test'
 
@@ -1428,13 +1436,13 @@ class ping:
         """ Ping the API server to obtain the pong response."""
         class R:
             _body = ['body'];
-            _ = {'tags': ['ping'], 'operationId': 'pingPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200Ping, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [], 'mime': 'application/json'}
+            # = {'tags': ['ping'], 'operationId': 'pingPost', 'requestBody': {'content': {}}, 'responses': {'200': Defs.components_responses_200Ping, '500': Defs.components_responses_500, '501': Defs.components_responses_501, '502': Defs.components_responses_502}, 'security': [], 'mime': 'application/json'}
             body = Defs.components_schemas_Ping_ping
         R.body = Defs.components_schemas_Ping_ping
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'for', 'while', 'except', 'if', 'async', 'not', 'raise', 'continue', 'import', 'from'}
+keyw = {'except', 'import', 'async', 'for', 'raise', 'continue', 'from', 'if', 'not', 'while'}
 
 class Tools:
     @staticmethod
@@ -1480,8 +1488,10 @@ class Tools:
         R = g(def_, 'R', 0)
         if R:
             return obj(R)
-        l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-        r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        l = g(def_, '_attrs', [
+              i for i in dir(def_) if not i[0] == '_'])
+        r = {k: obj(g(def_, k))
+                    for k in l if not is_(g(def_, k), dict)}
         return dict_(r)
 
     @staticmethod
@@ -1510,6 +1520,8 @@ class Tools:
             kw = {'params': params, 'headers': h, 'timeout': timeout}
             if getenv(API.passw):
                 kw['auth'] = (getenv(API.user), getenv(API.passw))
+            if getattr(API, 'digest', 0):
+                kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth'])
             if isinstance(data, (list, dict)):
                 kw['data'] = repl(data)
             req = getattr(requests, methd)
@@ -1523,7 +1535,7 @@ class Tools:
             r = {'status': req.status_code}
             try:
                 r['resp'] = json.loads(req.text)
-            except:
+            except Exception:
                 r['resp'] = req.text
         except Exception as ex:
             r = {'Exception': str(ex)}

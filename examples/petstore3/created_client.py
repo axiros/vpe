@@ -3,7 +3,7 @@
 # type: ignore
 '''
 Swagger Petstore - OpenAPI 3.0
-openapi.json
+swagger openapi.json
 
 contact:
   email: apiteam@swagger.io
@@ -33,7 +33,7 @@ termsOfService: http://swagger.io/terms/
 version: 1.0.17
 
 '''
-result = 1
+result = 2
 str_dflt = ''
 timeout = 5
 # -
@@ -181,7 +181,7 @@ class pet:
         """Update an existing pet by Id Update an existing pet"""
         class R:
             _body = ['body'];
-            _ = {'tags': ['pet'], 'operationId': 'updatePet', 'requestBody': {'description': 'Update an existent pet in the store', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_Pet}}, 'required': True}, 'responses': {'200': {'description': 'Successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/json': {'schema': Defs.components_schemas_Pet}}}, '400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Pet not found'}, '405': {'description': 'Validation exception'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}], 'mime': 'application/json'}
+            # = {'tags': ['pet'], 'operationId': 'updatePet', 'requestBody': {'description': 'Update an existent pet in the store', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_Pet}}, 'required': True}, 'responses': {'200': {'description': 'Successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/json': {'schema': Defs.components_schemas_Pet}}}, '400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Pet not found'}, '405': {'description': 'Validation exception'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}], 'mime': 'application/json'}
             body = Defs.components_schemas_Pet
         R.body = Defs.components_schemas_Pet
 
@@ -189,7 +189,7 @@ class pet:
         """Add a new pet to the store Add a new pet to the store"""
         class R:
             _body = ['body'];
-            _ = {'tags': ['pet'], 'operationId': 'addPet', 'requestBody': {'description': 'Create a new pet in the store', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_Pet}}, 'required': True}, 'responses': {'200': {'description': 'Successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/json': {'schema': Defs.components_schemas_Pet}}}, '405': {'description': 'Invalid input'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}], 'mime': 'application/json'}
+            # = {'tags': ['pet'], 'operationId': 'addPet', 'requestBody': {'description': 'Create a new pet in the store', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_Pet}}, 'required': True}, 'responses': {'200': {'description': 'Successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/json': {'schema': Defs.components_schemas_Pet}}}, '405': {'description': 'Invalid input'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}], 'mime': 'application/json'}
             body = Defs.components_schemas_Pet
         R.body = Defs.components_schemas_Pet
 
@@ -200,7 +200,7 @@ class pet__findByStatus:
         """Multiple status values can be provided with comma separated strings Finds Pets by status"""
         class R:
             _query = ['status'];
-            _ = {'tags': ['pet'], 'operationId': 'findPetsByStatus', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}, 'application/json': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}}}, '400': {'description': 'Invalid status value'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
+            # = {'tags': ['pet'], 'operationId': 'findPetsByStatus', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}, 'application/json': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}}}, '400': {'description': 'Invalid status value'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
             status = {'type': 'string', 'default': 'available', 'enum': ['available', 'pending', 'sold']}
         R.status = 'available'
 
@@ -211,7 +211,7 @@ class pet__findByTags:
         """Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing. Finds Pets by tags"""
         class R:
             _query = ['tags'];
-            _ = {'tags': ['pet'], 'operationId': 'findPetsByTags', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}, 'application/json': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}}}, '400': {'description': 'Invalid tag value'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
+            # = {'tags': ['pet'], 'operationId': 'findPetsByTags', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}, 'application/json': {'schema': {'type': 'array', 'items': Defs.components_schemas_Pet}}}}, '400': {'description': 'Invalid tag value'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
             tags = {'type': 'array', 'items': {'type': 'string'}}
         R.tags = [str_dflt]
 
@@ -222,7 +222,7 @@ class pet___petId_:
         """Returns a single pet Find pet by ID"""
         class R:
             _path = ['petId'];
-            _ = {'tags': ['pet'], 'operationId': 'getPetById', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/json': {'schema': Defs.components_schemas_Pet}}}, '400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Pet not found'}}, 'security': [{'api_key': []}, {'petstore_auth': ['write:pets', 'read:pets']}]}
+            # = {'tags': ['pet'], 'operationId': 'getPetById', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Pet}, 'application/json': {'schema': Defs.components_schemas_Pet}}}, '400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Pet not found'}}, 'security': [{'api_key': []}, {'petstore_auth': ['write:pets', 'read:pets']}]}
             petId = {'type': 'integer', 'format': 'int64'}
         R.petId = petId
 
@@ -230,7 +230,7 @@ class pet___petId_:
         """ Updates a pet in the store with form data"""
         class R:
             _query = ['name', 'status']; _path = ['petId'];
-            _ = {'tags': ['pet'], 'operationId': 'updatePetWithForm', 'responses': {'405': {'description': 'Invalid input'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
+            # = {'tags': ['pet'], 'operationId': 'updatePetWithForm', 'responses': {'405': {'description': 'Invalid input'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
             petId = {'type': 'integer', 'format': 'int64'}
             name = {'type': 'string'}
             status = {'type': 'string'}
@@ -242,7 +242,7 @@ class pet___petId_:
         """ Deletes a pet"""
         class R:
             _path = ['petId'];
-            _ = {'tags': ['pet'], 'operationId': 'deletePet', 'responses': {'400': {'description': 'Invalid pet value'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
+            # = {'tags': ['pet'], 'operationId': 'deletePet', 'responses': {'400': {'description': 'Invalid pet value'}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}]}
             api_key = {'type': 'string'}
             petId = {'type': 'integer', 'format': 'int64'}
         R.api_key = str_dflt
@@ -255,7 +255,7 @@ class pet___petId___uploadImage:
         """ uploads an image"""
         class R:
             _query = ['additionalMetadata']; _path = ['petId']; _mime = 'application/octet-stream';
-            _ = {'tags': ['pet'], 'operationId': 'uploadFile', 'requestBody': {'content': {'application/octet-stream': {'schema': {'type': 'string', 'format': 'binary'}}}}, 'responses': {'200': {'description': 'successful operation', 'content': {'application/json': {'schema': Defs.components_schemas_ApiResponse}}}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}], 'mime': 'application/octet-stream'}
+            # = {'tags': ['pet'], 'operationId': 'uploadFile', 'requestBody': {'content': {'application/octet-stream': {'schema': {'type': 'string', 'format': 'binary'}}}}, 'responses': {'200': {'description': 'successful operation', 'content': {'application/json': {'schema': Defs.components_schemas_ApiResponse}}}}, 'security': [{'petstore_auth': ['write:pets', 'read:pets']}], 'mime': 'application/octet-stream'}
             petId = {'type': 'integer', 'format': 'int64'}
             additionalMetadata = {'type': 'string'}
             content = {'name': 'content', 'type': 'string', 'mime': 'application/octet-stream', 'in': 'mimetype'}
@@ -269,7 +269,8 @@ class store__inventory:
     class get:
         """Returns a map of status codes to quantities Returns pet inventories by status"""
         class R:
-            _ = {'tags': ['store'], 'operationId': 'getInventory', 'responses': {'200': {'description': 'successful operation', 'content': {'application/json': {'schema': {'type': 'object', 'additionalProperties': {'type': 'integer', 'format': 'int32'}}}}}}, 'security': [{'api_key': []}]}
+            # = {'tags': ['store'], 'operationId': 'getInventory', 'responses': {'200': {'description': 'successful operation', 'content': {'application/json': {'schema': {'type': 'object', 'additionalProperties': {'type': 'integer', 'format': 'int32'}}}}}}, 'security': [{'api_key': []}]}
+            pass
 
 class store__order:
     pth = "/store/order"
@@ -278,7 +279,7 @@ class store__order:
         """Place a new order in the store Place an order for a pet"""
         class R:
             _body = ['body'];
-            _ = {'tags': ['store'], 'operationId': 'placeOrder', 'requestBody': {'content': {'application/xml': {'schema': Defs.components_schemas_Order}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_Order}}}, 'responses': {'200': {'description': 'successful operation', 'content': {'application/json': {'schema': Defs.components_schemas_Order}}}, '405': {'description': 'Invalid input'}}, 'mime': 'application/json'}
+            # = {'tags': ['store'], 'operationId': 'placeOrder', 'requestBody': {'content': {'application/xml': {'schema': Defs.components_schemas_Order}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_Order}}}, 'responses': {'200': {'description': 'successful operation', 'content': {'application/json': {'schema': Defs.components_schemas_Order}}}, '405': {'description': 'Invalid input'}}, 'mime': 'application/json'}
             body = Defs.components_schemas_Order
         R.body = Defs.components_schemas_Order
 
@@ -289,7 +290,7 @@ class store__order___orderId_:
         """For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions. Find purchase order by ID"""
         class R:
             _path = ['orderId'];
-            _ = {'tags': ['store'], 'operationId': 'getOrderById', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Order}, 'application/json': {'schema': Defs.components_schemas_Order}}}, '400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Order not found'}}}
+            # = {'tags': ['store'], 'operationId': 'getOrderById', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_Order}, 'application/json': {'schema': Defs.components_schemas_Order}}}, '400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Order not found'}}}
             orderId = {'type': 'integer', 'format': 'int64'}
         R.orderId = orderId
 
@@ -297,7 +298,7 @@ class store__order___orderId_:
         """For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors Delete purchase order by ID"""
         class R:
             _path = ['orderId'];
-            _ = {'tags': ['store'], 'operationId': 'deleteOrder', 'responses': {'400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Order not found'}}}
+            # = {'tags': ['store'], 'operationId': 'deleteOrder', 'responses': {'400': {'description': 'Invalid ID supplied'}, '404': {'description': 'Order not found'}}}
             orderId = {'type': 'integer', 'format': 'int64'}
         R.orderId = orderId
 
@@ -308,7 +309,7 @@ class user:
         """This can only be done by the logged in user. Create user"""
         class R:
             _body = ['body'];
-            _ = {'tags': ['user'], 'operationId': 'createUser', 'requestBody': {'description': 'Created user object', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_User}}}, 'responses': {'default': {'description': 'successful operation', 'content': {'application/json': {'schema': Defs.components_schemas_User}, 'application/xml': {'schema': Defs.components_schemas_User}}}}, 'mime': 'application/json'}
+            # = {'tags': ['user'], 'operationId': 'createUser', 'requestBody': {'description': 'Created user object', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_User}}}, 'responses': {'default': {'description': 'successful operation', 'content': {'application/json': {'schema': Defs.components_schemas_User}, 'application/xml': {'schema': Defs.components_schemas_User}}}}, 'mime': 'application/json'}
             body = Defs.components_schemas_User
         R.body = Defs.components_schemas_User
 
@@ -319,7 +320,7 @@ class user__createWithList:
         """Creates list of users with given input array Creates list of users with given input array"""
         class R:
             _body = ['body'];
-            _ = {'tags': ['user'], 'operationId': 'createUsersWithListInput', 'requestBody': {'content': {}}, 'responses': {'200': {'description': 'Successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/json': {'schema': Defs.components_schemas_User}}}, 'default': {'description': 'successful operation'}}, 'mime': 'application/json'}
+            # = {'tags': ['user'], 'operationId': 'createUsersWithListInput', 'requestBody': {'content': {}}, 'responses': {'200': {'description': 'Successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/json': {'schema': Defs.components_schemas_User}}}, 'default': {'description': 'successful operation'}}, 'mime': 'application/json'}
             body = {'type': 'array', 'items': Defs.components_schemas_User}
         R.body = [Defs.components_schemas_User]
 
@@ -330,7 +331,7 @@ class user__login:
         """ Logs user into the system"""
         class R:
             _query = ['username', 'password'];
-            _ = {'tags': ['user'], 'operationId': 'loginUser', 'responses': {'200': {'description': 'successful operation', 'headers': {'X-Rate-Limit': {'description': 'calls per hour allowed by the user', 'schema': {'type': 'integer', 'format': 'int32'}}, 'X-Expires-After': {'description': 'date in UTC when token expires', 'schema': {'type': 'string', 'format': 'date-time'}}}, 'content': {'application/xml': {'schema': {'type': 'string'}}, 'application/json': {'schema': {'type': 'string'}}}}, '400': {'description': 'Invalid username/password supplied'}}}
+            # = {'tags': ['user'], 'operationId': 'loginUser', 'responses': {'200': {'description': 'successful operation', 'headers': {'X-Rate-Limit': {'description': 'calls per hour allowed by the user', 'schema': {'type': 'integer', 'format': 'int32'}}, 'X-Expires-After': {'description': 'date in UTC when token expires', 'schema': {'type': 'string', 'format': 'date-time'}}}, 'content': {'application/xml': {'schema': {'type': 'string'}}, 'application/json': {'schema': {'type': 'string'}}}}, '400': {'description': 'Invalid username/password supplied'}}}
             username = {'type': 'string'}
             password = {'type': 'string'}
         R.username = username
@@ -342,7 +343,8 @@ class user__logout:
     class get:
         """ Logs out current logged in user session"""
         class R:
-            _ = {'tags': ['user'], 'operationId': 'logoutUser', 'responses': {'default': {'description': 'successful operation'}}}
+            # = {'tags': ['user'], 'operationId': 'logoutUser', 'responses': {'default': {'description': 'successful operation'}}}
+            pass
 
 class user___username_:
     pth = "/user/{username}"
@@ -351,7 +353,7 @@ class user___username_:
         """ Get user by user name"""
         class R:
             _path = ['username'];
-            _ = {'tags': ['user'], 'operationId': 'getUserByName', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/json': {'schema': Defs.components_schemas_User}}}, '400': {'description': 'Invalid username supplied'}, '404': {'description': 'User not found'}}}
+            # = {'tags': ['user'], 'operationId': 'getUserByName', 'responses': {'200': {'description': 'successful operation', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/json': {'schema': Defs.components_schemas_User}}}, '400': {'description': 'Invalid username supplied'}, '404': {'description': 'User not found'}}}
             username = {'type': 'string'}
         R.username = username
 
@@ -359,7 +361,7 @@ class user___username_:
         """This can only be done by the logged in user. Update user"""
         class R:
             _path = ['username']; _body = ['body'];
-            _ = {'tags': ['user'], 'operationId': 'updateUser', 'requestBody': {'description': 'Update an existent user in the store', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_User}}}, 'responses': {'default': {'description': 'successful operation'}}, 'mime': 'application/json'}
+            # = {'tags': ['user'], 'operationId': 'updateUser', 'requestBody': {'description': 'Update an existent user in the store', 'content': {'application/xml': {'schema': Defs.components_schemas_User}, 'application/x-www-form-urlencoded': {'schema': Defs.components_schemas_User}}}, 'responses': {'default': {'description': 'successful operation'}}, 'mime': 'application/json'}
             username = {'type': 'string'}
             body = Defs.components_schemas_User
         R.username = username
@@ -369,13 +371,13 @@ class user___username_:
         """This can only be done by the logged in user. Delete user"""
         class R:
             _path = ['username'];
-            _ = {'tags': ['user'], 'operationId': 'deleteUser', 'responses': {'400': {'description': 'Invalid username supplied'}, '404': {'description': 'User not found'}}}
+            # = {'tags': ['user'], 'operationId': 'deleteUser', 'responses': {'400': {'description': 'Invalid username supplied'}, '404': {'description': 'User not found'}}}
             username = {'type': 'string'}
         R.username = username
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'import', 'continue', 'from', 'async', 'for', 'except', 'not', 'raise', 'if', 'while'}
+keyw = {'raise', 'while', 'for', 'not', 'from', 'if', 'import', 'except', 'async', 'continue'}
 
 class Tools:
     @staticmethod
@@ -421,8 +423,10 @@ class Tools:
         R = g(def_, 'R', 0)
         if R:
             return obj(R)
-        l = g(def_, '_attrs', [i for i in dir(def_) if not i[0] == '_'])
-        r = {k: obj(g(def_, k)) for k in l if not is_(g(def_, k), dict)}
+        l = g(def_, '_attrs', [
+              i for i in dir(def_) if not i[0] == '_'])
+        r = {k: obj(g(def_, k))
+                    for k in l if not is_(g(def_, k), dict)}
         return dict_(r)
 
     @staticmethod
@@ -451,6 +455,8 @@ class Tools:
             kw = {'params': params, 'headers': h, 'timeout': timeout}
             if getenv(API.passw):
                 kw['auth'] = (getenv(API.user), getenv(API.passw))
+            if getattr(API, 'digest', 0):
+                kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth'])
             if isinstance(data, (list, dict)):
                 kw['data'] = repl(data)
             req = getattr(requests, methd)
@@ -464,7 +470,7 @@ class Tools:
             r = {'status': req.status_code}
             try:
                 r['resp'] = json.loads(req.text)
-            except:
+            except Exception:
                 r['resp'] = req.text
         except Exception as ex:
             r = {'Exception': str(ex)}
