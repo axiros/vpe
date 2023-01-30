@@ -456,13 +456,20 @@ def ExecuteSelectedRange():
     elif clear_help:
         ress = ''
     else:
+
+        class vpe:
+            """access to us from execed code"""
+
+            ctx = ctx
+            state = ctx.state
+            vim = vim
+            cmd = vimcmdr
+
         try:
             t0 = time.time()
-            state['vim'] = state.get('vim', vim)
-            state['cmd'] = state.get('cmd', vimcmdr)
-            state['ctx'] = state.get('ctx', ctx)
+            state['vpe'] = vpe
             exec(block, state, state)
-            state.pop('ctx')
+            state.pop('vpe')
             # postgen from assigns i guess not needed, he can directly run vim commands
             # but swagger  does deliver a post gen, which IS needed
             post_generate = state.get('post_generate', post_generate)

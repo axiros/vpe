@@ -8,15 +8,18 @@
     - [Result Display](#result-display)
     - [Predefined Blocks (Macros)](#predefined-blocks-macros)
     - [Markdown Fenced Blocks](#markdown-fenced-blocks)
-  - [Jump References](#jump-references)
-  - [Global Variables](#global-variables)
-  - [Modules](#modules)
-    - [Builtin Modules](#builtin-modules)
-      - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
-  - [Add on: Non Python Call Syntax](#add-on-non-python-call-syntax)
-    - [Into Split Window](#into-split-window)
-    - [Into Current Buffer](#into-current-buffer)
-      - [Examples](#examples)
+    - [Jump References](#jump-references)
+    - [Global Variables](#global-variables)
+      - [vpe.vim](#vpevim)
+      - [vpe.ctx](#vpectx)
+      - [vpe.cmd](#vpecmd)
+    - [Modules](#modules)
+      - [Builtin Modules](#builtin-modules)
+        - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
+    - [Add on: Non Python Call Syntax](#add-on-non-python-call-syntax)
+      - [Into Split Window](#into-split-window)
+      - [Into Current Buffer](#into-current-buffer)
+        - [Examples](#examples)
   - [Installation](#installation)
     - [Requirements](#requirements)
   - [Developing](#developing)
@@ -48,6 +51,8 @@ Access to vim api & jumps:
 | ----------------------- | ------------------------- |
 | after open:             | after eval of first line: |
 | ![](./docs/img/pre.png) | ![](./docs/img/post.png)  |
+
+_The example misses a `cmd = vpe.cmd` assignment, see [global-variables](#global-variables)_
 
 The module also offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
 
@@ -157,7 +162,7 @@ Fenced code blocks are evaluated in total if you evaluate the first line, starti
 Since state is kept also cross buffers, you might e.g. define helper functions for presentations
 centrally, which you can later use in your presentation files.
 
-## Jump References
+### Jump References
 
 Evaluating something like `:/foo.bar/` (at the beginning of a line) or `:vpe /foo.bar/`
 (anywhere in a line) tries to find all lines below, (regex)matching `.*foo.bar` and evaluate, as if it was the cursor line
@@ -165,33 +170,38 @@ when hitting the hotkey.
 
 This way you can hide code away, e.g. in presentations but still have it available.
 
-## Global Variables
+### Global Variables
 
-These are always available at execution time:
+Under the namespace class `vpe` the following variables are always available at python execution time:
 
-- `vim`
+#### vpe.vim
 
-Access to the pynvim API.
+Access to the pynvim API. Alternative: `import vim`.
 
 ```python
-p = vim.version #:here
+p = vpe.vim.version #:here
 # prints when evaluated:
 p = Version(api_compatible=0, api_level=10, api_prerelease=False, major=0, minor=8, patch=1, prerelease=False)
 ```
 
-- `ctx`
-  - `ctx`.`state`: Evaluation state
-  - `ctx`.`src_buf`: Reference to source buffer
-  - `ctx`.`L1`, `L2`: Lines selected
+#### vpe.ctx
+
+- `ctx`.`state`: Evaluation state
+- `ctx`.`src_buf`: Reference to source buffer
+- `ctx`.`L1`, `L2`: Lines selected
 
 You can explore those e.g. via `p = dir(ctx) # :here`
 
-- `cmd(<vim cmd>, silent=True, title=<False, True, string>, opt='')`
+#### vpe.cmd
+
+```python
+vpe(<vim cmd>, silent=True, title=<False, True, string>, opt='')
+```
 
 Executes vim command and redirects to a file. The file is then ALWAYS redirected to the
 current buffer, relative to current line. `opt` forwarded to the read as opt (`:h read`).
 
-## Modules
+### Modules
 
 This hands over evaluation to external modules.
 
@@ -227,15 +237,15 @@ methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  (...)
 ```
 
-### Builtin Modules
+#### Builtin Modules
 
-#### Interacting with Swagger APIs
+##### Interacting with Swagger APIs
 
 See [here](./docs/swagger.md)
 
-## Add on: Non Python Call Syntax
+### Add on: Non Python Call Syntax
 
-### Into Split Window
+#### Into Split Window
 
 A function evaluating _anything_ into a split window is also included within this plugin:
 
@@ -249,13 +259,13 @@ lines of buffername handling.
 
 Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe)
 
-### Into Current Buffer
+#### Into Current Buffer
 
 `,r` on a line starting with ':' (or after ':vpe ' anywhere in a line) evaluates the result into the buffer.
 
 [![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
 
-#### Examples
+##### Examples
 
 Open this file in vi and hit `,r` on these lines (`P` the usual lua table dump function):
 
