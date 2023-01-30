@@ -5,13 +5,14 @@ Tools to make use of python API.
 API funcs are in Capitals. Currently only "ExecuteSelectedRange" -
 evaluating selected python code.
 """
-
+import traceback
 from importlib import import_module
 from functools import partial as P
 import time
 import json
 import os
 import sys
+import re
 
 here = os.path.abspath(os.path.dirname(__file__))
 if here not in sys.path:
@@ -316,18 +317,32 @@ def ExecuteSelectedRange():
     if len(nrs) == 1:
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         line = src_buf[nrs[0]].strip()
+        if ':vpe ' in line:
+            line = ':' + line.split(':vpe ', 1)[1]
+            # special case: md comment. know no other comment with end sep:
+            if line.endswith('-->'):
+                line = line.rsplit('-->', 1)[0]
 
         if line[0] == ':':
             # this is a command. replace line if single line, else append
             cmd = line[1:].strip()
-            # we support :@foo bar -> jump to the line with '@foo bar' in it and execute that one (handy in md)
-            if cmd.startswith('@'):
-                match = cmd[1:]
+            # we support :/foo.bar/ -> jump to the line with 'foo?bar' in it and execute that one (handy in md)
+            if cmd and cmd[0] + cmd[-1] == '//':
+
+                wind = vim.current.window
+                have = set()
+                match = '.*' + cmd[1:-1]
                 for line in range(nrs[0] + 1, len(src_buf)):
-                    if f'@{match}' in src_buf[line]:
+                    lstr = src_buf[line]
+                    if re.match(match, lstr):
+                        if lstr in have:
+                            continue
+                        have.add(lstr)
                         ctx.L1 = ctx.L2 = line + 1
-                        return ExecuteSelectedRange()
-                raise Exception(f'Not found in buffer: "@{match}"')
+                        ExecuteSelectedRange()
+                        vim.current.window = wind
+
+                return
 
             return vimcmdr(cmd, silent=False, title=False)
 
@@ -453,7 +468,16 @@ def ExecuteSelectedRange():
             post_generate = state.get('post_generate', post_generate)
             dt = round(time.time() - t0, 2)
         except Exception as ex:
-            state['y'] = f'Python Evaluation Error:\n{type(ex)}\n{str(ex)}'
+            silent = False
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            # tb = traceback.TracebackException(exc_type, exc_value, exc_tb)
+            state['p'] = {
+                'Python Evaluation Error': [
+                    type(ex),
+                    str(ex),
+                    traceback.format_tb(exc_tb),
+                ]
+            }
         ress = check_print_wanted(state, add_state)
         # [b.append(l) for l in block.splitlines()]
     if doc_call or state.get('autodoc'):
@@ -471,7 +495,7 @@ def ExecuteSelectedRange():
             vimcmd(':silent lua vim.lsp.buf.format()')
             vimcmd(f'{len(res_buf)}j')
             res_buf = add_or_switch_to_window('previous')
-        else:
+        elif ress:
             fn = '/tmp/vi.here.%s' % os.environ['USER']
             with open(fn, 'w') as fd:
                 fd.write(str(ress))

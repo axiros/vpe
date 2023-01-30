@@ -1,7 +1,6 @@
 # Vim Python Eval
 
 <!--toc:start-->
-
 - [Vim Python Eval](#vim-python-eval)
   - [Usage](#usage)
   - [Features](#features)
@@ -9,8 +8,12 @@
     - [Result Display](#result-display)
     - [Predefined Blocks (Macros)](#predefined-blocks-macros)
     - [Markdown Fenced Blocks](#markdown-fenced-blocks)
-  - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
-  - [Add On: EvalInto](#add-on-evalinto)
+  - [Jump References](#jump-references)
+  - [Global Variables](#global-variables)
+  - [Modules](#modules)
+    - [Builtin Modules](#builtin-modules)
+      - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
+  - [Add on: Non Python Call Syntax](#add-on-non-python-call-syntax)
     - [Into Split Window](#into-split-window)
     - [Into Current Buffer](#into-current-buffer)
       - [Examples](#examples)
@@ -21,7 +24,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-  <!--toc:end-->
+<!--toc:end-->
 
 vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")`.
 
@@ -30,7 +33,7 @@ vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")`.
 This plugin adds
 
 - Output handling
-  - within a split window (a buffer, incl. undo history)
+  - within a split window (a buffer, incl. undo history) or inline
   - as valid python (lsp support, e.g. for re-formatting)
 - Support for various [evaluation and output control directives](#directives)
 - Loadable predefined python code blocks
@@ -38,6 +41,13 @@ This plugin adds
 - More convience regarding evaluation of lines within code blocks
 
 ![](./docs/img/demo.gif)
+
+Access to vim api & jumps:
+
+|                         |                           |
+| ----------------------- | ------------------------- |
+| after open:             | after eval of first line: |
+| ![](./docs/img/pre.png) | ![](./docs/img/post.png)  |
 
 The module also offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
 
@@ -147,19 +157,13 @@ Fenced code blocks are evaluated in total if you evaluate the first line, starti
 Since state is kept also cross buffers, you might e.g. define helper functions for presentations
 centrally, which you can later use in your presentation files.
 
-## References
+## Jump References
 
-Evaluating something like
-
-```
-:@foo bar
-```
-
-tries to find a line containing '@foo bar' and evaluates, as if it was the cursor line
+Evaluating something like `:/foo.bar/` (at the beginning of a line) or `:vpe /foo.bar/`
+(anywhere in a line) tries to find all lines below, (regex)matching `.*foo.bar` and evaluate, as if it was the cursor line
 when hitting the hotkey.
 
 This way you can hide code away, e.g. in presentations but still have it available.
-
 
 ## Global Variables
 
@@ -167,7 +171,7 @@ These are always available at execution time:
 
 - `vim`
 
-Access to the vim api.
+Access to the pynvim API.
 
 ```python
 p = vim.version #:here
@@ -202,13 +206,15 @@ That call syntax you may also apply on the command line:
 Example: Instead of evaluating `swagger ./hcloud.json` in vi you can call the module on the CLI with those args:
 
 ```bash
-~/.l/sh/nvim/site/pack/packer/start/vpe/examples/hetzner main ⇡1 !10 ?7 ❯ alias vpe
-vpe=/home/gk/.local/share/nvim/site/pack/packer/start/vpe/plugin/vim_python_eval.py
-~/.l/sh/nvim/site/pack/packer/start/vpe/examples/hetzner main ⇡1 !10 ?7 ❯ vpe
+gk@axgk hetzner]$ alias vpe
+alias vpe='/home/gk/.local/share/nvim/site/pack/packer/start/vpe/plugin/vim_python_eval.py'
+[gk@axgk hetzner]$ vpe
+no vim api importable
 Call me with <module name> <file or url>. Modules: ['swagger', 'openapi']
-~/.l/sh/nvim/site/pack/packer/start/vpe/examples/hetzner main ⇡1 !10 ?7 ❯ rm -f client_hcloud.py; vpe swagger ./hcloud.json
+[gk@axgk hetzner]$ rm -f client_hcloud.py; vpe swagger ./hcloud.json
+no vim api importable
 Have written: client_hcloud.py
-~/.l/sh/nvim/site/pack/packer/start/vpe/examples/hetzner main ⇡1 !10 ?7 ❯ cat client_hcloud.py | grep -A 10 methods
+[gk@axgk hetzner]$ cat client_hcloud.py | grep -A 10 methods
 methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  '🟩', actions.get,
  '🟩', actions___id_.get,
@@ -245,10 +251,7 @@ Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe
 
 ### Into Current Buffer
 
-`,r` on a line starting with ':' evaluates the result into the buffer.
-
-- If the result is a single line we replace the cmd line with it.
-- Otherwise we append the result
+`,r` on a line starting with ':' (or after ':vpe ' anywhere in a line) evaluates the result into the buffer.
 
 [![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
 
