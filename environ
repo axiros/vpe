@@ -1,0 +1,6 @@
+# vi: ft=bash
+function push {
+  git push git@github.com:axiros/vpe.git
+}
+
+echo 'say "push" to push via ssh to gh'

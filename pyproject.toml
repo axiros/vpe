@@ -3,6 +3,7 @@
 # E741	ambiguous-variable-name	
 ignore = ["E501",  "E741"]
 
+
 exclude = [
     ".bzr",
     ".direnv",

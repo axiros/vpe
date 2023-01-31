@@ -312,7 +312,7 @@ def ExecuteSelectedRange():
     ctx.executed_lines.append(
         ctx.L1
     )   # set by the vim plugin -> always emtpy at hotkey press
-    filetype = vim.eval('&filetype')
+    filetype = ctx.filetype = vim.eval('&filetype')
     # os.system(f'notify-send {ctx.L1}')
     src_buf = ctx.src_buf = vim.current.buffer
     nrs = list(range(ctx.L1 - 1, ctx.L2))   # lines start with 1, buffer is a list -> 0
@@ -493,6 +493,7 @@ def ExecuteSelectedRange():
             state = ctx.state
             vim = vim
             cmd = vimcmdr
+            notify = notify
 
         try:
             t0 = time.time()
