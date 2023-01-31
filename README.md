@@ -1,6 +1,7 @@
 # Vim Python Eval
 
 <!--toc:start-->
+
 - [Vim Python Eval](#vim-python-eval)
   - [Usage](#usage)
   - [Features](#features)
@@ -28,7 +29,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-<!--toc:end-->
+  <!--toc:end-->
 
 👓 General statement: _Try use built in mechanics instead of plugins - they are *pretty* powerful:_
 
@@ -328,7 +329,13 @@ This lazy loads the module on first use.
 Set `let g:vpe_reload=1` to enable reloading the module at every invokation.
 State, e.g. evaluated imports, is kept in dict `ctx.state`.
 
-In order to run tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
+In order to run "manual" tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
+
+### Automatic Testing
+
+They require a [pds](https://github.com/AXGKl/pds) sandbox on your system, for test tools support.
+
+Then you can [automate testing](./tests/test_pds.sh) based on a real vi running in tmux.
 
 ## Troubleshooting
 
@@ -379,7 +386,7 @@ If you cannot avoid the monkey path, then try command out the check in nvim.py's
 
 ## Credits, Alternatives, Interesting Links
 
-(neo)vim with python support.
+(neo)vim with python support as a basis for your [PDE](https://www.youtube.com/watch?v=IK_-C0GXfjo)
 
 Inspiration from this: [vim-http-client](https://github.com/aquach/vim-http-client)
 
