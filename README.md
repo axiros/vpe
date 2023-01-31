@@ -52,7 +52,6 @@ Access to vim api & jumps:
 | after open:             | after eval of first line: |
 | ![](./docs/img/pre.png) | ![](./docs/img/post.png)  |
 
-_The example misses a `cmd = vpe.cmd` assignment, see [global-variables](#global-variables)_
 
 The module also offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
 
