@@ -1,14 +1,15 @@
 # Vim Python Eval
 
 <!--toc:start-->
+
 - [Vim Python Eval](#vim-python-eval)
+
   - [Usage](#usage)
   - [Features](#features)
     - [Directives](#directives)
     - [Result Display](#result-display)
     - [Predefined Blocks (Macros)](#predefined-blocks-macros)
     - [Markdown Fenced Blocks](#markdown-fenced-blocks)
-    - [Jump References](#jump-references)
     - [Global Variables](#global-variables)
       - [vpe.vim](#vpevim)
       - [vpe.ctx](#vpectx)
@@ -19,6 +20,7 @@
     - [Add on: Non Python Call Syntax](#add-on-non-python-call-syntax)
       - [Into Split Window](#into-split-window)
       - [Into Current Buffer](#into-current-buffer)
+      - [Jump References](#jump-references)
         - [Examples](#examples)
   - [Installation](#installation)
     - [Requirements](#requirements)
@@ -27,13 +29,18 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-<!--toc:end-->
+  <!--toc:end-->
 
-vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")`.
+👓 General statement: _Try use built in mechanics instead of plugins - they are *pretty* powerful:_
+
+- vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")` or `:!ls -lta /`.
+- Also it can insert files into the buffer quite easily: `:read /etc/hosts`
+- It can also redir command output into the current buffer (`h redir`)
+- (...)
 
 [hot]: https://vim.fandom.com/wiki/Execute_Python_from_within_current_file
 
-This plugin adds
+This plugin offers
 
 - Output handling
   - within a split window (a buffer, incl. undo history) or inline
@@ -51,7 +58,6 @@ Access to vim api & jumps:
 | ----------------------- | ------------------------- |
 | after open:             | after eval of first line: |
 | ![](./docs/img/pre.png) | ![](./docs/img/post.png)  |
-
 
 The module also offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
 
@@ -92,6 +98,8 @@ Supported (usually in comment blocks) are:
 - `:silent`: Skip showing results at all
 - `:single`: Only the line on the cursor is evaluated, even if within a bigger block (see swagger)
 - `:state`: Add the evaluation state to result (shows all assigned variables)
+- `:vpe_on_any`: Occurring at header or footer of files (3 lines), this line will be evaluated if no python under cursor
+- `:vpe_on_err`: Occurring at header or footer of files (10 lines), this line will be evaluated on exceptions
 - `:wrap <code>`: The line is wrapped into code, replacing the string '{}' (see swagger)
 
 ### Result Display
@@ -160,14 +168,6 @@ Fenced code blocks are evaluated in total if you evaluate the first line, starti
 
 Since state is kept also cross buffers, you might e.g. define helper functions for presentations
 centrally, which you can later use in your presentation files.
-
-### Jump References
-
-Evaluating something like `:/foo.bar/` (at the beginning of a line) or `:vpe /foo.bar/`
-(anywhere in a line) tries to find all lines below, (regex)matching `.*foo.bar` and evaluate, as if it was the cursor line
-when hitting the hotkey.
-
-This way you can hide code away, e.g. in presentations but still have it available.
 
 ### Global Variables
 
@@ -254,7 +254,7 @@ line into a split window, named like the command:
 [![asciicast](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG.svg)](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG)
 
 The function is using only built in vim mechanics: Basically `put=execute(getline('.'))` plus a few
-lines of buffername handling.
+lines of buffername handling. No directives evaluated.
 
 Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe)
 
@@ -263,6 +263,21 @@ Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe
 `,r` on a line starting with ':' (or after ':vpe ' anywhere in a line) evaluates the result into the buffer.
 
 [![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
+
+Note: When line starts with `<!--`, we split off closing `-->`
+
+#### Jump References
+
+Evaluating something like `:/foo.bar/` (at the beginning of a line) or `:vpe /foo.bar/`
+(anywhere in a line) tries to find all lines below, (regex)matching `.*foo.bar` and evaluate, as if it was the cursor line
+when hitting the hotkey.
+
+This way you can hide code away, e.g. in presentations but still have it available.
+
+If you say `/gg/foo.bar/` then searching for matches will happen not from the
+line with the jump declaration but from the beginning of the file.
+
+That way you can have a jump ref at the end of the file, possibly with a `:vpe_on_err` or `:vpe_on_any` directive.
 
 ##### Examples
 
@@ -274,6 +289,8 @@ Open this file in vi and hit `,r` on these lines (`P` the usual lua table dump f
     :history
 
 You get the idea.
+
+Note: Directives `:vpe_on_err` or `:vpe_on_any` are understood behind ` # :` seperator (but before a closing `-->`)
 
 ## Installation
 

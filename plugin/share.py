@@ -30,13 +30,16 @@ def vimcmdr(cmd, silent=True, title=True, opt=''):
     vimcmd(f'redir >> {fn}')
     vimcmd(f'silent! {cmd}')
     vimcmd('redir END')
-    s = read_file(fn).strip()
-    if not s:
+    s = read_file(fn)  # .strip()
+    if not s.strip():
         return None if silent else vimcmd(f'lua vim.notify("{cmd}")')
+
     # sometimes cmd is first line (:!date)
-    if cmd in s.split('\n', 1)[0]:
-        s = s.split(cmd, 1)[1].strip()
-    t = '' if not title else cmd if title is True else str(title)
+    while '\n' in s:
+        _, s = s.split('\n', 1)
+        if _.strip() and _ != cmd:
+            break
+    t = '' if not title else title if is_(title, str) else str(cmd)
     with open(fn, 'w') as fd:
         fd.write(f'{t}\n') if t else None
         fd.write(s)

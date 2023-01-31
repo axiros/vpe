@@ -89,8 +89,6 @@ def help():
         v = '# ' + v.lstrip().split('\n', 1)[0].replace('if ', '')
         r += f'{m}: {v}\n'
     r += '\n\nResults you get by assigning "p" or "y" in code blocks.'
-    r += '\n\n# Easter Eggs: Evaluate:'
-    r += '\n- :smile.happy (req. pip emoji-fzf)'
     r += '\n\n# ' + __file__
     return r
 
@@ -299,8 +297,22 @@ def into_src_buffer(sb, lines):
             sb.append(l)
 
 
+def find_directive_in_header_and_footer(buf, ctx, dir, check_lines=10):
+    L = len(buf)
+    rs = range(0, min(L - 1, check_lines))
+    re = range(min(0, L - check_lines), L - 1)
+    for r in rs, re:
+        for l in r:
+            if dir in buf[l] and (l + 1) not in ctx.executed_lines:
+                return l + 1
+
+
 def ExecuteSelectedRange():
     """Called method when hotkey is pressed in vim"""
+    ctx.executed_lines.append(
+        ctx.L1
+    )   # set by the vim plugin -> always emtpy at hotkey press
+    filetype = vim.eval('&filetype')
     # os.system(f'notify-send {ctx.L1}')
     src_buf = ctx.src_buf = vim.current.buffer
     nrs = list(range(ctx.L1 - 1, ctx.L2))   # lines start with 1, buffer is a list -> 0
@@ -321,20 +333,26 @@ def ExecuteSelectedRange():
             line = ':' + line.split(':vpe ', 1)[1]
             # special case: md comment. know no other comment with end sep:
             if line.endswith('-->'):
-                line = line.rsplit('-->', 1)[0]
+                line = line.rsplit('-->', 1)[0].strip()
 
-        if line[0] == ':':
-            # this is a command. replace line if single line, else append
+        if line and line[0] == ':':
+            # this is a (vim) command or jump. Any directives behind ' # :'
+            line = line.split(' # :', 1)[0]
             cmd = line[1:].strip()
             # we support :/foo.bar/ -> jump to the line with 'foo?bar' in it and execute that one (handy in md)
             if cmd and cmd[0] + cmd[-1] == '//':
+                search_start = ctx.L1
+                if '/gg/' in cmd:
+                    cmd = cmd.replace('gg/', '')
+                    search_start = 1
 
                 wind = vim.current.window
                 have = set()
                 match = '.*' + cmd[1:-1]
-                for line in range(nrs[0] + 1, len(src_buf)):
+                for line in range(search_start, len(src_buf)):
                     lstr = src_buf[line]
-                    if re.match(match, lstr):
+                    # avoid hits on the jump declaration itself:
+                    if re.match(match, lstr) and cmd not in lstr:
                         if lstr in have:
                             continue
                         have.add(lstr)
@@ -346,14 +364,18 @@ def ExecuteSelectedRange():
 
             return vimcmdr(cmd, silent=False, title=False)
 
-        # markdown code block?:
-        if line.startswith('```'):
+        # markdown code block?: go to stop fences if on start fences:
+        if line.startswith('```') and not line.strip() == '```':
             deindent = len(orig_line.rstrip()) - len(line)
-            while not src_buf[nrs[-1] + 1].lstrip().startswith('```'):
-                nrs.append(nrs[-1] + 1)
+            try:
+                while not src_buf[nrs[-1] + 1].lstrip().startswith('```'):
+                    nrs.append(nrs[-1] + 1)
+            except Exception:
+                pass
 
         else:
-            v = try_load_file_or_url(line)   # load swagger specs
+            # module? e.g. swagger?
+            v = try_load_file_or_url(line)
             if v:
                 v, post_generate = v
                 clear_all(buffer=src_buf)
@@ -367,10 +389,13 @@ def ExecuteSelectedRange():
                 v = macros[line]
                 into_src_buffer(src_buf, v)
                 clear_buffer = clear_help = True
-            else:
-                # move up:
-                while (src_buf[nrs[0]] + ' ')[0] in {' ', ']', '}', ')'}:
-                    nrs.insert(0, nrs[0] - 1)
+            elif filetype == 'python':
+                # move up in python files:
+                try:
+                    while (src_buf[nrs[0]] + ' ')[0] in {' ', ']', '}', ')'}:
+                        nrs.insert(0, nrs[0] - 1)
+                except Exception:
+                    pass
                 nrs = [nrs[0]]
 
     # if there is just one selected, we now take the whole block, i.e. move down:
@@ -396,7 +421,13 @@ def ExecuteSelectedRange():
         elif line == ':doc':
             docs.insert(0, l1)
         l1 = line
-
+    pyblock = [i.strip() for i in block]
+    pyblock = [i for i in pyblock if i and not i[0] == '#']
+    if not pyblock:
+        on_any = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 3)
+        if on_any:
+            ctx.L1 = ctx.L2 = on_any
+            return ExecuteSelectedRange()
     block = '\n'.join(block)
     state = ctx.state
     ctx.state['always'] = ctx.state.get('always', {})
@@ -446,11 +477,9 @@ def ExecuteSelectedRange():
     if not state:
         state.update(globals())
     res_buf = None
-    if not silent:
-        if not here:
-            res_buf: list = add_or_switch_to_window('results.py', remember_cur=True)
-            if clear_buffer or state.get('autodoc'):
-                clear_all(buffer=res_buf)
+    # if not silent:
+    #     if not here:
+
     if show_help:
         ress = help()
     elif clear_help:
@@ -477,6 +506,14 @@ def ExecuteSelectedRange():
         except Exception as ex:
             silent = False
             exc_type, exc_value, exc_tb = sys.exc_info()
+            l1 = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_err', 10)
+            if not l1:
+                l1 = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 3)
+            if l1:
+                vim.current.buffer = src_buf
+                ctx.L1 = ctx.L2 = l1
+                return ExecuteSelectedRange()
+
             # tb = traceback.TracebackException(exc_type, exc_value, exc_tb)
             state['p'] = {
                 'Python Evaluation Error': [
@@ -493,6 +530,10 @@ def ExecuteSelectedRange():
 
     if not silent:
         if not here:
+
+            res_buf: list = add_or_switch_to_window('results.py', remember_cur=True)
+            if clear_buffer or state.get('autodoc'):
+                clear_all(buffer=res_buf)
             [res_buf.append(l) for l in docs]
             docs.clear()
 

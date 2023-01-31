@@ -76,6 +76,6 @@ vpe.cmd('edit mappings.lua', title='')
 ```
 
 <!--
-:vpe /gg/@parser/ # :vpe_on_error
+:vpe /gg/@parser/ # :vpe_on_any
 vi: fdl=1 fen
 -->

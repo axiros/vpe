@@ -52,7 +52,7 @@ if int(dbg):
 
 vpe.ctx.L1 = int(vim.eval("a:l1"))
 vpe.ctx.L2 = int(vim.eval("a:l2"))
-
+vpe.ctx.executed_lines = []
 getattr(vpe, vim.eval("a:func_name"))()
 EOL
 endfunction
