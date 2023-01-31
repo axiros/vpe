@@ -1,9 +1,7 @@
 # Vim Python Eval
 
 <!--toc:start-->
-
 - [Vim Python Eval](#vim-python-eval)
-
   - [Usage](#usage)
   - [Features](#features)
     - [Directives](#directives)
@@ -14,6 +12,7 @@
       - [vpe.vim](#vpevim)
       - [vpe.ctx](#vpectx)
       - [vpe.cmd](#vpecmd)
+      - [vpe.fnd](#vpefnd)
     - [Modules](#modules)
       - [Builtin Modules](#builtin-modules)
         - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
@@ -29,7 +28,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-  <!--toc:end-->
+<!--toc:end-->
 
 👓 General statement: _Try use built in mechanics instead of plugins - they are *pretty* powerful:_
 
@@ -199,6 +198,16 @@ vpe(<vim cmd>, silent=True, title=<False, True, string>, opt='')
 
 Executes vim command and redirects to a file. The file is then ALWAYS redirected to the
 current buffer, relative to current line. `opt` forwarded to the read as opt (`:h read`).
+
+#### vpe.fnd
+
+Convenience function to deliver dir and full path of source buffer:
+
+    vpe.fnd().here  / vpe.fnd().fn
+
+❗If you `os.chdir`, be aware that this happens in a python subprocess of vi. Vi itself does not change dir.
+
+=> Use sth like this in vim.cmd: `vpe.cmd(f'edit {os.getcwd()}/myfile')`
 
 ### Modules
 

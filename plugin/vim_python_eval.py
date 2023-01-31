@@ -307,14 +307,28 @@ def find_directive_in_header_and_footer(buf, ctx, dir, check_lines=10):
                 return l + 1
 
 
+def fn_dir_of_file():
+    fnf = vim.eval("expand('%:p')")
+    fnf = os.path.abspath(fnf)
+
+    class here:
+        fn = fnf
+        here = os.path.dirname(fnf)
+
+    return here
+
+
 def ExecuteSelectedRange():
     """Called method when hotkey is pressed in vim"""
-    ctx.executed_lines.append(
-        ctx.L1
-    )   # set by the vim plugin -> always emtpy at hotkey press
-    filetype = ctx.filetype = vim.eval('&filetype')
-    # os.system(f'notify-send {ctx.L1}')
+    # set by the vim plugin -> always emtpy at hotkey press
+    ctx.executed_lines.append(ctx.L1)
     src_buf = ctx.src_buf = vim.current.buffer
+    on_any = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 3)
+    if on_any:
+        ctx.L1 = ctx.L2 = on_any
+        return ExecuteSelectedRange()
+
+    filetype = ctx.filetype = vim.eval('&filetype')
     nrs = list(range(ctx.L1 - 1, ctx.L2))   # lines start with 1, buffer is a list -> 0
     # check if we are within a block and go up:
     # we do this only if there is no visual range selected
@@ -421,13 +435,6 @@ def ExecuteSelectedRange():
         elif line == ':doc':
             docs.insert(0, l1)
         l1 = line
-    pyblock = [i.strip() for i in block]
-    pyblock = [i for i in pyblock if i and not i[0] == '#']
-    if not pyblock:
-        on_any = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 3)
-        if on_any:
-            ctx.L1 = ctx.L2 = on_any
-            return ExecuteSelectedRange()
     block = '\n'.join(block)
     state = ctx.state
     ctx.state['always'] = ctx.state.get('always', {})
@@ -494,6 +501,7 @@ def ExecuteSelectedRange():
             vim = vim
             cmd = vimcmdr
             notify = notify
+            fnd = fn_dir_of_file
 
         try:
             t0 = time.time()
@@ -508,8 +516,6 @@ def ExecuteSelectedRange():
             silent = False
             exc_type, exc_value, exc_tb = sys.exc_info()
             l1 = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_err', 10)
-            if not l1:
-                l1 = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 3)
             if l1:
                 vim.current.buffer = src_buf
                 ctx.L1 = ctx.L2 = l1
