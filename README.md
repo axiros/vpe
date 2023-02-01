@@ -173,6 +173,12 @@ centrally, which you can later use in your presentation files.
 
 Under the namespace class `vpe` the following variables are always available at python execution time:
 
+👓 Eval this to access them:
+
+```python
+p = dir(vpe)
+```
+
 #### vpe.vim
 
 Access to the pynvim API. Alternative: `import vim`.
@@ -209,6 +215,17 @@ Convenience function to deliver dir and full path of source buffer:
 ❗If you `os.chdir`, be aware that this happens in a python subprocess of vi. Vi itself does not change dir.
 
 => Use sth like this in vim.cmd: `vpe.cmd(f'edit {os.getcwd()}/myfile')`
+
+#### vpe.notify
+
+Calls the notify-send utility.
+If you use growl or other tools, symlink or wrap them e.g. at `/usr/local/bin/notify-send` 
+
+```python
+vpe.notify('title', 'optional msg') # calls notify-send "title" "o. msg"
+```
+
+
 
 ### Modules
 
