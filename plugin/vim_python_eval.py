@@ -297,13 +297,13 @@ def into_src_buffer(sb, lines):
             sb.append(l)
 
 
-def find_directive_in_header_and_footer(buf, ctx, dir, check_lines=10):
+def find_directive_in_header_and_footer(buf, ctx, directive, check_lines=10):
     L = len(buf)
     rs = range(0, min(L - 1, check_lines))
-    re = range(min(0, L - check_lines), L - 1)
+    re = range(max(0, L - check_lines), L - 1)
     for r in rs, re:
         for l in r:
-            if dir in buf[l] and (l + 1) not in ctx.executed_lines:
+            if directive in buf[l] and (l + 1) not in ctx.executed_lines:
                 return l + 1
 
 
