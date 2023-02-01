@@ -112,7 +112,7 @@ def log(s, **kw):
 
 def notify(title='', msg=''):
     title = title or 'VPE'
-    os.system(f'notify-send "{title}" {msg}')
+    os.system(f'notify-send "{title}" "{msg}"')
 
 
 # Avoiding the infomous python indent bug for Treesitter...
