@@ -299,12 +299,17 @@ def into_src_buffer(sb, lines):
 
 def find_directive_in_header_and_footer(buf, ctx, directive, check_lines=10):
     L = len(buf)
-    rs = range(0, min(L - 1, check_lines))
-    re = range(max(0, L - check_lines), L - 1)
-    for r in rs, re:
-        for l in r:
+    if L < 5:
+        return
+    for off, l in [[1, 0], [-1, L - 1]]:
+        checked = 0
+        while checked < check_lines and l > -1 and l < L:
             if directive in buf[l] and (l + 1) not in ctx.executed_lines:
                 return l + 1
+            l += off
+            if not buf[l].strip():
+                continue
+            checked += 1
 
 
 def fn_dir_of_file():
@@ -321,8 +326,12 @@ def fn_dir_of_file():
 def ExecuteSelectedRange():
     """Called method when hotkey is pressed in vim"""
     # set by the vim plugin -> always emtpy at hotkey press
-    ctx.executed_lines.append(ctx.L1)
     src_buf = ctx.src_buf = vim.current.buffer
+    if not ctx.executed_lines:
+        ctx.original_line = ctx.L1
+        # might be interesting in recursive call chains
+        ctx.original_line_val = src_buf[ctx.L1 - 1]
+    ctx.executed_lines.append(ctx.L1)
     on_any = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 3)
     if on_any:
         ctx.L1 = ctx.L2 = on_any
@@ -435,7 +444,7 @@ def ExecuteSelectedRange():
         elif line == ':doc':
             docs.insert(0, l1)
         l1 = line
-    block = '\n'.join(block)
+    block = '\n'.join(block).split(':stop', 1)[0]
     state = ctx.state
     ctx.state['always'] = ctx.state.get('always', {})
 
@@ -484,9 +493,6 @@ def ExecuteSelectedRange():
     if not state:
         state.update(globals())
     res_buf = None
-    # if not silent:
-    #     if not here:
-
     if show_help:
         ress = help()
     elif clear_help:
@@ -502,6 +508,7 @@ def ExecuteSelectedRange():
             cmd = vimcmdr
             notify = notify
             fnd = fn_dir_of_file
+            hlp = hlp
 
         try:
             t0 = time.time()
@@ -526,9 +533,10 @@ def ExecuteSelectedRange():
                 'Python Evaluation Error': [
                     type(ex),
                     str(ex),
-                    traceback.format_tb(exc_tb),
+                    [l.split(',') for l in traceback.format_tb(exc_tb)],
                 ]
             }
+
         ress = check_print_wanted(state, add_state)
         # [b.append(l) for l in block.splitlines()]
     if doc_call or state.get('autodoc'):
@@ -560,6 +568,21 @@ def ExecuteSelectedRange():
         # vimcmd('delete') if clear_buffer else 0
     if post_generate:
         post_generate(src_buf, res_buf)
+
+
+class hlp:
+    def insert_between(begin, end, txt):
+        """Inserts txt into the buffer, between begin and end, no matter what's in between (also multiline)"""
+
+        for sr in '\\;\\\\', '/;\\/':
+            txt = txt.replace(*sr.split(';'))
+        txt = txt.replace('\n', '\r')
+
+        repl = f'{begin}\(\_.*\){end}'
+        vim.command(f'%s/{repl}/{begin}{txt}{end}/')
+
+    def insert_between_html_cmt(begin, txt, end):
+        """Inserts txt into the buffer, between begin and end, no matter what's in between (also multiline)"""
 
 
 if __name__ == '__main__':

@@ -98,6 +98,7 @@ Supported (usually in comment blocks) are:
 - `:silent`: Skip showing results at all
 - `:single`: Only the line on the cursor is evaluated, even if within a bigger block (see swagger)
 - `:state`: Add the evaluation state to result (shows all assigned variables)
+- `:stop`: Evaluate only to this point in a block
 - `:vpe_on_any`: Occurring at header or footer of files (3 lines), this line will be evaluated if no python under cursor
 - `:vpe_on_err`: Occurring at header or footer of files (10 lines), this line will be evaluated on exceptions
 - `:wrap <code>`: The line is wrapped into code, replacing the string '{}' (see swagger)
@@ -219,13 +220,11 @@ Convenience function to deliver dir and full path of source buffer:
 #### vpe.notify
 
 Calls the notify-send utility.
-If you use growl or other tools, symlink or wrap them e.g. at `/usr/local/bin/notify-send` 
+If you use growl or other tools, symlink or wrap them e.g. at `/usr/local/bin/notify-send`
 
 ```python
 vpe.notify('title', 'optional msg') # calls notify-send "title" "o. msg"
 ```
-
-
 
 ### Modules
 
