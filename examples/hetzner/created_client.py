@@ -5,12 +5,14 @@
 Hetzner Cloud API
 swagger openapi.json
 
-contact:
-  url: https://docs.hetzner.cloud/
-description: Copied from the official API documentation for the Public Hetzner Cloud.
-openapi: 3.0.3
-version: 4ea4924-dirty
-
+{
+    "description": "Copied from the official API documentation for the Public Hetzner Cloud.",
+    "contact": {
+        "url": "https://docs.hetzner.cloud/"
+    },
+    "version": "4ea4924-dirty",
+    "openapi": "3.0.3"
+}
 '''
 result = 2
 str_dflt = ''
@@ -5580,7 +5582,7 @@ class volumes___id___actions__resize:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'raise', 'except', 'for', 'import', 'while', 'continue', 'not', 'async', 'if', 'from'}
+keyw = {'for', 'not', 'async', 'import', 'if', 'from', 'continue', 'except', 'while', 'raise'}
 
 class Tools:
     @staticmethod

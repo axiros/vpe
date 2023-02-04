@@ -5,18 +5,19 @@
 Swagger Petstore
 swagger openapi.json
 
-contact:
-  email: apiteam@swagger.io
-description: 'This is a sample server Petstore server.  You can find out more about
-  Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For
-  this sample, you can use the api key `special-key` to test the authorization filters.'
-license:
-  name: Apache 2.0
-  url: http://www.apache.org/licenses/LICENSE-2.0.html
-openapi: '?'
-termsOfService: http://swagger.io/terms/
-version: 1.0.6
-
+{
+    "description": "This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+    "version": "1.0.6",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+        "email": "apiteam@swagger.io"
+    },
+    "license": {
+        "name": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "openapi": "?"
+}
 '''
 result = 2
 str_dflt = ''
@@ -361,7 +362,7 @@ class user:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'not', 'for', 'from', 'async', 'if', 'except', 'raise', 'import', 'while', 'continue'}
+keyw = {'not', 'raise', 'if', 'async', 'for', 'while', 'continue', 'from', 'except', 'import'}
 
 class Tools:
     @staticmethod

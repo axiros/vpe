@@ -481,7 +481,7 @@ class users___user_id_:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'for', 'from', 'not', 'import', 'async', 'except', 'if', 'continue', 'raise', 'while'}
+keyw = {'raise', 'async', 'continue', 'import', 'if', 'not', 'except', 'while', 'from', 'for'}
 
 class Tools:
     @staticmethod

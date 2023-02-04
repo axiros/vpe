@@ -5,33 +5,19 @@
 Swagger Petstore - OpenAPI 3.0
 swagger openapi.json
 
-contact:
-  email: apiteam@swagger.io
-description: 'This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You
-  can find out more about
-
-  Swagger at [http://swagger.io](http://swagger.io). In the third iteration of the
-  pet store, we''ve switched to the design first approach!
-
-  You can now help us improve the API whether it''s by making changes to the definition
-  itself or to the code.
-
-  That way, with time, we can improve the API in general, and expose some of the new
-  features in OAS3.
-
-
-  Some useful links:
-
-  - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
-
-  - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)'
-license:
-  name: Apache 2.0
-  url: http://www.apache.org/licenses/LICENSE-2.0.html
-openapi: 3.0.2
-termsOfService: http://swagger.io/terms/
-version: 1.0.17
-
+{
+    "description": "This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about\nSwagger at [http://swagger.io](http://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!\nYou can now help us improve the API whether it's by making changes to the definition itself or to the code.\nThat way, with time, we can improve the API in general, and expose some of the new features in OAS3.\n\nSome useful links:\n- [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)\n- [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+        "email": "apiteam@swagger.io"
+    },
+    "license": {
+        "name": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.17",
+    "openapi": "3.0.2"
+}
 '''
 result = 2
 str_dflt = ''
@@ -377,7 +363,7 @@ class user___username_:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'from', 'not', 'except', 'async', 'continue', 'raise', 'import', 'for', 'while', 'if'}
+keyw = {'import', 'async', 'for', 'if', 'while', 'continue', 'not', 'except', 'from', 'raise'}
 
 class Tools:
     @staticmethod

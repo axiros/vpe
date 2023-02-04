@@ -128,3 +128,8 @@ dmypy.json
 .pyre/
 
 examples/k8s/client_swagger.py
+
+
+examples/test_res/client_openapi.py
+examples/test_res/openapi.json
+examples/test_res/results.json
