@@ -14,13 +14,19 @@ import os
 import sys
 import re
 
+uid = os.environ['USER']
+
 here = os.path.abspath(os.path.dirname(__file__))
 if here not in sys.path:
     sys.path.append(here)
-
 from share import log, read_file, ctx, is_, debug, notify   # noqa
 from share import out, lib, BRKT, vim, vimcmd   # noqa
 from share import vimcmdr   # noqa
+
+d_vpe = f'/tmp/vpe.{uid}'
+if d_vpe not in sys.path:
+    sys.path.insert(0, d_vpe)
+    os.makedirs(d_vpe, exist_ok=True)
 
 ctx.mods = [
     i.rsplit('.py', 1)[0] for i in os.listdir(here + '/modules') if i.endswith('.py')
@@ -260,11 +266,12 @@ def to_y(o):
 formatters['y'] = to_y
 
 
-def try_load_file_or_url(url):
+def try_module(url):
     # Currently only about swagger defs:
     mod = url.split(' ')[0]
     if mod not in ctx.mods:
         return
+    url = url.rsplit('#', 1)[0]
 
     # this is a conventional feat: enrich the state beforehand:
     # see e.g. examples hetzner
@@ -274,14 +281,14 @@ def try_load_file_or_url(url):
         exec(s, m, m)
         ctx.state.update(m)
     url = url.split(mod, 1)[1].strip()
-    mod = ctx.mod = import_module(f'modules.{mod}')
     notify(mod)
+    mod = ctx.mod = import_module(f'modules.{mod}')
     h = {'http', 'https'}
     s = read_file(url)
     if not s and url.split(':', 1)[0] in h:   # and url.endswith('.json'):
         s = lib('requests').get(url).text
-
-    return mod.try_load(s, url=url)
+    r = mod.try_load(s, url=url)
+    return r
 
 
 def into_src_buffer(sb, lines):
@@ -309,6 +316,8 @@ def find_directive_in_header_and_footer(buf, ctx, directive, check_lines=10):
             if directive in buf[l] and (l + 1) not in ctx.executed_lines:
                 return l + 1
             l += off
+            if l < 0 or l > L - 1:
+                break
             if not buf[l].strip():
                 continue
             checked += 1
@@ -334,7 +343,8 @@ def ExecuteSelectedRange():
         # might be interesting in recursive call chains
         ctx.original_line_val = src_buf[ctx.L1 - 1]
     ctx.executed_lines.append(ctx.L1)
-    on_any = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 3)
+    on_any = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 10)
+
     if on_any:
         ctx.L1 = ctx.L2 = on_any
         return ExecuteSelectedRange()
@@ -351,6 +361,7 @@ def ExecuteSelectedRange():
     post_generate = False
     # just hotkey on a single line?
     deindent = 0
+    res_spec = None
     if len(nrs) == 1:
         # in general, if not special handling is wanted we move up until the block starts, then go down:
         line = src_buf[nrs[0]].strip()
@@ -400,28 +411,25 @@ def ExecuteSelectedRange():
 
         else:
             # module? e.g. swagger?
-            v = try_load_file_or_url(line)
-            if v:
-                v, post_generate = v
-                clear_all(buffer=src_buf)
-                into_src_buffer(src_buf, v)
-                clear_buffer = clear_help = True
-            elif line == '':
-                show_help = clear_buffer = True
-            elif line in macros:
-                vimcmd('delete')
-                vimcmd('delete')
-                v = macros[line]
-                into_src_buffer(src_buf, v)
-                clear_buffer = clear_help = True
-            elif filetype == 'python':
-                # move up in python files:
-                try:
-                    while (src_buf[nrs[0]] + ' ')[0] in {' ', ']', '}', ')'}:
-                        nrs.insert(0, nrs[0] - 1)
-                except Exception:
-                    pass
-                nrs = [nrs[0]]
+            res_spec = try_module(line)
+            if not res_spec:
+                if line == '':
+                    show_help = clear_buffer = True
+                elif line in macros:
+                    # small chhunks of python. modules are bigger, that's the diff
+                    vimcmd('delete')
+                    vimcmd('delete')
+                    v = macros[line]
+                    into_src_buffer(src_buf, v)
+                    clear_buffer = clear_help = True
+                elif filetype == 'python':
+                    # move up in python files:
+                    try:
+                        while (src_buf[nrs[0]] + ' ')[0] in {' ', ']', '}', ')'}:
+                            nrs.insert(0, nrs[0] - 1)
+                    except Exception:
+                        pass
+                    nrs = [nrs[0]]
 
     # if there is just one selected, we now take the whole block, i.e. move down:
     if len(nrs) == 1:
@@ -458,9 +466,10 @@ def ExecuteSelectedRange():
     if ':always' in block:
         always = True
 
-    def is_set(key, alw=always, block=block):
+    def is_set(key, alw=always, block=block, mod_res=res_spec):
+        mod_res = {} if not isinstance(mod_res, dict) else mod_res
         a = ctx.state['always']
-        if key in a or key in block:
+        if key in a or key in block or key in mod_res:
             if alw:
                 a[key] = True
             return True
@@ -494,58 +503,77 @@ def ExecuteSelectedRange():
     dt = ''
     if not state:
         state.update(globals())
+
     res_buf = None
     if show_help:
-        ress = help()
+        res_spec = help()
     elif clear_help:
-        ress = ''
+        res_spec = {'lines': ''}
     else:
+        # no mod res?
+        if not res_spec:
 
-        class vpe:
-            """access to us from execed code"""
+            class vpe:
+                """access to us from execed code"""
 
-            on_any = ctx.on_any
-            ctx = ctx
-            state = ctx.state
-            vim = vim
-            cmd = vimcmdr
-            notify = notify
-            fnd = fn_dir_of_file
-            hlp = hlp
+                on_any = ctx.on_any
+                ctx = ctx
+                state = ctx.state
+                vim = vim
+                cmd = vimcmdr
+                notify = notify
+                fnd = fn_dir_of_file
+                hlp = hlp
 
-        try:
-            t0 = time.time()
-            state['vpe'] = vpe
-            exec(block, state, state)
-            state.pop('vpe')
-            # postgen from assigns i guess not needed, he can directly run vim commands
-            # but swagger  does deliver a post gen, which IS needed
-            post_generate = state.get('post_generate', post_generate)
-            dt = round(time.time() - t0, 2)
-            ctx.on_any = vpe.on_any
-        except Exception as ex:
-            silent = False
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            l1 = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_err', 10)
-            if l1:
-                vim.current.buffer = src_buf
-                ctx.L1 = ctx.L2 = l1
-                return ExecuteSelectedRange()
+            try:
+                t0 = time.time()
+                state['vpe'] = vpe
+                # with open(f'{d_vpe}/vpe_block.py', 'w') as fd:
+                #     fd.write(block)
+                #
+                # def run(s=state):
+                #     locals().update(state)
+                #     globals().update(state)
+                #     import vpe_block
+                #
+                # run()
+                exec(block, state, state)
+                state.pop('vpe')
+                # postgen from assigns i guess not needed, he can directly run vim commands
+                # but swagger  does deliver a post gen, which IS needed
+                post_generate = state.get('post_generate', post_generate)
+                dt = round(time.time() - t0, 2)
+                ctx.on_any = vpe.on_any
+            except Exception as ex:
+                silent = False
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                l1 = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_err', 10)
+                if l1:
+                    vim.current.buffer = src_buf
+                    ctx.L1 = ctx.L2 = l1
+                    return ExecuteSelectedRange()
 
-            # tb = traceback.TracebackException(exc_type, exc_value, exc_tb)
-            state['p'] = {
-                'Python Evaluation Error': [
-                    type(ex),
-                    str(ex),
-                    [l.split(',') for l in traceback.format_tb(exc_tb)],
-                ]
-            }
+                # tb = traceback.TracebackException(exc_type, exc_value, exc_tb)
+                state['p'] = {
+                    'Python Evaluation Error': {
+                        'block': '\n'.join(
+                            [f'{l.rjust(4)}{block[l]}' for l in range(999)]
+                        ),
+                        'ex': [type(ex), str(ex)],
+                        'tb': [l.split(',') for l in traceback.format_tb(exc_tb)],
+                    }
+                }
 
-        ress = check_print_wanted(state, add_state)
+            res_spec = check_print_wanted(state, add_state)  # res string
         # [b.append(l) for l in block.splitlines()]
     if doc_call or state.get('autodoc'):
         dt = f'[{dt}s]' if dt else ''
         [docs.insert(0, f'# {i} {dt}') for i in block.splitlines()]
+
+    res_spec = res_spec or {'lines': ''}
+    if isinstance(res_spec, str):
+        res_spec = {'lines': res_spec, 'post_generate': post_generate}
+    lines = res_spec['lines']
 
     if not silent:
         if not here:
@@ -555,23 +583,24 @@ def ExecuteSelectedRange():
                 clear_all(buffer=res_buf)
             [res_buf.append(l) for l in docs]
             docs.clear()
-
-            if ress:
-                [res_buf.append(l) for l in ress.splitlines()]
+            if lines:
+                [res_buf.append(l) for l in lines.splitlines()]
             vimcmd(':lua vim.notify=print')   # lsp errs all the time on fails
             vimcmd(':silent lua vim.lsp.buf.format()')
             vimcmd(f'{len(res_buf)}j')
             res_buf = add_or_switch_to_window('previous')
-        elif ress:
+        elif lines:
             fn = '/tmp/vi.here.%s' % os.environ['USER']
             with open(fn, 'w') as fd:
-                fd.write(str(ress))
+                fd.write(lines)
             if ctx.L1 == len(src_buf):
                 src_buf.append('')
             vimcmd(f'.+1read {fn}')
         # vimcmd('delete') if clear_buffer else 0
-    if post_generate:
-        post_generate(src_buf, res_buf)
+
+    p = res_spec.get('post_generate')
+    if p:
+        p(src_buf, res_buf)
 
 
 class hlp:
@@ -590,15 +619,15 @@ class hlp:
 
 
 if __name__ == '__main__':
-    # we are callable directly as well, executing what's supported in try_load_file_or_url
+    # we are callable directly as well, executing what's supported in try_module
     debug, a = True, sys.argv
     if len(a) < 3:
         print(f'Call me with <module name> <file or url>. Modules: {ctx.mods}')
         sys.exit(1)
-    res = try_load_file_or_url(' '.join(sys.argv[1:]))
+    res = try_module(' '.join(sys.argv[1:]))
 
     if not sys.stdout.isatty():
-        sys.exit(print(res[0]))
+        sys.exit(print(res['lines']))
     f = getattr(ctx.mod, 'cli_post', 0)
     if f:
         f(res)

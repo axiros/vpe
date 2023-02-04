@@ -430,7 +430,7 @@ class swagger:
         spec['title'] = i.pop('title', 'Swagger API Tester')
         if not any([j for j in i.values() if is_(j, (dict, list))]):
             return json.dumps(list(i.values()))[1:-1].replace('"', '')
-        return lib('yaml').safe_dump(i)
+        return lib('yaml').safe_dump(i) if lib('yaml') else json.dumps(i, indent=4)
 
     @staticmethod
     def build_details_cls(ind, pre=''):
@@ -661,9 +661,21 @@ class swagger:
         r = r.replace('_TOC_', sep.join(toc))
         r = r.replace('_PTHPARAMS_', '\n'.join(P).replace('\nR.', '\n'))
         r += tools_cls
-        # r += '\nTools.send(pet___petId_.get)'
 
-        return r, swagger.post_generate
+        # # r += '\nTools.send(pet___petId_.get)'
+        #     v = try_module(line)
+        #     if v:
+        #         v, post_generate = v
+        #         clear_all(buffer=src_buf)
+        #         into_src_buffer(src_buf, v)
+        #         clear_buffer = clear_help = True
+
+        return {
+            'lines': r,
+            'post_generate': swagger.post_generate,
+            ':clear': True,
+            ':here': True,
+        }
 
     @staticmethod
     def clean_dictkeys(d):
@@ -707,20 +719,20 @@ try_load = swagger.try_load
 
 
 def cli_post(res):
-    if not res or not 'host' in str(res[0]):
+    if not res or not 'host' in str(res['lines']):
         sys.exit(print('Client was not generated - error') or 1)
-    r=res[0]
-    mod=sys.argv[1]
+    r = res['lines']
+    mod = sys.argv[1]
     if not mod in ctx.mods:
         sys.exit(print(f'no module {mod}') or 1)
-    fn=sys.argv[2].rsplit('/', 1)[-1]
+    fn = sys.argv[2].rsplit('/', 1)[-1]
     if not sys.stdout.isatty():
         sys.exit(print(r))
     for s in 'json', 'yaml', 'yml':
-        fn=fn.replace(f'.{s}', '')
-    fn=f'client_{fn}'   # I like to tab complete...
+        fn = fn.replace(f'.{s}', '')
+    fn = f'client_{fn}'   # I like to tab complete...
     fn += '.py'
-    s="""
+    s = """
         if __name__ == '__main__':
             import sys, os
             match = '' if len(sys.argv) == 1 else sys.argv[1]
@@ -735,7 +747,7 @@ def cli_post(res):
                         if y not in {'y', 'a'}: continue
                     print(json.dumps(Tools.send(m), indent=4, sort_keys=True))
     """
-    r='#!/usr/bin/env python\n' + r
+    r = '#!/usr/bin/env python\n' + r
     r += '\n' + deindent(s)
     open(fn, 'w').write(r)
     os.system(f'chmod +x "{fn}"')

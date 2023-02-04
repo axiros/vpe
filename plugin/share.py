@@ -87,6 +87,9 @@ def read_file(fn):
     return s
 
 
+printed = set()
+
+
 def lib(libname, t={}):
     """we don't always require all libs"""
     c = ctx.state['_loaded_libs']
@@ -101,7 +104,10 @@ def lib(libname, t={}):
         except Exception:
             pass
     s = '\n' + '-' * 40 + '\n'
-    print(f'{s}Please: pip install {libname}{s}\n')
+    msg = f'{s}Please: pip install {libname}{s}\n'
+    if not msg in printed:
+        print(msg, file=sys.stderr)
+        printed.add(msg)
 
 
 def log(s, **kw):
