@@ -1442,7 +1442,7 @@ class ping:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'except', 'import', 'async', 'for', 'raise', 'continue', 'from', 'if', 'not', 'while'}
+keyw = {'if', 'for', 'while', 'continue', 'not', 'from', 'async', 'import', 'raise', 'except'}
 
 class Tools:
     @staticmethod

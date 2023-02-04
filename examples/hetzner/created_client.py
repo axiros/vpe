@@ -5580,7 +5580,7 @@ class volumes___id___actions__resize:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'if', 'import', 'async', 'continue', 'from', 'for', 'except', 'raise', 'while', 'not'}
+keyw = {'raise', 'except', 'for', 'import', 'while', 'continue', 'not', 'async', 'if', 'from'}
 
 class Tools:
     @staticmethod

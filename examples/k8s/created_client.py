@@ -27226,7 +27226,7 @@ class version__:
 
 # ─────────────── Tools ─────────────────────
 import requests, json, functools, inspect, os
-keyw = {'if', 'from', 'not', 'continue', 'raise', 'import', 'async', 'while', 'except', 'for'}
+keyw = {'async', 'not', 'while', 'if', 'continue', 'for', 'raise', 'import', 'from', 'except'}
 
 class Tools:
     @staticmethod
