@@ -67,6 +67,7 @@ class ctx:
     Also transfers state over debug module reloads.
     """
 
+    on_any = True   # vpe_on_any support enabled
     cur_cls: list = []
     cur_buffer = None
     prev_buffer = None

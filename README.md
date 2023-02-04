@@ -14,6 +14,7 @@
       - [vpe.ctx](#vpectx)
       - [vpe.cmd](#vpecmd)
       - [vpe.fnd](#vpefnd)
+      - [vpe.notify](#vpenotify)
     - [Modules](#modules)
       - [Builtin Modules](#builtin-modules)
         - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
@@ -21,15 +22,20 @@
       - [Into Split Window](#into-split-window)
       - [Into Current Buffer](#into-current-buffer)
       - [Jump References](#jump-references)
+        - [Sample Use Cases](#sample-use-cases)
+        - [Example](#example)
         - [Examples](#examples)
   - [Installation](#installation)
     - [Requirements](#requirements)
   - [Developing](#developing)
+    - [Automatic Testing](#automatic-testing)
   - [Troubleshooting](#troubleshooting)
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
   <!--toc:end-->
+
+Documents which can "do" stuff may come handy sometimes - this is python centric approach.
 
 👓 General statement: _Try use built in mechanics instead of plugins - they are *pretty* powerful:_
 
@@ -44,11 +50,11 @@ This plugin offers
 
 - Output handling
   - within a split window (a buffer, incl. undo history) or inline
-  - as valid python (lsp support, e.g. for re-formatting)
-- Support for various [evaluation and output control directives](#directives)
+  - as valid python (i.e. with lsp support, e.g. for re-formatting)
+- Various [evaluation and output control directives](#directives)
 - Loadable predefined python code blocks
 - Hot reload of this plugin's python module code, w/o state loss
-- More convience regarding evaluation of lines within code blocks
+- Some convience regarding evaluation of lines within code blocks
 
 ![](./docs/img/demo.gif)
 
@@ -59,7 +65,7 @@ Access to vim api & jumps:
 | after open:             | after eval of first line: |
 | ![](./docs/img/pre.png) | ![](./docs/img/post.png)  |
 
-The module also offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
+Also, the module offers [built in support](./docs/swagger.md) for interaction with Swagger/OpenAPI APIs
 
 ![](./docs/img/swagger.png)
 
@@ -305,6 +311,27 @@ line with the jump declaration but from the beginning of the file.
 
 That way you can have a jump ref at the end of the file, possibly with a `:vpe_on_err` or `:vpe_on_any` directive.
 
+##### Sample Use Cases
+
+##### Example
+
+```
+ # My Live Markdown Doc
+ ...
+ func1()
+
+ <!-- Code defined below, not visible for the viewer
+ `` python @prepare-presentation
+ # python code, executed when ,r is pressed *anywhere* (through vpe_on_any below)>
+ vpe.on_any = False # disable for subsequent ,r in this whole vi session (until enabled again)
+ func1 = lambda: do_something_useful() # will happen when u hit ,r on the line with func1 above
+ ``
+
+ :vpe /gg/@prepare-presentation/ # :vpe_on_any
+ vi: fdl=1 fen
+ end of document -->
+```
+
 ##### Examples
 
 Open this file in vi and hit `,r` on these lines (`P` the usual lua table dump function):
@@ -402,14 +429,16 @@ If you cannot avoid the monkey path, then try command out the check in nvim.py's
 
 ## Credits, Alternatives, Interesting Links
 
-(neo)vim with python support as a basis for your [PDE](https://www.youtube.com/watch?v=IK_-C0GXfjo)
+- (neo)vim with python support as a basis for your [PDE](https://www.youtube.com/watch?v=IK_-C0GXfjo)
 
-Inspiration from this: [vim-http-client](https://github.com/aquach/vim-http-client)
+- Inspiration for this: [vim-http-client](https://github.com/aquach/vim-http-client)
 
-Powerful alternative: [jupyter-vim](https://github.com/jupyter-vim/jupyter-vim)
+- Powerful alternative: [jupyter-vim](https://github.com/jupyter-vim/jupyter-vim)
 
-OpenAPI:
+- Godmode alternative (as always): [Emacs OrgMode + literate programming](https://www.offerzen.com/blog/literate-programming-empower-your-writing-with-emacs-org-mode)
 
-- Tools: https://openapi.tools/
-- Generation UI, with import function: https://www.apibldr.com/
-- Their default gen tool: https://github.com/OpenAPITools/openapi-generator
+- OpenAPI:
+
+  - Tools: https://openapi.tools/
+  - Generation UI, with import function: https://www.apibldr.com/
+  - Their default gen tool: https://github.com/OpenAPITools/openapi-generator

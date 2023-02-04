@@ -298,6 +298,8 @@ def into_src_buffer(sb, lines):
 
 
 def find_directive_in_header_and_footer(buf, ctx, directive, check_lines=10):
+    if not ctx.on_any:
+        return   # disabled support
     L = len(buf)
     if L < 5:
         return
@@ -502,6 +504,7 @@ def ExecuteSelectedRange():
         class vpe:
             """access to us from execed code"""
 
+            on_any = ctx.on_any
             ctx = ctx
             state = ctx.state
             vim = vim
@@ -519,6 +522,7 @@ def ExecuteSelectedRange():
             # but swagger  does deliver a post gen, which IS needed
             post_generate = state.get('post_generate', post_generate)
             dt = round(time.time() - t0, 2)
+            ctx.on_any = vpe.on_any
         except Exception as ex:
             silent = False
             exc_type, exc_value, exc_tb = sys.exc_info()
