@@ -266,12 +266,12 @@ def to_y(o):
 formatters['y'] = to_y
 
 
-def try_module(url):
+def try_module(line):
     # Currently only about swagger defs:
-    mod = url.split(' ')[0]
+    mod = line.split(' ')[0]
     if mod not in ctx.mods:
         return
-    url = url.rsplit('#', 1)[0]
+    line = line.rsplit('#', 1)[0]
 
     # this is a conventional feat: enrich the state beforehand:
     # see e.g. examples hetzner
@@ -280,14 +280,14 @@ def try_module(url):
         m = {}
         exec(s, m, m)
         ctx.state.update(m)
-    url = url.split(mod, 1)[1].strip()
+    line = line.split(mod, 1)[1].strip()
     notify(mod)
     mod = ctx.mod = import_module(f'modules.{mod}')
     h = {'http', 'https'}
-    s = read_file(url)
-    if not s and url.split(':', 1)[0] in h:   # and url.endswith('.json'):
-        s = lib('requests').get(url).text
-    r = mod.try_load(s, url=url)
+    s = read_file(line)
+    if not s and line.split(':', 1)[0] in h:   # and url.endswith('.json'):
+        s = lib('requests').get(line).text
+    r = mod.try_load(s, line=line)
     return r
 
 
@@ -332,6 +332,50 @@ def fn_dir_of_file():
         here = os.path.dirname(fnf)
 
     return here
+
+
+def SmartGoto():
+    """
+    2 modes - visual, then lines are set, we call use per line, then
+    Else called on one line
+    """
+
+    b = vim.current.buffer
+    import smart_goto
+
+    if ctx.L2 > 0:
+        for l in range(ctx.L1, ctx.L2 + 1):
+            ctx.L = line = b[l - 1]
+            # visual range in one line? google it:
+            if ctx.L1 == ctx.L2:
+                _, start = vim.eval("""getpos("'<")[1:2]""")
+                _, end = vim.eval("""getpos("'>")[1:2]""")
+                if start != end:
+                    words = line[int(start) - 1: int(end)]
+                    words = smart_goto.google_search(words)
+                    return browse(words)
+
+            ctx.L1 = l
+            if not line.strip():
+                continue
+            ctx.COL = ctx.L1
+            ctx.L2 = -1
+            SmartGoto()
+        return
+
+    try:
+        smart_goto.handle(ctx.COL - 1, ctx.W, ctx.L, ctx.L1 - 1, ctx.PTH)
+    except smart_goto.Noop:
+        pass
+    except smart_goto.Edit as ex:
+        vim.command(f'edit {ex.args[0]}')
+    except smart_goto.Browse as ex:
+        browse(ex.args[0])
+
+
+def browse(lnk):
+    browser = os.environ.get('BROWSER', 'microsoft-edge')
+    os.system('%s "%s" >/dev/null 2>/dev/null &' % (browser, lnk))
 
 
 def ExecuteSelectedRange():

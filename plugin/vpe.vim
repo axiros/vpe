@@ -35,28 +35,45 @@ if exists('vpe_reload')
 else
   let s:vpe_reload = 0
 endif
-
-
+let s:vpe_word = expand("<cword>")
+let s:vpe_pth = expand("%:p")
+"let s:vpe_foo = getpos("'<")[1:2]
+" just indent all python
 python3 << EOL
-import os, sys
-D=vim.eval("s:script_path")
-dbg=vim.eval("s:vpe_reload")
-if not D in sys.path:
-    sys.path.insert(0, D)
-    import vim_python_eval as vpe 
-if int(dbg):
-    m = vpe.ctx.state
-    sys.modules.pop('vim_python_eval')
-    import vim_python_eval as vpe
-    vpe.ctx.state = m
-
-vpe.ctx.L1 = int(vim.eval("a:l1"))
-vpe.ctx.L2 = int(vim.eval("a:l2"))
-vpe.ctx.executed_lines = []
-getattr(vpe, vim.eval("a:func_name"))()
+if 'python':
+    import os, sys
+    D=vim.eval("s:script_path")
+    reload_=vim.eval("s:vpe_reload")
+    line = vim.eval("getline('.')")
+    if not D in sys.path:
+        sys.path.insert(0, D)
+        import vim_python_eval
+    if int(reload_) or ':reload' in  line:
+        m = vim_python_eval.ctx.state
+        for k in  list(sys.modules.keys()):
+          v = sys.modules[k]
+          if '/vpe/' in str(v):
+            sys.modules.pop(k)
+        import vim_python_eval
+        vim_python_eval.ctx.state = m
+    # make a lot of stuff accessible via ctx, for the module:
+    # 2: actual col, not bytes. like in python
+    ccp = vim.eval('getcursorcharpos()')
+    _ = vim_python_eval
+    #_.ctx.foo  = vim.eval("s:vpe_foo")
+    _.ctx.L1  = int(ccp[1]) # like vim, from 1
+    _.ctx.COL  = int(ccp[2]) # like vim, from 1
+    _.ctx.L2  = int(vim.eval("a:l2"))
+    _.ctx.W   = vim.eval("s:vpe_word")
+    _.ctx.PTH = vim.eval("s:vpe_pth")
+    _.ctx.L   = line
+    _.ctx.executed_lines = []
+    getattr(vim_python_eval, vim.eval("a:func_name"))()
 EOL
 endfunction
 
 command! -range PythonEval <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
+command! PythonGoto silent  call s:VPE('SmartGoto', -1, -1) 
+command! -range PythonGotoRange silent <line1>,<line2> call s:VPE('SmartGoto', <line1>, <line2>)
 command! EvalInto silent call s:EvalInto()
 

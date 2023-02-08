@@ -112,14 +112,15 @@ def lib(libname, t={}):
 
 def log(s, **kw):
     """for debug only"""
+    kw = ', '.join([f'{k}: {v}' for k, v in kw.items()])
     with open(f'/tmp/vpe', 'a') as fd:
         s = f'{s} {kw}\n'
         fd.write(s)
 
 
-def notify(title='', msg=''):
+def notify(title='', msg='', dt=3):
     title = title or 'VPE'
-    os.system(f'notify-send "{title}" "{msg}"')
+    os.system(f'notify-send -t {dt} "{title}" "{msg}"')
 
 
 # Avoiding the infomous python indent bug for Treesitter...

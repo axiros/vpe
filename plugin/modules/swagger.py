@@ -460,8 +460,9 @@ class swagger:
         return h[:-1] if h.endswith('/') else h
 
     @staticmethod
-    def try_load(s: str, url='n.a.'):
+    def try_load(s: str, line='n.a.'):
         """s the content of a swagger definition file"""
+        url = line
         s = s.encode().decode('utf-8-sig')
         if not s or ('swagger' not in s and 'openapi' not in s):
             return

@@ -101,6 +101,7 @@ Supported (usually in comment blocks) are:
 - `:here`: Show the result under the current line in the source buffer (no split)
 - `:[no]autodoc`: The `:doc` directive is set/removed for all subsequent evaluations
 - `:[no]always`: When set, then all directives of this eval run are remembered for future runs, until `:noalways` is set
+- `:reload`: Reload the module, keep ctx.state. Comes handy testing code changes.
 - `:silent`: Skip showing results at all
 - `:single`: Only the line on the cursor is evaluated, even if within a bigger block (see swagger)
 - `:state`: Add the evaluation state to result (shows all assigned variables)
