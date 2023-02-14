@@ -3,4 +3,4 @@ function push {
   git push git@github.com:axiros/vpe.git
 }
 
-echo 'say "push" to push via ssh to gh'
+echo 'say "push" to git push via ssh to gh'
