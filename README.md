@@ -1,11 +1,10 @@
 # Vim Python Eval
 
 <!--toc:start-->
-
 - [Vim Python Eval](#vim-python-eval)
   - [Evaluate Python Code (`,r`)](#evaluate-python-code-r)
     - [Setup](#setup)
-    - [Usage](#usage)
+    - [Usage Evaluate](#usage-evaluate)
     - [Features](#features)
       - [Directives](#directives)
       - [Result Display](#result-display)
@@ -17,16 +16,17 @@
         - [vpe.cmd](#vpecmd)
         - [vpe.fnd](#vpefnd)
         - [vpe.notify](#vpenotify)
+        - [vpe.hlp.insert_between](#vpehlpinsertbetween)
   - [Modules](#modules)
     - [Interacting with Swagger/OpenAPI APIs](#interacting-with-swaggeropenapi-apis)
     - [Googling stuff](#googling-stuff)
     - [Making Screenshots](#making-screenshots)
-  - [Non Python Evaluation: ,E](#non-python-evaluation-e)
-    - [Usage](#usage)
+  - [Non Python Evaluation: EvalInto](#non-python-evaluation-evalinto)
+    - [Usage EvalInto](#usage-evalinto)
   - [Non Python Eval on `:<cmd>`: ,r](#non-python-eval-on-cmd-r)
     - [Examples](#examples)
   - [Smart Goto](#smart-goto)
-    - [Usage:](#usage)
+    - [Usage Smart Goto](#usage-smart-goto)
   - [Jump References](#jump-references)
     - [Sample Use Cases](#sample-use-cases)
   - [Installation](#installation)
@@ -37,7 +37,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-  <!--toc:end-->
+<!--toc:end-->
 
 ## Evaluate Python Code (`,r`)
 
@@ -80,7 +80,7 @@ Also, the module offers [built in support](./docs/swagger.md) for interaction wi
 
 Config: Map `,r` in normal and visual mode to `PythonEval`.
 
-### Usage
+### Usage Evaluate
 
 - Hit the hotkey (e.g. `,r`) on a line, lines or visually selected range, which you want evaluated.
 - By default we evaluate as python, except when you hint otherwise (see below)
@@ -368,11 +368,11 @@ Will let you
 This assumes you have the [scrot](https://github.com/resurrecting-open-source-projects/scrot) utility installed on the system.
 If you use another screenshot tool, you have to provide a wrapper.
 
-## Non Python Evaluation: ,E
+## Non Python Evaluation: EvalInto
 
 A function evaluating _anything_ vim can do in ex mode (e.g. `!ls -lta`) into a split window is also included.
 
-### Usage
+### Usage EvalInto
 
 Config: Map `,E` in normal and visual mode to `EvalInto<CR>`.
 
@@ -405,7 +405,7 @@ You get the idea.
 
 ## Smart Goto
 
-### Usage:
+### Usage Smart Goto
 
 Map `:PythonGoto` in normal and `:PythonGotoRange` in visual mode. Vim or a browser will open
 according to cursor position or selected range.
