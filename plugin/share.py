@@ -60,7 +60,9 @@ def deindent(s, spec={}):
 is_ = isinstance
 debug = False
 out = P(print, file=sys.stderr)
+exists, dirname, abspath = os.path.exists, os.path.dirname, os.path.abspath
 
+cli_mode = lambda: os.environ.get('vpe_cli_mode') == 'true'
 
 class ctx:
     """Interface for the caller, setting us up

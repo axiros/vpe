@@ -9,3 +9,5 @@ what your intent is, when pressing the hotkey invoking the function:
   it.
 - Under a manpage link: Open it
 - Under a normal word or selected range: Google it
+
+If you marked a bunch of URLs, those will be opened in browser as well.

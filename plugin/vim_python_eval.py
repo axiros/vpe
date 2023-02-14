@@ -103,7 +103,7 @@ def help():
 
 
 def clear_all(buffer):
-    del buffer[0: len(buffer)]
+    del buffer[0 : len(buffer)]
 
 
 def buf():
@@ -351,7 +351,7 @@ def SmartGoto():
                 _, start = vim.eval("""getpos("'<")[1:2]""")
                 _, end = vim.eval("""getpos("'>")[1:2]""")
                 if start != end:
-                    words = line[int(start) - 1: int(end)]
+                    words = line[int(start) - 1 : int(end)]
                     words = smart_goto.google_search(words)
                     return browse(words)
 
@@ -367,6 +367,8 @@ def SmartGoto():
         smart_goto.handle(ctx.COL - 1, ctx.W, ctx.L, ctx.L1 - 1, ctx.PTH)
     except smart_goto.Noop:
         pass
+    except smart_goto.RunCmd as ex:
+        os.system(ex.args[0])
     except smart_goto.Edit as ex:
         vim.command(f'edit {ex.args[0]}')
     except smart_goto.Browse as ex:
@@ -456,6 +458,8 @@ def ExecuteSelectedRange():
         else:
             # module? e.g. swagger?
             res_spec = try_module(line)
+            if res_spec == None:
+                return
             if not res_spec:
                 if line == '':
                     show_help = clear_buffer = True
@@ -664,14 +668,15 @@ class hlp:
 
 if __name__ == '__main__':
     # we are callable directly as well, executing what's supported in try_module
+    os.environ['vpe_cli_mode'] = 'true'
     debug, a = True, sys.argv
     if len(a) < 3:
         print(f'Call me with <module name> <file or url>. Modules: {ctx.mods}')
         sys.exit(1)
     res = try_module(' '.join(sys.argv[1:]))
-
-    if not sys.stdout.isatty():
-        sys.exit(print(res['lines']))
     f = getattr(ctx.mod, 'cli_post', 0)
+    if not sys.stdout.isatty() or not f:
+        if res:
+            sys.exit(print(res['lines']))
     if f:
         f(res)

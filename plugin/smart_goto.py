@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """
-":reload" in the line will reload this file
+Tests: see __main__
 """
+import time
 from pathlib import Path
 import re
 import sys
@@ -18,16 +19,23 @@ import os
 dirname, abspath, exists = os.path.dirname, os.path.abspath, os.path.exists
 
 
-class Edit(Exception):
-    pass
+def imgopencmd(fnimg):
+    return f'$BROWSER "{fnimg}" >/dev/null 2>&1'
 
 
-class Browse(Exception):
-    pass
+def google_search(word):
+    return 'https://www.google.com/search?client=%s-b-d&q=' + word
 
 
-class Noop(Exception):
-    pass
+# fmt: off
+class Edit(Exception)   : pass
+class Browse(Exception) : pass
+class RunCmd(Exception) : pass
+class Noop(Exception)   : pass
+def browse(url)    : raise Browse(url)
+def edit(fn)       : raise Edit(fn)
+def run(cmd)       : raise RunCmd(cmd)
+# fmt: on
 
 
 def is_man_page(word, fn, **_):
@@ -49,24 +57,12 @@ def is_help(word, **m):
         raise Edit(__file__)
 
 
-def browse(url):
-    raise Browse(url)
-
-
-def edit(fn):
-    raise Edit(fn)
-
-
 def read_file(fn):
     try:
         with open(fn) as fd:
             return fd.read()
     except Exception:
         return ''
-
-
-def google_search(word):
-    return 'https://www.google.com/search?client=%s-b-d&q=' + word
 
 
 def google(word):
@@ -104,8 +100,7 @@ def url_or_file(lnk, dir):
     pth = pth_join(dir, lnk)
     if exists(pth):
         if pth.rsplit('.', 1)[-1].lower() in {'png', 'svg', 'jpeg', 'gif', 'jpg'}:
-            # show img in browser
-            browse(pth)
+            run(imgopencmd(pth))
         edit(pth)
     if exists(pth + '.md'):
         edit(pth + '.md')
@@ -211,6 +206,8 @@ def is_file_path_or_url(dir, **kw):
             k = pth_join(d, w)
             if exists(k):
                 edit(k)
+            if len(w.split('/')) == 2:
+                browse('https://github.com/' + w)
 
 
 def is_lcdoc_lp_line(dir, fn, **kw):
@@ -260,6 +257,8 @@ def test(match):
     when pressing the hotky
 
     """
+    now = time.time
+    t0 = now()
     H = os.environ['HOME']
     L = 'http://foo.bar'
     TMD1 = """
@@ -269,11 +268,12 @@ def test(match):
     [foo bar]: {L}
     """
     TMD1 = TMD1.format(L=L).replace('\n    ', '\n')
-    d = f'/tmp/vpeso.{os.environ["USER"]}'
-    os.makedirs(d, exist_ok=True)
+    TD = f'/tmp/vpeso.{os.environ["USER"]}'  # testdir
+    os.makedirs(TD, exist_ok=True)
     # we use foo a lot and want to avoid a file foo existing in test dir
-    [os.unlink(f'{d}/{i}') for i in os.listdir(d)]
-    fntmd1 = f'{d}/m1.md'
+    [os.unlink(f'{TD}/{i}') for i in os.listdir(TD)]
+    os.system(f'touch {TD}/testimg.png')
+    fntmd1 = f'{TD}/m1.md'
     G = google_search
 
     def check_created(t, ex, fn):
@@ -295,17 +295,27 @@ def test(match):
                 ],
                 [
                     [16, 'newfile', 'Test [my title](newfile.md) bla', 1, fntmd1],
-                    partial(check_created, fn=d + '/newfile.md'),
+                    partial(check_created, fn=TD + '/newfile.md'),
                 ],
                 [
                     [(4, 10), 'bashrc', 'foo ~/.bashrc', ''],
                     [H + '/.bashrc'],
-                    'tilde replaced',
+                    'tilde replaced, file open in vi',
                 ],
                 [
                     [(4, 15), 'bashrc', 'foo $HOME/.bashrc', ''],
                     [H + '/.bashrc'],
                     '$HOME replaced',
+                ],
+                [
+                    [(15, 25), 'etc', 'foo some_func("/etc/hosts") bar', ''],
+                    ['/etc/hosts'],
+                    'file name extracted',
+                ],
+                [
+                    [(15, 25), 'etc', 'foo some_func(`/etc/hosts`) bar', ''],
+                    ['/etc/hosts'],
+                    'file name extracted in backticks',
                 ],
             ],
         ],
@@ -326,12 +336,27 @@ def test(match):
             ],
         ],
         [
+            'Must Run Command',
+            [
+                [
+                    [(10, 16), 'testimg', 'x b ![](./testimg.png)', 1, fntmd1],
+                    [0, 0, imgopencmd(TD + '/testimg.png')],
+                    'Must run the image open command',
+                ]
+            ],
+        ],
+        [
             'Must browse',
             [
                 [[(1, 6), 'foobar', 'a foobar bar foo'], [0, G('foobar')]],
                 [[(0, 6), 'foobar', 'foobar bar foo'], [0, G('foobar')]],
                 [[(5, 12), 'a', 'b [a](http://foo/bar) x'], [0, 'http://foo/bar']],
                 [[(0, 10), 'foo', f'[foo]: {L}'], [0, L]],
+                [
+                    [(3, 6), 'git', 'a "git/hub" foo'],
+                    [0, 'https://github.com/git/hub'],
+                    'github default for 2 word slash sepped',
+                ],
                 [
                     [1, 'foo', f'[foo]: {L} .'],
                     [0, L],
@@ -404,16 +429,25 @@ def test(match):
                         keep_ctx = True
                     print(' ✅')
                     continue
+
+                except RunCmd as ex:
+                    try:
+                        assert ex.args[0] == t[1][2], msg
+                    except Exception as ex1:
+                        print('breakpoint set')
+                        breakpoint()
+                        keep_ctx = True
+                    print(' ✅')
+                    continue
                 raise Exception(msg, t)
-    print('All well')
+
+    print(f'\x1b[1m✅ All well \x1b[0m [{round(now()-t0, 2)}s]')
 
 
-BL_RND = '('
-BL_SQR = '['
+BL_RND, BL_SQR = '(['
 if __name__ == '__main__':
     sys.argv.append('')
     test(match=sys.argv[1])
 
 # is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
 # on_empty_in_md_file_do_mkdocs_serve,

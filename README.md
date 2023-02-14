@@ -3,7 +3,9 @@
 <!--toc:start-->
 
 - [Vim Python Eval](#vim-python-eval)
-  - [Usage](#usage)
+  - [Evaluate Python Code (`,r`)](#evaluate-python-code-r)
+    - [Usage](#usage)
+    - [Operation](#operation)
   - [Features](#features)
     - [Directives](#directives)
     - [Result Display](#result-display)
@@ -18,9 +20,11 @@
     - [Modules](#modules)
       - [Builtin Modules](#builtin-modules)
         - [Interacting with Swagger APIs](#interacting-with-swagger-apis)
-    - [Add on: Non Python Call Syntax](#add-on-non-python-call-syntax)
-      - [Into Split Window](#into-split-window)
-      - [Into Current Buffer](#into-current-buffer)
+  - [Non Python Evaluation: ,E](#non-python-evaluation-e)
+    - [Usage](#usage)
+  - [Non Python Eval on `:<cmd>`: ,r](#non-python-eval-on-cmd-r)
+  - [Smart Goto](#smart-goto)
+    - [Usage:](#usage)
       - [Jump References](#jump-references)
         - [Sample Use Cases](#sample-use-cases)
         - [Example](#example)
@@ -35,9 +39,11 @@
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
   <!--toc:end-->
 
+## Evaluate Python Code (`,r`)
+
 Documents which can "do" stuff may come handy sometimes - this is python centric approach.
 
-👓 General statement: _Try use built in mechanics instead of plugins - they are *pretty* powerful:_
+👓 General statement: _Try use **built in** mechanics instead of plugins - they are *pretty* powerful:_
 
 - vim/neovim [can][hot] 'hot evaluate' code using e.g. `:py print("hello")` or `:!ls -lta /`.
 - Also it can insert files into the buffer quite easily: `:read /etc/hosts`
@@ -55,6 +61,7 @@ This plugin offers
 - Loadable predefined python code blocks
 - Hot reload of this plugin's python module code, w/o state loss
 - Some convience regarding evaluation of lines within code blocks
+- Testing functions
 
 ![](./docs/img/demo.gif)
 
@@ -69,14 +76,17 @@ Also, the module offers [built in support](./docs/swagger.md) for interaction wi
 
 ![](./docs/img/swagger.png)
 
-## Usage
+### Setup
 
-- Hit the hotkey (e.g. `,r`) on a line or visually selected range, which you want evaluated.
-- The line may be a filename or URL of a swagger definition, resulting in code generation for a
-  python requests based API client (see [here](./docs/swagger.md))
-- When the evaluated block contains assignments to `p` or `y`, their values are shown pretty printed
-  or as yaml within a vertical split window. As are evaluation errors.
+Config: Map `,r` in normal and visual mode to `PythonEval`.
+
+### Usage
+
+- Hit the hotkey (e.g. `,r`) on a line, lines or visually selected range, which you want evaluated.
+- By default we evaluate as python, except when you hint otherwise (see below)
 - If the evaluated line is part of a block (e.g. a line within a function), then the whole block is evaluated by default.
+- When the evaluated python block contains assignments to `p` or `y`, their values are shown pretty printed
+  or as yaml within a vertical split window. As are evaluation errors.
 - Invocations of the `print` function result in print outs within vim's status window.
 - Previously evaluated lines are remembered, i.e. state is kept between evaluations.
 - Objects or classes within result structures are walked for their attributes, when printing them
@@ -88,11 +98,11 @@ Notes:
 - vim calls the python code syncronously, blocking. You have to kill the python process to unblock
   it, should your code block forever, while executing.
 
-## Features
+### Features
 
-### Directives
+#### Directives
 
-Supported (usually in comment blocks) are:
+Supported (in python mode usually after comment tags '#') are:
 
 - `:all`: The whole source module is evaluated before the single line is
 - `:clear`: The previous result is removed
@@ -110,7 +120,7 @@ Supported (usually in comment blocks) are:
 - `:vpe_on_err`: Occurring at header or footer of files (10 lines), this line will be evaluated on exceptions
 - `:wrap <code>`: The line is wrapped into code, replacing the string '{}' (see swagger)
 
-### Result Display
+#### Result Display
 
 Assign the following variables and evaluate to influence how results are shown:
 
@@ -137,7 +147,7 @@ p = {'a': [{'foo': {'bar': 'xxx'}}, '...[2 items]]}
 
 Note: When you set `:here` then the result will be NOT shown in a split window but within the source buffer, below the current line.
 
-### Predefined Blocks (Macros)
+#### Predefined Blocks (Macros)
 
 Note: At this time this feature does NOT offer anything more than a good snippets tool, i.e. you
 probably do NOT need it. I was just adding it, in order to have those available on `cow style` machines
@@ -161,7 +171,7 @@ macros = {'demo': d}
 
 [![asciicast](https://asciinema.org/a/057ewOGytqJDGEL6DF9Ck1hDw.svg)](https://asciinema.org/a/057ewOGytqJDGEL6DF9Ck1hDw)
 
-### Markdown Fenced Blocks
+#### Markdown Fenced Blocks
 
 Fenced code blocks are evaluated in total if you evaluate the first line, starting with 3 fences
 (also indented)
@@ -177,7 +187,7 @@ Fenced code blocks are evaluated in total if you evaluate the first line, starti
 Since state is kept also cross buffers, you might e.g. define helper functions for presentations
 centrally, which you can later use in your presentation files.
 
-### Global Variables
+#### Global Variables
 
 Under the namespace class `vpe` the following variables are always available at python execution time:
 
@@ -187,7 +197,7 @@ Under the namespace class `vpe` the following variables are always available at 
 p = dir(vpe)
 ```
 
-#### vpe.vim
+##### vpe.vim
 
 Access to the pynvim API. Alternative: `import vim`.
 
@@ -197,15 +207,18 @@ p = vpe.vim.version #:here
 p = Version(api_compatible=0, api_level=10, api_prerelease=False, major=0, minor=8, patch=1, prerelease=False)
 ```
 
-#### vpe.ctx
+##### vpe.ctx
 
 - `ctx`.`state`: Evaluation state
 - `ctx`.`src_buf`: Reference to source buffer
 - `ctx`.`L1`, `L2`: Lines selected
+- `ctx`.`W`: The visually selected words (if any)
+- `ctx`.`PTH`: The full file path
+- `ctx`.`COL`: The first column of visual selection
 
 You can explore those e.g. via `p = dir(ctx) # :here`
 
-#### vpe.cmd
+##### vpe.cmd
 
 ```python
 vpe(<vim cmd>, silent=True, title=<False, True, string>, opt='')
@@ -214,7 +227,7 @@ vpe(<vim cmd>, silent=True, title=<False, True, string>, opt='')
 Executes vim command and redirects to a file. The file is then ALWAYS redirected to the
 current buffer, relative to current line. `opt` forwarded to the read as opt (`:h read`).
 
-#### vpe.fnd
+##### vpe.fnd
 
 Convenience function to deliver dir and full path of source buffer:
 
@@ -224,7 +237,7 @@ Convenience function to deliver dir and full path of source buffer:
 
 => Use sth like this in vim.cmd: `vpe.cmd(f'edit {os.getcwd()}/myfile')`
 
-#### vpe.notify
+##### vpe.notify
 
 Calls the notify-send utility.
 If you use growl or other tools, symlink or wrap them e.g. at `/usr/local/bin/notify-send`
@@ -233,15 +246,25 @@ If you use growl or other tools, symlink or wrap them e.g. at `/usr/local/bin/no
 vpe.notify('title', 'optional msg') # calls notify-send "title" "o. msg"
 ```
 
-### Modules
+## Modules
 
-This hands over evaluation to external modules.
-
-Builtin module currently: swagger/openapi (see below).
-
-Call syntax:
+Call syntax (in vim):
 
 `<module name>  [argument]`
+
+This hands over evaluation to modules, doing specific things with the args.
+
+Some modules make some sense to be called outside vim as well, syntax like this:
+
+`<path to this repo>/plugin/vim_python_eval.py <module name> [argument]`
+
+Builtin modules currently:
+
+### Interacting with Swagger/OpenAPI APIs
+
+Module name: `swagger`. Alias: `openapi`
+
+See [here](./docs/swagger.md)
 
 That call syntax you may also apply on the command line:
 
@@ -269,20 +292,63 @@ methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
  (...)
 ```
 
-#### Builtin Modules
+### Googling stuff
 
-##### Interacting with Swagger APIs
+Module name: `google`. Alias: `g`
 
-See [here](./docs/swagger.md)
+Example:
 
-### Add on: Non Python Call Syntax
+`g my search keywords`
 
-#### Into Split Window
+Will search google and display all URLs from the first page, excluding the non interesting
+google internal ones.
 
-A function evaluating _anything_ into a split window is also included within this plugin:
+💡 Select all links and open the browser on them using `,g`, smart open (see below).
 
-Add `nnoremap  ,E  :EvalInto<CR>` to your mappings and get the evaluation result of the current
-line into a split window, named like the command:
+Example from command line:
+
+```
+
+
+[gk@axgk ~]$ vpe g vim python evaluation
+"""
+
+https://vim.fandom.com/wiki/Evaluate_current_line_using_Python
+https://vim.fandom.com
+https://vi.stackexchange.com/questions/27353/evaluate-an-expression-from-visual-selection-in-python
+https://vi.stackexchange.com
+https://vi.stackexchange.com/questions/13997/vim-python-debugger
+https://vi.stackexchange.com/questions/37468/executing-python-scripts-in-vim-such-that-vim-remembers-previously-run-code
+https://vi.stackexchange.com/questions/26771/vimscript-evaluating-the-contents-of-a-variable
+(...)
+```
+
+### Making Screenshots
+
+Module name: `shot`
+
+Example:
+
+`shot img/foo`
+
+Will let you
+
+- select a rectangle or window (double click) on the screen
+- shoot it, using `scrot --freeze -s img/foo.png`
+- delete `img/foo.png` if existing
+- save the shot as at `img/foo.png`
+- replace the line with `![](img/foo.png)`
+
+This assumes you have the [scrot](https://github.com/resurrecting-open-source-projects/scrot) utility installed on the system.
+If you use another screenshot tool, you have to provide a wrapper.
+
+## Non Python Evaluation: ,E
+
+A function evaluating _anything_ vim can do in ex mode (e.g. `!ls -lta`) into a split window is also included.
+
+### Usage
+
+Config: Map `,E` in normal and visual mode to `EvalInto<CR>`.
 
 [![asciicast](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG.svg)](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG)
 
@@ -291,15 +357,36 @@ lines of buffername handling. No directives evaluated.
 
 Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe)
 
-#### Into Current Buffer
+## Non Python Eval on `:<cmd>`: ,r
 
-`,r` on a line starting with ':' (or after ':vpe ' anywhere in a line) evaluates the result into the buffer.
+`,r` on a line starting with ':' (or after ':vpe ' anywhere in a line) vim evaluates the result into the buffer (as if typed in ex mode with colon).
 
 [![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
 
 Note: When line starts with `<!--`, we split off closing `-->`
 
-#### Jump References
+### Examples
+
+Open this file in vi and hit `,r` on these lines (`P` the usual lua table dump function):
+
+    :lua P(require('telescope.mappings').default_mappings)
+    :hi
+    :map
+    :!ls -lta /
+    :history
+
+You get the idea.
+
+## Smart Goto
+
+### Usage:
+
+Map `:PythonGoto` in normal and `:PythonGotoRange` in visual mode. Vim or a browser will open
+according to cursor position or selected range.
+
+See [here](./docs/smart_goto.md) for details.
+
+## Jump References
 
 Evaluating something like `:/foo.bar/` (at the beginning of a line) or `:vpe /foo.bar/`
 (anywhere in a line) tries to find all lines below, (regex)matching `.*foo.bar` and evaluate, as if it was the cursor line
@@ -307,14 +394,14 @@ when hitting the hotkey.
 
 This way you can hide code away, e.g. in presentations but still have it available.
 
-If you say `/gg/foo.bar/` then searching for matches will happen not from the
-line with the jump declaration but from the beginning of the file.
+If you say `/gg/foo.bar/` then searching for matches will happen not from the line with
+the jump declaration but from the beginning of the file.
 
 That way you can have a jump ref at the end of the file, possibly with a `:vpe_on_err` or `:vpe_on_any` directive.
 
-##### Sample Use Cases
+Note: Directives `:vpe_on_err` or `:vpe_on_any` are understood behind ` # :` seperator (but before a closing `-->`)
 
-##### Example
+### Sample Use Cases
 
 ```
  # My Live Markdown Doc
@@ -333,19 +420,6 @@ That way you can have a jump ref at the end of the file, possibly with a `:vpe_o
  end of document -->
 ```
 
-##### Examples
-
-Open this file in vi and hit `,r` on these lines (`P` the usual lua table dump function):
-
-    :lua P(require('telescope.mappings').default_mappings)
-    :hi
-    :!ls -lta /
-    :history
-
-You get the idea.
-
-Note: Directives `:vpe_on_err` or `:vpe_on_any` are understood behind ` # :` seperator (but before a closing `-->`)
-
 ## Installation
 
 1. Install this plugin "axiros/vpe"
@@ -360,20 +434,22 @@ xnoremap <silent> ,r  :Vpe<CR>
 
 This lazy loads the module on first use.
 
+If wanted, same style, also `,g` and `,E`. Naturally, those shorcuts are just suggestions.
+
 ### Requirements
 
-- Should work for vim and neovim with python3 support.
+- Should work for vim and neovim with python3 support but tested only in neovim
 - Autoformatting of results only in neovim.
 - For filetype python we assume these requirements in your config:
-- `set foldmethod=indent` should be set, since we collapse classes after creating swagger support
-  definitions.
+- `set foldmethod=indent` should be set, since we collapse classes after creating swagger
+  support definitions.
 
 ## Developing
 
 Set `let g:vpe_reload=1` to enable reloading the module at every invokation.
 State, e.g. evaluated imports, is kept in dict `ctx.state`.
 
-In order to run "manual" tests w/o vim, just touch an empty `vim.py` next to the module (or pip install it).
+Modules can be tested better using the command line syntax.
 
 ### Automatic Testing
 
