@@ -20,8 +20,8 @@ If you marked a bunch of URLs, those will be opened in browser as well.
 
 |Word|Whole Line<BR>Valid Cursor Positions: ^<br>Open Action|Comment|
 |-  |-           | - |
-|`x`|`foo [xxx](/tmp/vpeso.gk/m1.md.tst.md)` <br> `.........^^^^^` <br>  |Linked non existing markdown files are autocreated, then opened in vi| 
-|`newfile`|`Test [my title](newfile.md) bla` <br> `................^` <br>  | 
+|`x`|`[new]: /tmp/vpeso.gk/m1.md` <br> `.........^^^^^` <br> ✔️`/tmp/vpeso.gk/m1.md`|Ref link to existing file is opened| 
+|`x`|`foo [xxx](x1/x1.md)` <br> `.........^^^^^` <br> ✔️`/tmp/vpeso.gk/x1/x1.md`|Linked non existing markdown files: Dir created, file unsaved opened in vi<BR>dir created<BR>content: `# xxx LS `| 
 |`bashrc`|`foo ~/.bashrc` <br> `....^^^^^^` <br> ✔️`/home/gk/.bashrc`|tilde replaced, file open in vi| 
 |`bashrc`|`foo $HOME/.bashrc` <br> `....^^^^^^^^^^^` <br> ✔️`/home/gk/.bashrc`|$HOME replaced| 
 |`bashrc`|`'foo ~/.bashrc'` <br> `.....^^^^^` <br> ✔️`/home/gk/.bashrc`|tilde replaced, file open in vi| 

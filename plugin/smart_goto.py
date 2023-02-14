@@ -32,9 +32,9 @@ class Edit(Exception)   : pass
 class Browse(Exception) : pass
 class RunCmd(Exception) : pass
 class Noop(Exception)   : pass
-def browse(url)    : raise Browse(url)
-def edit(fn)       : raise Edit(fn)
-def run(cmd)       : raise RunCmd(cmd)
+def browse(url)         : raise Browse(url)
+def edit(fn, content=''): raise Edit(fn, content)
+def run(cmd)            : raise RunCmd(cmd)
 # fmt: on
 
 
@@ -74,19 +74,27 @@ def is_markdown_ref_link(fn, word, word_space_sepped, dir, line, **kw):
     if not line or not fn.endswith('.md'):
         return
     # comments (with e.g. other links) are anyway not allowed in ref link lines by md => really, just hit the link:
-    if line[0] == '[' and ']: ' in line:
-        title, link = line.split(']: ', 1)
-        link = link.split(' ', 1)[0].strip()
-        if not link:
-            google(title[1:])
-        browse(link)
+    if not (line[0] == '[' and ']: ' in line):
+        return
+    title, link = line.split(']: ', 1)
+    link = link.split(' ', 1)[0].strip()
+    if not link:
+        google(title[1:])
+    url_or_file_browse_or_edit(link, dir, title=title)
+
+    # fn1 = pth_join(dir, link)
+    #
+    # if exists(fn1):
+    #     edit(fn1)
+    #
+    # browse(link)
 
 
 def pth_join(dir, fn):
     return str(Path(dir).joinpath(Path(fn)))
 
 
-def url_or_file(lnk, dir):
+def url_or_file_browse_or_edit(lnk, dir, title=''):
     if lnk.startswith('http') and '://' in lnk:
         browse(lnk)
     # (./parameters.md#section)
@@ -104,6 +112,13 @@ def url_or_file(lnk, dir):
         edit(pth)
     if exists(pth + '.md'):
         edit(pth + '.md')
+    if not pth.endswith('.md'):
+        return
+    d = dirname(pth)
+    if not exists(d):
+        notify('Creating directory', d)
+        os.makedirs(d)
+    edit(pth, content=f'# {title}\n(save to create file)')
 
     # if not lnk.endswith('.md'): edit(lnk)
 
@@ -149,11 +164,11 @@ def is_markdown_link(col, fn, word, word_space_sepped, dir, line, **kw):
         if BL_SQR not in title:
             return
         title = title.rsplit(BL_SQR, 1)[-1][:-1]
-        url_or_file(x[1:], dirname(fn))
-        pth = pth_join(dir, x[1:])
-        if pth.endswith('.md'):
-            touch_new_md_file(pth, title)
-            edit(pth)
+        url_or_file_browse_or_edit(x[1:], dir, title=title)
+        # pth = pth_join(dir, x[1:])
+        # if pth.endswith('.md'):
+        #     touch_new_md_file(pth, title)
+        #     edit(pth)
 
 
 def between_spaces(col, line):
@@ -276,10 +291,16 @@ def get_test_table(T):
             if curs[0] > 0:
                 mark = '.' * curs[0] + mark
             add(f'`{word}`')
-            if callable(t[1]) or not t[1]:
+            t.append('')
+            if not t[1]:
                 res = ' '
             elif t[1][0]:
-                res = f'✔️`{t[1][0]}`'
+                fn = t[1][0]
+                if isinstance(fn, tuple):
+                    fn, dir, content = fn
+                    content = content.replace('\n', ' LS ')
+                    t[2] += f'<BR>dir created<BR>content: `{content}`'
+                res = f'✔️`{fn}`'
             elif t[1][1]:
                 # add(f'`{t[1][0]}')
                 res = f'🌐`{t[1][1]}`'
@@ -290,7 +311,7 @@ def get_test_table(T):
             else:
                 res = ' '
             add(f'`{line}` <br> `{mark}` <br> {res}')
-            if len(t) > 2:
+            if len(t) > 2 and t[2]:
                 add(f'{t[2]}')
             add(' ')
             table.append('|'.join(L))
@@ -316,18 +337,13 @@ def test(match):
     [foo bar]: {L}
     """
     TMD1 = TMD1.format(L=L).replace('\n    ', '\n')
-    TD = f'/tmp/vpeso.{os.environ["USER"]}'  # testdir
-    os.makedirs(TD, exist_ok=True)
     # we use foo a lot and want to avoid a file foo existing in test dir
-    [os.unlink(f'{TD}/{i}') for i in os.listdir(TD)]
+    TD = f'/tmp/vpeso.{os.environ["USER"]}'  # testdir
+    os.system(f'/bin/rm -rf "{TD}"')
+    os.makedirs(TD)
     os.system(f'touch {TD}/testimg.png')
     fntmd1 = f'{TD}/m1.md'
     G = google_search
-
-    def check_created(t, ex, fn):
-        assert exists(fn)
-        assert type(ex) == Edit
-        os.unlink(fn)
 
     # Testmatrix gourps all use cases uder the error msgs as first item of the nested list
     # thhen defines what is handed over to the handle entry function.
@@ -337,13 +353,14 @@ def test(match):
             'Must edit',
             [
                 [
-                    [(9, 14), 'x', f'foo [xxx]({fntmd1}.tst.md)'],
-                    partial(check_created, fn=fntmd1 + '.tst.md'),
-                    'Linked non existing markdown files are autocreated, then opened in vi',
+                    [(9, 14), 'x', f'[new]: {fntmd1}'],
+                    [fntmd1],
+                    'Ref link to existing file is opened',
                 ],
                 [
-                    [16, 'newfile', 'Test [my title](newfile.md) bla', 1, fntmd1],
-                    partial(check_created, fn=TD + '/newfile.md'),
+                    [(9, 14), 'x', 'foo [xxx](x1/x1.md)', 1, fntmd1],
+                    [(f'{TD}/x1/x1.md', f'{TD}/x1', '# xxx\n')],
+                    'Linked non existing markdown files: Dir created, file unsaved opened in vi',
                 ],
                 [
                     [(4, 10), 'bashrc', 'foo ~/.bashrc', ''],
@@ -480,10 +497,12 @@ def test(match):
                     continue
 
                 except Edit as ex:
-                    if callable(t[1]):
-                        t[1](t, ex)
-                        continue
-                    assert ex.args[0] == t[1][0], msg
+                    fn = t[1][0]
+                    if isinstance(fn, tuple):
+                        fn, dir, content = fn
+                        assert exists(dir), msg
+                        assert ex.args[1].startswith(content), msg
+                    assert ex.args[0] == fn, msg
                     print(' ✅')
                     continue
 

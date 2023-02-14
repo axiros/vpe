@@ -371,6 +371,18 @@ def SmartGoto():
         os.system(ex.args[0])
     except smart_goto.Edit as ex:
         vim.command(f'edit {ex.args[0]}')
+        cont = ex.args[1]
+        if cont:
+            b, ls = vim.current.buffer, cont.splitlines()
+            del0 = False
+            if len(b) == 1 and not b[0]:
+                b[0] = ls[0]
+            else:
+                b.append(ls[0])
+
+            for l in ls[1:]:
+                # special case: empty file
+                vim.current.buffer.append(l)
     except smart_goto.Browse as ex:
         browse(ex.args[0])
 
