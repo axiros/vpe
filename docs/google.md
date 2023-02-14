@@ -9,6 +9,12 @@ google internal ones.
 
 💡 Select all links and open the browser on them using `,g`, smart open (see below).
 
+![cast](https://github.com/AXGKl/large_assets/blob/master/vpe/google_vim.mp4.gif?raw=true)
+
+- Browser preview via [MarkdownPreviewNvim](https://github.com/iamcco/markdown-preview.nvim)
+
+---
+
 Example from command line:
 
 ```
@@ -27,6 +33,3 @@ https://vi.stackexchange.com/questions/26771/vimscript-evaluating-the-contents-o
 (...)
 ```
 
-![cast](https://github.com/AXGKl/large_assets/blob/master/vpe/google_vim.mp4.gif?raw=true)
-
-- Browser preview via [MarkdownPreviewNvim](https://github.com/iamcco/markdown-preview.nvim)
