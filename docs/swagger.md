@@ -37,6 +37,32 @@ Note: In the recording, the 'swagger' keyword was not required before the url. M
 
 If you have downloaded a swagger definition into a file, press the hotkey on the filename
 
+### CLI Example
+
+Instead of evaluating `swagger ./hcloud.json` in vi you can call the module on the CLI with those args:
+
+```bash
+gk@axgk hetzner]$ alias vpe
+alias vpe='/home/gk/.local/share/nvim/site/pack/packer/start/vpe/plugin/vim_python_eval.py'
+[gk@axgk hetzner]$ vpe
+no vim api importable
+Call me with <module name> <file or url>. Modules: ['swagger', 'openapi']
+[gk@axgk hetzner]$ rm -f client_hcloud.py; vpe swagger ./hcloud.json
+no vim api importable
+Have written: client_hcloud.py
+[gk@axgk hetzner]$ cat client_hcloud.py | grep -A 10 methods
+methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
+ '🟩', actions.get,
+ '🟩', actions___id_.get,
+ '🟩', certificates.get,
+ '🟪', certificates.post,
+ '🟥', certificates___id_.delete,
+ '🟩', certificates___id_.get,
+ '🟧', certificates___id_.put,
+ '🟩', certificates___id___actions.get,
+ (...)
+```
+
 ## Source Layout and Navigation
 
 - The source module is optimized for jumping around using `gd` (goto definition), which should be

@@ -291,64 +291,15 @@ Builtin modules currently:
 
 Module name: `swagger`. Alias: `openapi`
 
-See [here](./docs/swagger.md)
+See [here](./docs/swagger.md) for details.
 
 That call syntax you may also apply on the command line:
-
-Example: Instead of evaluating `swagger ./hcloud.json` in vi you can call the module on the CLI with those args:
-
-```bash
-gk@axgk hetzner]$ alias vpe
-alias vpe='/home/gk/.local/share/nvim/site/pack/packer/start/vpe/plugin/vim_python_eval.py'
-[gk@axgk hetzner]$ vpe
-no vim api importable
-Call me with <module name> <file or url>. Modules: ['swagger', 'openapi']
-[gk@axgk hetzner]$ rm -f client_hcloud.py; vpe swagger ./hcloud.json
-no vim api importable
-Have written: client_hcloud.py
-[gk@axgk hetzner]$ cat client_hcloud.py | grep -A 10 methods
-methods = lambda: ( # :clear :doc :all :single :wrap p = Tools.send({})
- '🟩', actions.get,
- '🟩', actions___id_.get,
- '🟩', certificates.get,
- '🟪', certificates.post,
- '🟥', certificates___id_.delete,
- '🟩', certificates___id_.get,
- '🟧', certificates___id_.put,
- '🟩', certificates___id___actions.get,
- (...)
-```
 
 ### Googling stuff
 
 Module name: `google`. Alias: `g`
 
-Example:
-
-`g my search keywords`
-
-Will search google and display all URLs from the first page, excluding the non interesting
-google internal ones.
-
-💡 Select all links and open the browser on them using `,g`, smart open (see below).
-
-Example from command line:
-
-```
-
-
-[gk@axgk ~]$ vpe g vim python evaluation
-"""
-
-https://vim.fandom.com/wiki/Evaluate_current_line_using_Python
-https://vim.fandom.com
-https://vi.stackexchange.com/questions/27353/evaluate-an-expression-from-visual-selection-in-python
-https://vi.stackexchange.com
-https://vi.stackexchange.com/questions/13997/vim-python-debugger
-https://vi.stackexchange.com/questions/37468/executing-python-scripts-in-vim-such-that-vim-remembers-previously-run-code
-https://vi.stackexchange.com/questions/26771/vimscript-evaluating-the-contents-of-a-variable
-(...)
-```
+See [here](./docs/google.md) for details.
 
 ### Making Screenshots
 
@@ -360,16 +311,7 @@ See [here](./docs/shot.md) for details.
 
 A function evaluating _anything_ vim can do in ex mode (e.g. `!ls -lta`) into a split window is also included.
 
-### Usage EvalInto
-
-Config: Map `,E` in normal and visual mode to `EvalInto<CR>`.
-
-[![asciicast](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG.svg)](https://asciinema.org/a/EkeLpbjEBbqH34PegKGda0TqG)
-
-The function is using only built in vim mechanics: Basically `put=execute(getline('.'))` plus a few
-lines of buffername handling. No directives evaluated.
-
-Tip: For repeated evals, you want to close the result buffers, using `:bw` (wipe)
+See [here](./docs/eval_into.md) for details.
 
 ## Non Python Eval on `:<cmd>`: ,r
 
