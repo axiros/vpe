@@ -1,6 +1,7 @@
 # Vim Python Eval
 
 <!--toc:start-->
+
 - [Vim Python Eval](#vim-python-eval)
   - [Evaluate Python Code (`,r`)](#evaluate-python-code-r)
     - [Setup](#setup)
@@ -37,7 +38,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-<!--toc:end-->
+  <!--toc:end-->
 
 ## Evaluate Python Code (`,r`)
 
@@ -353,20 +354,7 @@ https://vi.stackexchange.com/questions/26771/vimscript-evaluating-the-contents-o
 
 Module name: `shot`
 
-Example:
-
-`shot img/foo`
-
-Will let you
-
-- select a rectangle or window (double click) on the screen
-- shoot it, using `scrot --freeze -s img/foo.png`
-- delete `img/foo.png` if existing
-- save the shot as at `img/foo.png`
-- replace the line with `![](img/foo.png)`
-
-This assumes you have the [scrot](https://github.com/resurrecting-open-source-projects/scrot) utility installed on the system.
-If you use another screenshot tool, you have to provide a wrapper.
+See [here](./docs/shot.md) for details.
 
 ## Non Python Evaluation: EvalInto
 
