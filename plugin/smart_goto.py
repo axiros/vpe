@@ -126,7 +126,7 @@ def is_markdown_link(col, fn, word, word_space_sepped, dir, line, **kw):
         # we are in md ref link title.
         rlt = between(col + 1, line, '[', ']')
         # search it in buffer or file
-        if vim:
+        if vim and hasattr(vim, 'current_buffer'):
             b = vim.current.buffer
         else:
             b = read_file(fn).splitlines()
@@ -193,6 +193,12 @@ def all_words(kw):
     return [kw[i] for i in k.split()]
 
 
+def no_apos(w):
+    for k in '"', "'", '`':
+        w = w.replace(k, '')
+    return w
+
+
 def is_file_path_or_url(dir, **kw):
     words = all_words(kw)
     H = os.environ['HOME']
@@ -200,6 +206,7 @@ def is_file_path_or_url(dir, **kw):
         for w in words:
             if not w:
                 continue
+            w = no_apos(w)
             if w.startswith('http') and '://' in w:
                 browse(w)
             w = w.replace('~', H).replace('$HOME', H)
@@ -251,6 +258,47 @@ def handle(col, word, line, linenr=1, fn='x.md'):
     raise Noop()
 
 
+def get_test_table(T):
+    table = ['', '|Word|Whole Line<BR>Valid Cursor Positions: ^<br>Open Action|Comment|']
+    table += ['|-  |-           | - |']
+    for msg, set in T:
+        for t in set:
+            # many cols in one test?
+            L = ['']
+            add = L.append
+            curs = t[0][0]
+            if not isinstance(curs, tuple):
+                curs = (t[0][0], t[0][0] + 1)
+            word, line = t[0][1], t[0][2]
+            line = line.replace('`', '^')
+
+            mark = '^' * (curs[1] - curs[0])
+            if curs[0] > 0:
+                mark = '.' * curs[0] + mark
+            add(f'`{word}`')
+            if callable(t[1]) or not t[1]:
+                res = ' '
+            elif t[1][0]:
+                res = f'✔️`{t[1][0]}`'
+            elif t[1][1]:
+                # add(f'`{t[1][0]}')
+                res = f'🌐`{t[1][1]}`'
+                if 'search?' in res:
+                    res = f'🌐search: `{res.split("search?", 1)[1]}'
+            elif t[1][2]:
+                res = f'⌨`{t[1][2]}`'
+            else:
+                res = ' '
+            add(f'`{line}` <br> `{mark}` <br> {res}')
+            if len(t) > 2:
+                add(f'{t[2]}')
+            add(' ')
+            table.append('|'.join(L))
+
+    t = '\n'.join(table)
+    return f'\n\n{t}\n||Notes: <br> - backticks replaced with `^` <br> - Testfile contains markdown ref:<br>   `[foo bar]: http://foo.bar`|\n\n'
+
+
 def test(match):
     """We write one test FILE which we rely on for some "same directory" related tests
     For most of the use cases we do not need that and just act on current word marked
@@ -291,7 +339,7 @@ def test(match):
                 [
                     [(9, 14), 'x', f'foo [xxx]({fntmd1}.tst.md)'],
                     partial(check_created, fn=fntmd1 + '.tst.md'),
-                    'Linked  markdown files are autocreated',
+                    'Linked non existing markdown files are autocreated, then opened in vi',
                 ],
                 [
                     [16, 'newfile', 'Test [my title](newfile.md) bla', 1, fntmd1],
@@ -306,6 +354,11 @@ def test(match):
                     [(4, 15), 'bashrc', 'foo $HOME/.bashrc', ''],
                     [H + '/.bashrc'],
                     '$HOME replaced',
+                ],
+                [
+                    [(5, 10), 'bashrc', "'foo ~/.bashrc'", ''],
+                    [H + '/.bashrc'],
+                    'tilde replaced, file open in vi',
                 ],
                 [
                     [(15, 25), 'etc', 'foo some_func("/etc/hosts") bar', ''],
@@ -332,7 +385,11 @@ def test(match):
                     [],
                     '< 3 letter words (x) are not googled',
                 ],
-                [[16, 'y', 'x b [a][foo bar] y', 1, fntmd1], [], 'y only: no action'],
+                [
+                    [(16, 18), 'y', 'x b [a][foo bar] y', 1, fntmd1],
+                    [],
+                    'y only: no action',
+                ],
             ],
         ],
         [
@@ -353,7 +410,7 @@ def test(match):
                 [[(5, 12), 'a', 'b [a](http://foo/bar) x'], [0, 'http://foo/bar']],
                 [[(0, 10), 'foo', f'[foo]: {L}'], [0, L]],
                 [
-                    [(3, 6), 'git', 'a "git/hub" foo'],
+                    [(3, 9), 'git', 'a "git/hub" foo'],
                     [0, 'https://github.com/git/hub'],
                     'github default for 2 word slash sepped',
                 ],
@@ -373,18 +430,28 @@ def test(match):
                     'Find defined link in the file, open it',
                 ],
                 [
-                    [(4, 5), 'a', 'x b [a][foo bar] x', 1, fntmd1],
+                    [(4, 6), 'a', 'x b [a][foo bar] x', 1, fntmd1],
                     [0, G('a')],
                     'Google the title',
                 ],
                 [
-                    [(4, 12), 'barx', 'x b [barx bah][foo] x', fntmd1],
+                    [(4, 13), 'barx', 'x b [barx bah][foo] x', fntmd1],
                     [0, G('barx bah')],
                     'Google ALL title',
                 ],
             ],
         ],
     ]
+    if match == 'get_table':
+        t = get_test_table(T)
+        print(t)
+        fn = dirname(__file__) + '/../docs/smart_goto.md'
+        sep = '<!--@examples-->'
+        s = read_file(fn).split(sep)
+        s = sep.join([s[0], t, s[2]])
+        with open(fn, 'w') as fd:
+            fd.write(s)
+        return print('written', fn)
 
     def h(col, word, line, nr=0, fn='/tmp/foo.md'):
         # md has most features -> is default
@@ -440,7 +507,7 @@ def test(match):
                     print(' ✅')
                     continue
                 raise Exception(msg, t)
-
+    test(match='get_table')
     print(f'\x1b[1m✅ All well \x1b[0m [{round(now()-t0, 2)}s]')
 
 
@@ -448,6 +515,33 @@ BL_RND, BL_SQR = '(['
 if __name__ == '__main__':
     sys.argv.append('')
     test(match=sys.argv[1])
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
+
+# is_markdown_dragshot_req,
+# on_empty_in_md_file_do_mkdocs_serve,
 
 # is_markdown_dragshot_req,
 # on_empty_in_md_file_do_mkdocs_serve,

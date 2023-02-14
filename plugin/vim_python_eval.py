@@ -103,7 +103,7 @@ def help():
 
 
 def clear_all(buffer):
-    del buffer[0 : len(buffer)]
+    del buffer[0: len(buffer)]
 
 
 def buf():
@@ -351,7 +351,7 @@ def SmartGoto():
                 _, start = vim.eval("""getpos("'<")[1:2]""")
                 _, end = vim.eval("""getpos("'>")[1:2]""")
                 if start != end:
-                    words = line[int(start) - 1 : int(end)]
+                    words = line[int(start) - 1: int(end)]
                     words = smart_goto.google_search(words)
                     return browse(words)
 
@@ -655,7 +655,7 @@ class hlp:
     def insert_between(begin, end, txt):
         """Inserts txt into the buffer, between begin and end, no matter what's in between (also multiline)"""
 
-        for sr in '\\;\\\\', '/;\\/':
+        for sr in '\\;\\\\', '/;\\/', '~;\~', '&;\&':
             txt = txt.replace(*sr.split(';'))
         txt = txt.replace('\n', '\r')
 

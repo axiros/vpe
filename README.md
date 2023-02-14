@@ -1,6 +1,7 @@
 # Vim Python Eval
 
 <!--toc:start-->
+
 - [Vim Python Eval](#vim-python-eval)
   - [Evaluate Python Code (`,r`)](#evaluate-python-code-r)
     - [Setup](#setup)
@@ -36,7 +37,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-<!--toc:end-->
+  <!--toc:end-->
 
 ## Evaluate Python Code (`,r`)
 
@@ -244,6 +245,32 @@ If you use growl or other tools, symlink or wrap them e.g. at `/usr/local/bin/no
 ```python
 vpe.notify('title', 'optional msg') # calls notify-send "title" "o. msg"
 ```
+
+##### vpe.hlp.insert_between
+
+Helper to insert text between markers in the buffer.
+
+Example
+
+Within the document add 2 insert markers, e.g.:
+
+```
+<!-- beg insert1 -->
+<!-- end insert1 -->
+```
+
+then you can (re-) evaluate a string and (re-)insert it between the markers like so
+
+````
+ ```python :silent
+ t, a = 'hi\nthere', 'insert1'
+ vpe.hlp.insert_between(f'beg {a} -->', '<!-- end {a}', t)
+ ```
+````
+
+Existing content between the markers will be overwritten by the new stuff.
+
+💡 Using `vpe_on_any` you can re-evaluate the insertion code via `,r` from anywhere in the document.
 
 ## Modules
 
