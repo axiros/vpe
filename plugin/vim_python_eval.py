@@ -270,7 +270,7 @@ def try_module(line):
     # Currently only about swagger defs:
     mod = line.split(' ')[0]
     if mod not in ctx.mods:
-        return
+        return False
     line = line.rsplit('#', 1)[0]
 
     # this is a conventional feat: enrich the state beforehand:
@@ -472,7 +472,7 @@ def ExecuteSelectedRange():
             res_spec = try_module(line)
             if res_spec == None:
                 return
-            if not res_spec:
+            if res_spec == False:
                 if line == '':
                     show_help = clear_buffer = True
                 elif line in macros:
