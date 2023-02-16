@@ -60,7 +60,6 @@ if 'python':
     # 2: actual col, not bytes. like in python
     ccp = vim.eval('getcursorcharpos()')
     _ = vim_python_eval
-    #_.ctx.foo  = vim.eval("s:vpe_foo")
     _.ctx.L1  = int(ccp[1]) # like vim, from 1
     _.ctx.COL  = int(ccp[2]) # like vim, from 1
     _.ctx.L2  = int(vim.eval("a:l2"))

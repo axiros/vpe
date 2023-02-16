@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # These tests require https://github.com/AXGKl/pds
 #
+echo "Hint: when failing try pkill tmux"
 set -o errexit
 vpe_here="$(builtin cd $(dirname "$0") && pwd)"
 verbose=true

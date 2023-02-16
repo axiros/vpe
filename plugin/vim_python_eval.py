@@ -6,7 +6,6 @@ API funcs are in Capitals. Currently only "ExecuteSelectedRange" -
 evaluating selected python code.
 """
 import traceback
-from importlib import import_module
 from functools import partial as P
 import time
 import json
@@ -14,121 +13,16 @@ import os
 import sys
 import re
 
-uid = os.environ['USER']
-
-here = os.path.abspath(os.path.dirname(__file__))
-if here not in sys.path:
-    sys.path.append(here)
-from share import log, read_file, ctx, is_, debug, notify   # noqa
-from share import out, lib, BRKT, vim, vimcmd   # noqa
+from share import log, here, uid, read_file, ctx, is_, debug, notify, exists   # noqa
+from share import clear_all, buf, add_or_switch_to_window   # noqa
+from share import out, lib, BRKT, vim, vimcmd, BL_SQR  # noqa
 from share import vimcmdr   # noqa
-
-d_vpe = f'/tmp/vpe.{uid}'
-if d_vpe not in sys.path:
-    sys.path.insert(0, d_vpe)
-    os.makedirs(d_vpe, exist_ok=True)
-
-ctx.mods = [
-    i.rsplit('.py', 1)[0] for i in os.listdir(here + '/modules') if i.endswith('.py')
-]
-
-# ------------------------------------------------------------------------------------------------ "macros"
-# some predefined code blocks, extensible by user:
-m_r = """
-if 'Sending requests to API endpoint':
-    from requests import get, post, delete, patch
-    from json import dumps
-    from functools import partial
-    headers = {'Content-Type': 'application/json'}
-    Post = lambda url, data: post(url, data=data, headers=headers)
-
-class R:
-    # :clear
-    # :cmt pastebin example
-    url = 'http://httpbin.org/post'
-    data = { "mydata": { "hello": "world" }}
-    p = Post(url, data=data).text
-    # y = Post(url, data=data)
-
-"""
-
-m_rx = """
-
-'Testing Reactive-X for Python'
-import gevent
-
-import rx as Rx
-from rx import operators as rx  # noqa
-
-# If you need subjects:
-from rx import subject
-
-# If you need a scheduler:
-from rx.scheduler.eventloop import GEventScheduler  # noqa
-GS = GEventScheduler(gevent)
-
-# and an actual test:
-s1 = Rx.from_([1, 2, 3])
-s2 = Rx.from_(['a', 'b', 'c', 'd'])
-s3 = Rx.from_(['A', 'B'])
-p = []
-s1.pipe(rx.combine_latest(s2, s3)).subscribe(lambda x: p.append(x))
-
-"""
-
-macros = {'r': m_r, 'rx': m_rx}
-# custom ones:
-fn_m = os.environ['HOME'] + '/.config/vpe/macros.py'
-s = read_file(fn_m)
-m = {}
-if s:
-    exec(s, m, m)
-    if 'macros' in m:
-        macros.update(m['macros'])
-
-
-def help():
-    """Display available macros"""
-
-    r = 'Enter letter and hit evaluation hotkey on it:\n\n'
-    for m, v in macros.items():
-        v = '# ' + v.lstrip().split('\n', 1)[0].replace('if ', '')
-        r += f'{m}: {v}\n'
-    r += '\n\nResults you get by assigning "p" or "y" in code blocks.'
-    r += '\n\n# ' + __file__
-    return r
-
-
-# ------------------------------------------------------------------------------------------------ Vim API tools
-
-
-def clear_all(buffer):
-    del buffer[0: len(buffer)]
-
-
-def buf():
-    return vim.current.buffer
-
-
-def add_or_switch_to_window(buffername, remember_cur=False, b=None):
-    """Create a split win, or, if present, switch to it
-    Provides a remember feature to switch back using the convention name 'previous'
-    """
-    if buffername == 'previous':
-        vim.current.window = ctx.prev_win
-        return
-    if remember_cur:
-        ctx.prev_win = vim.current.window
-    bid = vim.eval(f'bufwinnr("{buffername}")')
-    if bid == '-1':
-        vimcmd(f'rightbelow vsplit {buffername}')
-        vimcmd('setlocal buftype=nofile nospell')
-    else:
-        vimcmd(f'{bid}wincmd w')
-    return vim.current.buffer
-
+from mods import refresh_known_mods, try_module, all_mods   # noqa
+from vpe_macros import macros   # noqa
 
 # ------------------------------------------------------------------------------------------------ Result Formatting
+
+
 def check_print_wanted(state, want_state):
     def add_state(v, want=want_state):
         if not want:
@@ -266,31 +160,6 @@ def to_y(o):
 formatters['y'] = to_y
 
 
-def try_module(line):
-    # Currently only about swagger defs:
-    mod = line.split(' ')[0]
-    if mod not in ctx.mods:
-        return False
-    line = line.rsplit('#', 1)[0]
-
-    # this is a conventional feat: enrich the state beforehand:
-    # see e.g. examples hetzner
-    s = read_file('./mods.py')
-    if s:
-        m = {}
-        exec(s, m, m)
-        ctx.state.update(m)
-    line = line.split(mod, 1)[1].strip()
-    notify(mod)
-    mod = ctx.mod = import_module(f'modules.{mod}')
-    h = {'http', 'https'}
-    s = read_file(line)
-    if not s and line.split(':', 1)[0] in h:   # and url.endswith('.json'):
-        s = lib('requests').get(line).text
-    r = mod.try_load(s, line=line)
-    return r
-
-
 def into_src_buffer(sb, lines):
     """sometimes we modify the source buffer. macros, swagger, ..."""
     if isinstance(lines, str):
@@ -398,9 +267,7 @@ def ExecuteSelectedRange():
     src_buf = ctx.src_buf = vim.current.buffer
     if not ctx.executed_lines:
         ctx.original_line = ctx.L1
-        # might be interesting in recursive call chains
-        ctx.original_line_val = src_buf[ctx.L1 - 1]
-    ctx.executed_lines.append(ctx.L1)
+    ctx.executed_lines.append(ctx.L1)   # loop preventer, exec only once per ,r
     on_any = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_any', 10)
 
     if on_any:
@@ -421,7 +288,8 @@ def ExecuteSelectedRange():
     deindent = 0
     res_spec = None
     if len(nrs) == 1:
-        # in general, if not special handling is wanted we move up until the block starts, then go down:
+        # the most often calling case, ,r on a line
+        # in general, if not special handling is wanted we move up until the py block starts, then go down:
         line = src_buf[nrs[0]].strip()
         if ':vpe ' in line:
             line = ':' + line.split(':vpe ', 1)[1]
@@ -429,37 +297,12 @@ def ExecuteSelectedRange():
             if line.endswith('-->'):
                 line = line.rsplit('-->', 1)[0].strip()
 
-        if line and line[0] == ':':
-            # this is a (vim) command or jump. Any directives behind ' # :'
-            line = line.split(' # :', 1)[0]
-            cmd = line[1:].strip()
-            # we support :/foo.bar/ -> jump to the line with 'foo?bar' in it and execute that one (handy in md)
-            if cmd and cmd[0] + cmd[-1] == '//':
-                search_start = ctx.L1
-                if '/gg/' in cmd:
-                    cmd = cmd.replace('gg/', '')
-                    search_start = 1
-
-                wind = vim.current.window
-                have = set()
-                match = '.*' + cmd[1:-1]
-                for line in range(search_start, len(src_buf)):
-                    lstr = src_buf[line]
-                    # avoid hits on the jump declaration itself:
-                    if re.match(match, lstr) and cmd not in lstr:
-                        if lstr in have:
-                            continue
-                        have.add(lstr)
-                        ctx.L1 = ctx.L2 = line + 1
-                        ExecuteSelectedRange()
-                        vim.current.window = wind
-
-                return
-
-            return vimcmdr(cmd, silent=False, title=False)
-
         # markdown code block?: go to stop fences if on start fences:
         if line.startswith('```') and not line.strip() == '```':
+            # convenience, allowing ```py only
+            if line.startswith('```py `'):
+                src_buf[nrs[0]] = line.replace('```py ', '```python ')
+
             deindent = len(orig_line.rstrip()) - len(line)
             try:
                 while not src_buf[nrs[-1] + 1].lstrip().startswith('```'):
@@ -470,12 +313,10 @@ def ExecuteSelectedRange():
         else:
             # module? e.g. swagger?
             res_spec = try_module(line)
-            if res_spec == None:
+            if res_spec is None:
                 return
-            if res_spec == False:
-                if line == '':
-                    show_help = clear_buffer = True
-                elif line in macros:
+            if res_spec is False:
+                if line in macros:
                     # small chhunks of python. modules are bigger, that's the diff
                     vimcmd('delete')
                     vimcmd('delete')
@@ -566,7 +407,9 @@ def ExecuteSelectedRange():
 
     res_buf = None
     if show_help:
-        res_spec = help()
+        from vpe_help import vpe_help
+
+        res_spec = vpe_help()
     elif clear_help:
         res_spec = {'lines': ''}
     else:
@@ -584,6 +427,8 @@ def ExecuteSelectedRange():
                 notify = notify
                 fnd = fn_dir_of_file
                 hlp = hlp
+                # when new one added during vim run
+                refresh_known_mods = refresh_known_mods
 
             try:
                 t0 = time.time()
@@ -623,9 +468,13 @@ def ExecuteSelectedRange():
                         'tb': [l.split(',') for l in traceback.format_tb(exc_tb)],
                     }
                 }
-
-            res_spec = check_print_wanted(state, add_state)  # res string
-        # [b.append(l) for l in block.splitlines()]
+            res_spec = check_print_wanted(state, add_state)  # just a string
+            ge = state.get('ge')
+            if isinstance(ge, str) and BL_SQR in ge:
+                state.pop('ge')   # do not re-evaluate
+                res_spec += '\n'
+                res_spec += os.popen(f'echo -e "{ge}" | graph-easy --as boxart').read()
+                res_spec += '\n'
     if doc_call or state.get('autodoc'):
         dt = f'[{dt}s]' if dt else ''
         [docs.insert(0, f'# {i} {dt}') for i in block.splitlines()]
@@ -637,7 +486,6 @@ def ExecuteSelectedRange():
 
     if not silent:
         if not here:
-
             res_buf: list = add_or_switch_to_window('results.py', remember_cur=True)
             if clear_buffer or state.get('autodoc'):
                 clear_all(buffer=res_buf)
@@ -645,9 +493,15 @@ def ExecuteSelectedRange():
             docs.clear()
             if lines:
                 [res_buf.append(l) for l in lines.splitlines()]
+            ft = res_spec.get(':ft')
+            if ft:
+                vimcmd(f'set filetype={ft}')
             vimcmd(':lua vim.notify=print')   # lsp errs all the time on fails
-            vimcmd(':silent lua vim.lsp.buf.format()')
+            ft = res_spec.get(':nofmt')
+            if not ft == True:
+                vimcmd(':silent lua vim.lsp.buf.format()')
             vimcmd(f'{len(res_buf)}j')
+
             res_buf = add_or_switch_to_window('previous')
         elif lines:
             fn = '/tmp/vi.here.%s' % os.environ['USER']
@@ -655,6 +509,7 @@ def ExecuteSelectedRange():
                 fd.write(lines)
             if ctx.L1 == len(src_buf):
                 src_buf.append('')
+            vim.command(str(nrs[-1]))   # goto last line of block
             vimcmd(f'.+1read {fn}')
         # vimcmd('delete') if clear_buffer else 0
 
@@ -682,10 +537,13 @@ if __name__ == '__main__':
     # we are callable directly as well, executing what's supported in try_module
     os.environ['vpe_cli_mode'] = 'true'
     debug, a = True, sys.argv
-    if len(a) < 3:
-        print(f'Call me with <module name> <file or url>. Modules: {ctx.mods}')
+    if len(a) < 2:
+        print(f'Call me with <module name> [args]. Modules: {list(all_mods.keys())}')
         sys.exit(1)
+    # must work with a line in vim anyway so combine:
     res = try_module(' '.join(sys.argv[1:]))
+    if isinstance(res, str):
+        sys.exit(print(res))
     f = getattr(ctx.mod, 'cli_post', 0)
     if not sys.stdout.isatty() or not f:
         if res:
