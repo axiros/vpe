@@ -1,6 +1,7 @@
 # Vim Python Eval
 
 <!--toc:start-->
+
 - [Vim Python Eval](#vim-python-eval)
   - [Evaluate Python Code (`,r`)](#evaluate-python-code-r)
     - [Setup](#setup)
@@ -36,8 +37,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-<!--toc:end-->
-
+  <!--toc:end-->
 
 ## Evaluate Python Code (`,r`)
 
@@ -308,11 +308,13 @@ Aliases in square brackets
 | ------------------ | --------- | ------------------------------------------------------- |
 | [cmd][cmd]         | : :vpe    | Run Vim Commands, incl. find & execute (see cast below) |
 | [google][google]   | g         | Searches Google                                         |
+| [grapheasy][ge]    | ge        | Draws Graph Easy Plots                                  |
 | [shot][shot]       |           | Adds Screenshots                                        |
 | [swagger][swagger] | openapi   | Builds Interactive API Client                           |
 
 [cmd]: plugin/modules/cmd.py
 [google]: plugin/modules/google.py
+[ge]: plugin/modules/grapheasy.py
 [shot]: plugin/modules/shot.py
 [swagger]: docs/swagger.md
 

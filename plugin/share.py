@@ -145,6 +145,10 @@ def vimcmd(cmd):
     return vim.command(cmd)
 
 
+def delete_cur_line():
+    vimcmd('.d')
+
+
 def vimcmdr(cmd, silent=True, title=True, opt=''):
     """vimcmd with redir into current buffer
     opt: /foo/  => insert at line matching foo
