@@ -1,3 +1,4 @@
+from os import unlink
 import os
 import sys
 from functools import partial as P
@@ -56,6 +57,17 @@ def deindent(s, spec={}):
 
 def cli_mode():
     return os.environ.get('vpe_cli_mode') == 'true'
+
+
+def unlink_if(fn):
+    if exists(fn):
+        os.unlink(fn)
+
+
+def write_file(fn, s):
+    os.makedirs(dirname(fn), exist_ok=True)
+    with open(fn, 'w') as fd:
+        fd.write(s)
 
 
 def read_file(fn):
@@ -156,7 +168,7 @@ def vimcmdr(cmd, silent=True, title=True, opt=''):
 
     """
     fn = '/tmp/vi.r.%s' % os.environ['USER']
-    os.unlink(fn) if os.path.exists(fn) else 0
+    unlink_if(fn)
     # vimcmd(f':write | redir >> {fn} | :{cmd} | redir END | edit')
     vimcmd(f'redir >> {fn}')
     vimcmd(f'silent! {cmd}')
