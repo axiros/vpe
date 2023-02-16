@@ -141,4 +141,4 @@ def fmt(line, starts='-.=<', ends='>>'):
 
 L = '['
 R = ']'
-p = fmt('B - x -> A')
+# p = fmt('B - x -> A')

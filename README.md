@@ -309,12 +309,14 @@ Aliases in square brackets
 | [cmd][cmd]         | : :vpe    | Run Vim Commands, incl. find & execute (see cast below) |
 | [google][google]   | g         | Searches Google                                         |
 | [grapheasy][ge]    | ge        | Draws Graph Easy Plots                                  |
+| [plantuml][plant]  | plant uml | Draws Plantuml Plots                                    |
 | [shot][shot]       |           | Adds Screenshots                                        |
 | [swagger][swagger] | openapi   | Builds Interactive API Client                           |
 
 [cmd]: plugin/modules/cmd.py
 [google]: plugin/modules/google.py
 [ge]: plugin/modules/grapheasy.py
+[plant]: plugin/modules/plantuml.py
 [shot]: plugin/modules/shot.py
 [swagger]: docs/swagger.md
 
