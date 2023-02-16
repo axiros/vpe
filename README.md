@@ -1,7 +1,6 @@
 # Vim Python Eval
 
 <!--toc:start-->
-
 - [Vim Python Eval](#vim-python-eval)
   - [Evaluate Python Code (`,r`)](#evaluate-python-code-r)
     - [Setup](#setup)
@@ -18,14 +17,13 @@
         - [vpe.fnd](#vpefnd)
         - [vpe.notify](#vpenotify)
         - [vpe.hlp.insert_between](#vpehlpinsertbetween)
+  - [Empty Line Handling / Help](#empty-line-handling-help)
   - [Modules](#modules)
-    - [Interacting with Swagger/OpenAPI APIs](#interacting-with-swaggeropenapi-apis)
-    - [Googling stuff](#googling-stuff)
-    - [Making Screenshots](#making-screenshots)
+  - [Module Help](#module-help)
+  - [CLI](#cli)
+  - [Builtin Modules](#builtin-modules)
+    - [Module Demos](#module-demos)
   - [Non Python Evaluation: EvalInto](#non-python-evaluation-evalinto)
-    - [Usage EvalInto](#usage-evalinto)
-  - [Non Python Eval on `:<cmd>`: ,r](#non-python-eval-on-cmd-r)
-    - [Examples](#examples)
   - [Smart Goto](#smart-goto)
     - [Usage Smart Goto](#usage-smart-goto)
   - [Jump References](#jump-references)
@@ -38,7 +36,8 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-  <!--toc:end-->
+<!--toc:end-->
+
 
 ## Evaluate Python Code (`,r`)
 
@@ -105,13 +104,15 @@ Notes:
 
 Supported (in python mode usually after comment tags '#') are:
 
+- `:[no]always`: When set, then all directives of this eval run are remembered for future runs, until `:noalways` is set
+- `:[no]autodoc`: The `:doc` directive is set/removed for all subsequent evaluations
 - `:all`: The whole source module is evaluated before the single line is
 - `:clear`: The previous result is removed
 - `:cmt <comment>`: Show the given comment string
 - `:doc`: Show the evaluated block in the result window
+- `:ft`: Set filetype of result window
 - `:here`: Show the result under the current line in the source buffer (no split)
-- `:[no]autodoc`: The `:doc` directive is set/removed for all subsequent evaluations
-- `:[no]always`: When set, then all directives of this eval run are remembered for future runs, until `:noalways` is set
+- `:nofmt`: If set _no_ lsp format of result window
 - `:reload`: Reload the module, keep ctx.state. Comes handy testing code changes.
 - `:silent`: Skip showing results at all
 - `:single`: Only the line on the cursor is evaluated, even if within a bigger block (see swagger)
@@ -273,6 +274,11 @@ Existing content between the markers will be overwritten by the new stuff.
 
 💡 Using `vpe_on_any` you can re-evaluate the insertion code via `,r` from anywhere in the document.
 
+## Empty Line Handling / Help
+
+- When no result window open: Open it, showing help
+- Otherwise: Close result window
+
 ## Modules
 
 Call syntax (in vim):
@@ -281,57 +287,49 @@ Call syntax (in vim):
 
 This hands over evaluation to modules, doing specific things with the args.
 
+## Module Help
+
+hotkey on module name without args.
+
+## CLI
+
 Some modules make some sense to be called outside vim as well, syntax like this:
 
-`<path to this repo>/plugin/vim_python_eval.py <module name> [argument]`
+```bash
+alias vpe=<path to this repo>/plugin/vim_python_eval.py
+vpe <module name> [argument]`
+```
 
-Builtin modules currently:
+## Builtin Modules
 
-### Interacting with Swagger/OpenAPI APIs
+Aliases in square brackets
 
-Module name: `swagger`. Alias: `openapi`
+| Module             | Alias(es) | What                                                    |
+| ------------------ | --------- | ------------------------------------------------------- |
+| [cmd][cmd]         | : :vpe    | Run Vim Commands, incl. find & execute (see cast below) |
+| [google][google]   | g         | Searches Google                                         |
+| [shot][shot]       |           | Adds Screenshots                                        |
+| [swagger][swagger] | openapi   | Builds Interactive API Client                           |
 
-See [here](./docs/swagger.md) for details.
+[cmd]: plugin/modules/cmd.py
+[google]: plugin/modules/google.py
+[shot]: plugin/modules/shot.py
+[swagger]: docs/swagger.md
 
-That call syntax you may also apply on the command line:
+### Module Demos
 
-### Googling stuff
+- cmd [![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
+- google ![cast](https://github.com/AXGKl/large_assets/blob/master/vpe/google_vim.mp4.gif?raw=true)
+- shot: ![cast](https://github.com/AXGKl/large_assets/blob/master/vpe/make_shot.mp4.gif?raw=true)
 
-Module name: `google`. Alias: `g`
-
-See [here](./docs/google.md) for details.
-
-### Making Screenshots
-
-Module name: `shot`
-
-See [here](./docs/shot.md) for details.
+- In the "shot" screencast the area selection cursor after hitting `,r` could not be recorded
+- Markdown browser preview via [MarkdownPreviewNvim](https://github.com/iamcco/markdown-preview.nvim)
 
 ## Non Python Evaluation: EvalInto
 
 A function evaluating _anything_ vim can do in ex mode (e.g. `!ls -lta`) into a split window is also included.
 
 See [here](./docs/eval_into.md) for details.
-
-## Non Python Eval on `:<cmd>`: ,r
-
-`,r` on a line starting with ':' (or after ':vpe ' anywhere in a line) vim evaluates the result into the buffer (as if typed in ex mode with colon).
-
-[![asciicast](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP.svg)](https://asciinema.org/a/N659bceuquJjDEZNtAnND22GP)
-
-Note: When line starts with `<!--`, we split off closing `-->`
-
-### Examples
-
-Open this file in vi and hit `,r` on these lines (`P` the usual lua table dump function):
-
-    :lua P(require('telescope.mappings').default_mappings)
-    :hi
-    :map
-    :!ls -lta /
-    :history
-
-You get the idea.
 
 ## Smart Goto
 

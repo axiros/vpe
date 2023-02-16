@@ -1,3 +1,12 @@
+"""
+# Builds Swagger/OpenAPI Client
+
+swagger <swagger URL|filename>
+
+You can directly parametrize and call the APIs from within vim.
+"""
+
+
 import time
 import sys
 import os
@@ -9,7 +18,7 @@ from share import out, lib, BRKT, deindent, vim, vimcmd   # noqa
 
 pyallwd = set(string.digits + string.ascii_letters + '_')
 
-
+def try_help(): return __doc__
 def apostr(s, a="'", b='"', c='\n', d='\\n'):
     return (
         f"'{s.replace(a, b).replace(c, d)}'"
@@ -301,7 +310,7 @@ class swagger:
             r = apostr(r)
         sep = ''
         # given examples we simply take:
-        if ctx.openapi_ver < 2 and is_(r, list) and not ex:
+        if ctx.mod_openapi_ver < 2 and is_(r, list) and not ex:
             # https://swagger.io/docs/specification/2-0/describing-parameters/#query-parameters
             cf = v.get('collectionFormat', 'csv')
             if cf != 'multi':
@@ -484,7 +493,7 @@ class swagger:
         spec['info'] = swagger.parse_infos_for_docstr(spec)
         spec['host'] = swagger.get_host(spec, url)
         _: str = spec.get('openapi', spec.get('swagger', 2))
-        ctx.openapi_ver = int(_.upper().replace('V', '').split('.')[0])
+        ctx.mod_openapi_ver = int(_.upper().replace('V', '').split('.')[0])
         spec['forbidden_kw'] = swagger.forbidden_kw
 
         if not spec.get('basePath'):
@@ -724,7 +733,7 @@ def cli_post(res):
         sys.exit(print('Client was not generated - error') or 1)
     r = res['lines']
     mod = sys.argv[1]
-    if not mod in ctx.mods:
+    if not mod in ['swagger', 'openapi']:
         sys.exit(print(f'no module {mod}') or 1)
     fn = sys.argv[2].rsplit('/', 1)[-1]
     if not sys.stdout.isatty():

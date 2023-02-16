@@ -1,5 +1,22 @@
 # OpenAPI / Swagger Support
 
+<!--toc:start-->
+- [OpenAPI / Swagger Support](#openapi-swagger-support)
+  - [Usage](#usage)
+    - [CLI Example](#cli-example)
+  - [Source Layout and Navigation](#source-layout-and-navigation)
+  - [Pre-Parametrization](#pre-parametrization)
+  - [Requests Parametrization](#requests-parametrization)
+    - [Defining WHICH parameters to send](#defining-which-parameters-to-send)
+    - [Authentication](#authentication)
+  - [Command Line Usage](#command-line-usage)
+  - [Tutorial: Working with a Huge API](#tutorial-working-with-a-huge-api)
+  - [Tips](#tips)
+    - [Perf Tip](#perf-tip)
+    - [Misc](#misc)
+  - [Tests](#tests)
+<!--toc:end-->
+
 Early phase. Manually tested against various swagger files, incl. the [petstore](https://petstore.swagger.io/) demo API.
 
 See the [examples folder](../examples/) - the openapi test script runs them all.

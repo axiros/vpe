@@ -1,4 +1,35 @@
 #!/usr/bin/env python
+"""
+# Google Around From Within Vim
+
+`g my search keywords [@site]`
+
+## --site keywords
+
+{known_sites}
+
+The keyword can be anywhere
+
+## Examples
+
+g cnn news germany
+g @gh vpe
+
+Will search google and display all URLs from the first page, excluding the non interesting
+google internal ones.
+
+💡 Select all links and open the browser on them using `,g`, smart open (see below).
+
+## CLI Example
+
+```
+[gk@axgk ~]$ vpe g vim python evaluation
+https: // vim.fandom.com/wiki/Evaluate_current_line_using_Python
+https: // vim.fandom.com
+(...)
+```
+"""
+
 import sys
 import base64
 import uuid
@@ -13,6 +44,11 @@ rm_if_endswith = ['.svg', '.png', '&amp', '.xml', '.jpg', 'jpeg', '/stack_overfl
 known_sites = {'@gh': 'github.com', '@so': 'stackoverflow.com'}
 
 
+def try_help():
+    h = __doc__.format(known_sites=known_sites)
+    return h
+
+
 def metas(line):
     line = line + ' '
     s, e = [], []
@@ -24,7 +60,7 @@ def metas(line):
 
 
 def links(txt):
-    urls = """(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])"""
+    urls = '(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])'
     a = re.findall(urls, txt)
 
     def filt(i):

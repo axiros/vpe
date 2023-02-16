@@ -20,6 +20,7 @@ If you marked a bunch of URLs, those will be opened in browser as well.
 
 |Word|Whole Line<BR>Valid Cursor Positions: ^<br>Open Action|Comment|
 |-  |-           | - |
+|`readme`|`[foo bar][hosts](, g bla)` <br> `...........^^^^` <br> ✔️`/etc/hosts`|Ref link to existing file is opened| 
 |`x`|`[new]: /tmp/vpeso.gk/m1.md` <br> `.........^^^^^` <br> ✔️`/tmp/vpeso.gk/m1.md`|Ref link to existing file is opened| 
 |`x`|`foo [xxx](x1/x1.md)` <br> `.........^^^^^` <br> ✔️`/tmp/vpeso.gk/x1/x1.md`|Linked non existing markdown files: Dir created, file unsaved opened in vi<BR>dir created<BR>content: `# xxx LS `| 
 |`bashrc`|`foo ~/.bashrc` <br> `....^^^^^^` <br> ✔️`/home/gk/.bashrc`|tilde replaced, file open in vi| 

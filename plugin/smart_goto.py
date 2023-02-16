@@ -8,7 +8,7 @@ import re
 import sys
 import json
 from functools import partial
-from share import notify, log, ctx
+from share import notify, log, ctx, BL_RND, BL_SQR
 
 try:
     import vim
@@ -71,8 +71,8 @@ def google(word):
 
 def is_markdown_ref_link(fn, word, word_space_sepped, dir, line, **kw):
     """Always open it, no matter where we are in that line"""
-    if not line or not fn.endswith('.md'):
-        return
+    if not line:
+        return   # or not fn.endswith('.md'): return
     # comments (with e.g. other links) are anyway not allowed in ref link lines by md => really, just hit the link:
     if not (line[0] == '[' and ']: ' in line):
         return
@@ -132,16 +132,16 @@ def touch_new_md_file(fn, title):
 
 def is_markdown_link(col, fn, word, word_space_sepped, dir, line, **kw):
     """On title: browse. On link: open. On ref link: go to it"""
-    if not word_space_sepped or not fn.endswith('.md'):
+    if not word_space_sepped:   # or not fn.endswith('.md'):
         return
 
     # word can be within a space sepped title ->
     x = between(col, line, ']', ']')
     if x and x[0] == BL_SQR:
-        # we are in md ref link title.
+        # we are in md ref link.
         rlt = between(col + 1, line, '[', ']')
         # search it in buffer or file
-        if vim and hasattr(vim, 'current_buffer'):
+        if vim and hasattr(vim, 'current'):
             b = vim.current.buffer
         else:
             b = read_file(fn).splitlines()
@@ -243,36 +243,6 @@ def is_browsable(word, **kw):
         google(word)
 
 
-def handle(col, word, line, linenr=1, fn='x.md'):
-    """pth='' when no writgble buffer"""
-    dir = abspath(dirname(fn))
-    line = line.rstrip()
-    col = min(len(line) - 1, col)
-    # vim will pck NEXT word on spaces:
-    while line[col] == ' ':
-        col += 1
-    word_space_sepped = between_spaces(col, line)
-    word_between_apos = between_apos(col, line)
-    word_between_apos_clean = clean_special_chars(word_between_apos)
-
-    m = dict(locals())
-    s = '\n\r'.join([f'{k.ljust(5)}: {v}' for k, v in m.items()])
-    # notify('📖 Smart Goto', s, 10)
-
-    for f in [
-        is_man_page,
-        is_help,
-        is_markdown_ref_link,
-        is_markdown_link,
-        is_file_path_or_url,
-        is_lcdoc_lp_line,
-        is_browsable,
-    ]:
-        print(f'Trying {f.__name__}')
-        f(**m)
-    raise Noop()
-
-
 def get_test_table(T):
     table = ['', '|Word|Whole Line<BR>Valid Cursor Positions: ^<br>Open Action|Comment|']
     table += ['|-  |-           | - |']
@@ -320,6 +290,36 @@ def get_test_table(T):
     return f'\n\n{t}\n||Notes: <br> - backticks replaced with `^` <br> - Testfile contains markdown ref:<br>   `[foo bar]: http://foo.bar`|\n\n'
 
 
+def handle(col, word, line, linenr=1, fn='x.md'):
+    """pth='' when no writgble buffer"""
+    dir = abspath(dirname(fn))
+    line = line.rstrip()
+    col = min(len(line) - 1, col)
+    # vim will pck NEXT word on spaces:
+    while line[col] == ' ':
+        col += 1
+    word_space_sepped = between_spaces(col, line)
+    word_between_apos = between_apos(col, line)
+    word_between_apos_clean = clean_special_chars(word_between_apos)
+
+    m = dict(locals())
+    s = '\n\r'.join([f'{k.ljust(5)}: {v}' for k, v in m.items()])
+    # notify('📖 Smart Goto', s, 10)
+
+    for f in [
+        is_man_page,
+        is_help,
+        is_markdown_ref_link,
+        is_markdown_link,
+        is_file_path_or_url,
+        is_lcdoc_lp_line,
+        is_browsable,
+    ]:
+        print(f'Trying {f.__name__}')
+        f(**m)
+    raise Noop()
+
+
 def test(match):
     """We write one test FILE which we rely on for some "same directory" related tests
     For most of the use cases we do not need that and just act on current word marked
@@ -335,6 +335,7 @@ def test(match):
     bla [bar][foo] bla
     xxx
     [foo bar]: {L}
+    [hosts]: /etc/hosts
     """
     TMD1 = TMD1.format(L=L).replace('\n    ', '\n')
     # we use foo a lot and want to avoid a file foo existing in test dir
@@ -352,6 +353,11 @@ def test(match):
         [
             'Must edit',
             [
+                [
+                    [(11, 15), 'readme', '[foo bar][hosts](, g bla)', 1, fntmd1],
+                    ['/etc/hosts'],
+                    'Ref link to existing file is opened',
+                ],
                 [
                     [(9, 14), 'x', f'[new]: {fntmd1}'],
                     [fntmd1],
@@ -530,37 +536,6 @@ def test(match):
     print(f'\x1b[1m✅ All well \x1b[0m [{round(now()-t0, 2)}s]')
 
 
-BL_RND, BL_SQR = '(['
 if __name__ == '__main__':
     sys.argv.append('')
     test(match=sys.argv[1])
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
-
-# is_markdown_dragshot_req,
-# on_empty_in_md_file_do_mkdocs_serve,
