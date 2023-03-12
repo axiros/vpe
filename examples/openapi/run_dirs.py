@@ -67,6 +67,8 @@ def run_dir(d, vpe, testmode):
     os.system(f'chmod +x "{d}/{pre}created_client.py"')
     if not testmode:
         return
+
+    # ------------------------------------------------------------------- test mode
     cmd = f'diff --color "{d}/results.json" "{d}/{pre}results.json"'
     r = os.popen(cmd).read().strip()
     if r:
@@ -78,7 +80,7 @@ def run_dir(d, vpe, testmode):
 
 def main(match, testmode):
     os.chdir(here)
-    vpe = os.path.dirname(here) + '/plugin/vim_python_eval.py'
+    vpe = os.path.dirname(os.path.dirname(here)) + '/plugin/vim_python_eval.py'
     for d in os.listdir(here):
         if match in d and os.path.isdir(d):
             run_dir(absp(d), vpe, testmode)

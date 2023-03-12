@@ -1,1 +1,1 @@
-from modules.swagger import *
+swagger.py

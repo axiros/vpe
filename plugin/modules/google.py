@@ -4,13 +4,13 @@
 
 `g my search keywords [@site]`
 
-## --site keywords
+# --site keywords
 
 {known_sites}
 
 The keyword can be anywhere
 
-## Examples
+# Examples
 
 g cnn news germany
 g @gh vpe
@@ -20,7 +20,7 @@ google internal ones.
 
 💡 Select all links and open the browser on them using `,g`, smart open (see below).
 
-## CLI Example
+# CLI Example
 
 ```
 [gk@axgk ~]$ vpe g vim python evaluation
@@ -30,6 +30,7 @@ https: // vim.fandom.com
 ```
 """
 
+from share import notify, vim
 import sys
 import base64
 import uuid
@@ -84,7 +85,12 @@ def links(txt):
     # return r
 
 
-def try_load(s: str = '', line='vpe'):
+def from_picker(word):
+    res = try_load(word)
+    return res
+
+
+def try_load(line='vpe', **kw):
     """s the content of a swagger definition file"""
     line, sites, exclude = metas(line)
     q = urllib.parse.quote_plus(line)

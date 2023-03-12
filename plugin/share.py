@@ -1,3 +1,4 @@
+from pathlib import Path
 from os import unlink
 import os
 import sys
@@ -17,6 +18,8 @@ except Exception:
 
     # print('no vim api importable', file=sys.stderr)
 
+all_mods = {}
+
 
 class ctx:
     """Interface for the caller, setting us up Also transfers state over debug module reloads.
@@ -31,6 +34,7 @@ class ctx:
     PTH = None   # full buffer file path
     W = None   # word under cursor
     _ = {'_loaded_libs': {'yaml': 'pyyaml'}}
+    prev_mod_line = None  # module line of a previous run (so that we can us it if inside block)
     prev_win = None   # used in add_or_switch_to_window for 'previous' win
     cur_buffer = None
     cur_cls: list = []
@@ -41,6 +45,7 @@ class ctx:
     original_line_val = None   # content of the line. Not in use currently
     prev_buffer = None
     mod_openapi_ver = None   # mod openapi
+    src_buf = None  # .current.buffer
     state = _   # transferred even over module reloads:
 
 
@@ -161,6 +166,18 @@ def delete_cur_line():
     vimcmd('.d')
 
 
+fn_into_buf = '/tmp/vi.here.%s' % os.environ['USER']
+
+
+def add_lines(lines, offs=1):
+    src_buf = ctx.src_buf or vim.current.buffer
+    with open(fn_into_buf, 'w') as fd:
+        fd.write(lines)
+    if ctx.L1 == len(src_buf):
+        src_buf.append('')
+    vimcmd(f'.+{offs}read {fn_into_buf}')
+
+
 def vimcmdr(cmd, silent=True, title=True, opt=''):
     """vimcmd with redir into current buffer
     opt: /foo/  => insert at line matching foo
@@ -194,6 +211,133 @@ def vimcmdr(cmd, silent=True, title=True, opt=''):
     #     return vimcmd(f'.-0read {fn}')
     # else:
     #     src_buf[nrs[0]] = s
+
+
+def cast(s: str, b={'true': True, 'false': False}):
+    s = s.lower()
+    if s in b:
+        return b[s]
+    try:
+        return float(s)
+    except Exception:
+        try:
+            return int(s)
+        except Exception:
+            pass
+    return s
+
+
+def write_file_relative(pth, s, ext=None):
+    if ext:
+        pth = pth if pth.endswith(f'.{ext}') else f'{pth}.{ext}'
+    fn = Path(ctx.PTH).parent.joinpath(Path(pth))
+    d = str(fn.parent)
+    notify('dir', d)
+    if not exists(d):
+        notify('making dir', d)
+        os.makedirs(str(fn.parent))
+    if not os.path.isdir(d):
+        raise Exception(f"{d} is not a directory")
+    if isinstance(s, bytes):
+        fn.write_bytes(s)
+    else:
+        fn.write_text(s)
+    return str(fn), pth
+
+
+def linekw(line, kw):
+    kw = ' ' + kw
+    line = ' ' + line
+    if kw not in line:
+        return None
+    pre, val = line.split(kw, 1)
+    if val.startswith('='):
+        return cast(val.split(' ', 1)[0][1:])
+    return True
+
+
+def find_block_end_seps(b, nr, ends, addl=0):
+    '''Block end encountered, do we have more enclosing endings right after, which we should keep?
+    '''
+    while nr < len(b)-1:
+        nr += 1
+        if b[nr] not in ends:
+            break
+        addl += 1
+    return addl
+
+
+def get_this_and_block_after(sep, mod, seps, wanted):   # ends={'-->', ''}):
+    '''block terminated by sep, which is '', '-->', '"""', ...:'''
+    seps = dict(seps)
+    end = seps[sep] if sep else ''
+    fmt = getattr(mod, 'linefmt', None)
+    block, nr, b = [], ctx.L1, buf()
+    addl = 1
+    for nr in range(ctx.L1, len(b)):
+        l = b[nr]
+        if l.strip() == end:
+            a = 1 if end else 0
+            addl = find_block_end_seps(b, nr, seps.values(), a)
+            break
+        if fmt:
+            b[nr] = fmt(l)
+        block.append(l)
+    ub, full_block = False, False
+    if 'upsert_below' in wanted:
+        after = find_block_after(nr+addl-1, b, seps)
+        ub = P(upsert_below, after=after, offs=nr-ctx.L1+addl, delim=['<!--', '-->'])
+    if 'full_block' in wanted:
+        # go up:
+        full_block, i = list(block), ctx.L1
+        for nr in range(ctx.L1, 0, -1):
+            if not b[nr-1].strip():
+                break
+            full_block.insert(0, b[nr-1])
+
+    return block, ub, full_block
+
+
+def find_block_after(nr, buffer, seps):
+    '''returns start and stop line of the next block determinated by seps'''
+    b = buffer
+    seps.pop('', None)  # empty lines allowed
+    strt, stp = 0, 0
+    # look max 4 lines ahead:
+    for nr in range(nr, min(len(b), nr + 4)):
+        l = b[nr].strip()
+        if not l or l not in seps:
+            continue
+        end = seps[l]
+        strt = nr + 1
+        for nr in range(nr, len(b)):
+            le = b[nr]
+            if le.startswith(end):
+                stp = nr + 1
+                if '<!--' in le:
+                    stp += int(le.split('<!--', 1)[1][:-3])
+                return strt, stp+1
+
+
+def upsert_below(rendered, after, offs, delim):
+    if isinstance(rendered, str):
+        rendered = {'lines': rendered}
+    res = rendered['lines']
+    s = f'\n{delim[0]}\n{res.rstrip()}\n{delim[1]}\n'
+    se = rendered.get('block_append')
+    if se:
+        l = len(se.splitlines())
+        s = s[:-1] + f'<!--{l}-->\n' + se
+
+    fn = '/tmp/vpe.rendering.{UID}'.format(UID=uid)
+    write_file(fn, s)
+    vimcmd(f'.{offs}read {fn}')
+    if after:
+        l = len(s.splitlines())
+        i = 1 if after[1] + l > len(buf()) else 0
+        vimcmd(f'{after[0] + l},{after[1] + l-i}d')
+        vimcmd(str(ctx.original_line))
+        # vimcmd(f'{ctx.L1}')
 
 
 # Avoiding the infomous python indent bug for Treesitter...

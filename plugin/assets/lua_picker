@@ -1,0 +1,42 @@
+-- vi: ft=lua
+local pickers = require("telescope.pickers")
+local finders = require("telescope.finders")
+local conf = require("telescope.config").values
+local actions = require("telescope.actions")
+local action_state = require("telescope.actions.state")
+
+-- our picker function: colors
+local show = function(title, list, fn_res)
+        local opts = require("telescope.themes").get_dropdown({})
+        local opts = {}
+        pickers
+            .new(opts, {
+                    prompt_title = title,
+                    finder = finders.new_table({
+                            results = list, -- { "red", "green", "blue" },
+                    }),
+                    sorter = conf.generic_sorter(opts),
+                    attach_mappings = function(prompt_bufnr, map)
+                            actions.select_default:replace(function()
+                                    actions.close(prompt_bufnr)
+                                    local selection = action_state.get_selected_entry()
+                                    local file = io.open(fn_res, "w")
+                                    if selection[1] ~= nil then
+                                            file:write(selection[1])
+                                    else
+                                            file:write("")
+                                    end
+                                    file:close()
+                                    -- print(vim.inspect(selection))
+                                    -- vim.api.nvim_put({ selection[1] }, "", false, true)
+                                    vim.cmd("PythonEval")
+                            end)
+                            return true
+                    end,
+            })
+            :find()
+end
+
+_picker = { show = show }
+-- to execute the function
+--colors()

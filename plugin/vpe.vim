@@ -30,6 +30,7 @@ endfunction
 
 function! s:VPE(func_name, l1, l2) range
 "" Executes functions from py_api.py
+
 if exists('vpe_reload')
   let s:vpe_reload = 1
 else
@@ -59,6 +60,7 @@ if 'python':
     # make a lot of stuff accessible via ctx, for the module:
     # 2: actual col, not bytes. like in python
     ccp = vim.eval('getcursorcharpos()')
+    #os.system(f'notify-send ccp  "{ccp}"')
     _ = vim_python_eval
     _.ctx.L1  = int(ccp[1]) # like vim, from 1
     _.ctx.COL  = int(ccp[2]) # like vim, from 1
@@ -67,12 +69,14 @@ if 'python':
     _.ctx.PTH = vim.eval("s:vpe_pth")
     _.ctx.L   = line
     _.ctx.executed_lines = []
+    # funcname: 'ExecuteSelectedRange' or 'SmartGoto'
     getattr(vim_python_eval, vim.eval("a:func_name"))()
 EOL
 endfunction
 
-command! -range PythonEval <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
+command! PythonEval silent  call s:VPE('ExecuteSelectedRange', -1, -1) 
 command! PythonGoto silent  call s:VPE('SmartGoto', -1, -1) 
+command! -range PythonEvalRange silent <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
 command! -range PythonGotoRange silent <line1>,<line2> call s:VPE('SmartGoto', <line1>, <line2>)
 command! EvalInto silent call s:EvalInto()
 

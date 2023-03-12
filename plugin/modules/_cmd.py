@@ -36,7 +36,7 @@ import re
 import vim_python_eval
 
 
-def try_load(s: str = '', line: str = ''):
+def try_load(line, **kw):
     if not hasattr(vim, 'current'):
         return 'this module can only be run in vim'
 

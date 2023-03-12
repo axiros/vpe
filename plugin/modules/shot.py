@@ -37,7 +37,7 @@ def try_help():
     return s
 
 
-def try_load(s: str = '', line='vpe'):
+def try_load(line='vpe', **kw):
     """s the content of a swagger definition file"""
     img = line.split()[0]
     # notify(img, dir(ctx), 10)

@@ -18,7 +18,11 @@ from share import out, lib, BRKT, deindent, vim, vimcmd   # noqa
 
 pyallwd = set(string.digits + string.ascii_letters + '_')
 
-def try_help(): return __doc__
+
+def try_help():
+    return __doc__
+
+
 def apostr(s, a="'", b='"', c='\n', d='\\n'):
     return (
         f"'{s.replace(a, b).replace(c, d)}'"
@@ -469,8 +473,17 @@ class swagger:
         return h[:-1] if h.endswith('/') else h
 
     @staticmethod
-    def try_load(s: str, line='n.a.'):
+    def try_load(line, **kw):
         """s the content of a swagger definition file"""
+
+        h = ['http://', 'https://']
+        if line.startswith(h[0]) or line.startswith(h[1]):
+            s = lib('requests').get(line).text
+
+        s = read_file(line)
+        if not s and line.split(':', 1)[0] in h:   # and url.endswith('.json'):
+            s = lib('requests').get(line).text
+
         url = line
         s = s.encode().decode('utf-8-sig')
         if not s or ('swagger' not in s and 'openapi' not in s):

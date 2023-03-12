@@ -73,7 +73,7 @@ def build(fninto, depth, size):
     vimcmd('edit')
 
 
-def try_load(s: str = '', line='vpe'):
+def try_load(s: str = '', line='vpe', **kw):
     """s the content of a swagger definition file"""
     line += ' 100'
     depth, size = [int(i) for i in line.split()[:2]]

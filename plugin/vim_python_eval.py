@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """
 Tools to make use of python API.
 
@@ -16,7 +17,7 @@ import re
 from share import log, here, uid, read_file, ctx, is_, debug, notify, exists   # noqa
 from share import clear_all, buf, add_or_switch_to_window   # noqa
 from share import out, lib, BRKT, vim, vimcmd, BL_SQR  # noqa
-from share import vimcmdr   # noqa
+from share import vimcmdr, add_lines   # noqa
 from mods import refresh_known_mods, try_module, all_mods   # noqa
 from vpe_macros import macros   # noqa
 
@@ -233,6 +234,7 @@ def SmartGoto():
         return
 
     try:
+        notify('fooadsfa', [ctx.W, ctx.L1])
         smart_goto.handle(ctx.COL - 1, ctx.W, ctx.L, ctx.L1 - 1, ctx.PTH)
     except smart_goto.Noop:
         pass
@@ -264,6 +266,10 @@ def browse(lnk):
 def ExecuteSelectedRange():
     """Called method when hotkey is pressed in vim"""
     # set by the vim plugin -> always emtpy at hotkey press
+
+    if ctx.L2 < 0:
+        ctx.L2 = ctx.L1
+
     src_buf = ctx.src_buf = vim.current.buffer
     if not ctx.executed_lines:
         ctx.original_line = ctx.L1
@@ -452,20 +458,28 @@ def ExecuteSelectedRange():
             except Exception as ex:
                 silent = False
                 exc_type, exc_value, exc_tb = sys.exc_info()
+                # this is intended for interactive docs, for others.
                 l1 = find_directive_in_header_and_footer(src_buf, ctx, ':vpe_on_err', 10)
                 if l1:
                     vim.current.buffer = src_buf
                     ctx.L1 = ctx.L2 = l1
                     return ExecuteSelectedRange()
 
+                if len(ctx.W) > 0:
+                    from picker import show_action_picker
+
+                    return show_action_picker()
+
                 # tb = traceback.TracebackException(exc_type, exc_value, exc_tb)
+                lines = [
+                    f'{str(l).rjust(4)}{block[l]}' for l in range(min(999, len(block)))
+                ]
                 state['p'] = {
                     'Python Evaluation Error': {
-                        'block': '\n'.join(
-                            [f'{l.rjust(4)}{block[l]}' for l in range(999)]
-                        ),
+                        'block': lines,
+                        'word': [ctx.W, ctx.COL],
                         'ex': [type(ex), str(ex)],
-                        'tb': [l.split(',') for l in traceback.format_tb(exc_tb)],
+                        'tb': [str(l).split(',') for l in traceback.format_tb(exc_tb)],
                     }
                 }
             res_spec = check_print_wanted(state, add_state)  # just a string
@@ -504,13 +518,9 @@ def ExecuteSelectedRange():
 
             res_buf = add_or_switch_to_window('previous')
         elif lines:
-            fn = '/tmp/vi.here.%s' % os.environ['USER']
-            with open(fn, 'w') as fd:
-                fd.write(lines)
-            if ctx.L1 == len(src_buf):
-                src_buf.append('')
             vim.command(str(nrs[-1]))   # goto last line of block
-            vimcmd(f'.+1read {fn}')
+            add_lines(lines)
+
         # vimcmd('delete') if clear_buffer else 0
 
     p = res_spec.get('post_generate')
