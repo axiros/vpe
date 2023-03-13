@@ -76,6 +76,8 @@ Also, the module offers [built in support](./docs/swagger.md) for interaction wi
 
 ![](./docs/img/swagger.png)
 
+...and much more.
+
 ### Setup
 
 Config: Map `,r` in normal and visual mode to `PythonEval`.
@@ -147,7 +149,8 @@ result pane:
 p = {'a': [{'foo': {'bar': 'xxx'}}, '...[2 items]]}
 ```
 
-Note: When you set `:here` then the result will be NOT shown in a split window but within the source buffer, below the current line.
+Note: When you set `:here` then the result will be NOT shown in a split window but within
+the source buffer, below the current line.
 
 #### Predefined Blocks (Macros)
 
@@ -356,8 +359,7 @@ Those options are found, based on modules available or linked within the
 
 ### Usage Smart Goto
 
-Map `:PythonGoto` in normal and `:PythonGotoRange` in visual mode. Vim or a browser will open
-according to cursor position or selected range.
+Vim or a browser will open according to cursor position or selected range.
 
 See [here](./docs/smart_goto.md) for details.
 
@@ -397,26 +399,30 @@ Note: Directives `:vpe_on_err` or `:vpe_on_any` are understood behind ` # :` sep
 
 ## Installation
 
-1. Install this plugin "axiros/vpe"
+1. Install this plugin, i.e. "axiros/vpe", using your fav. package mgr.
 2. Configuration:
 
-Define a hotkey for invoking it in normal and visual mode, e.g.:
+Define a hotkey for invoking it in normal and extended mode, e.g.:
 
-```vim
-nnoremap          ,r  :Vpe<CR>
-xnoremap <silent> ,r  :Vpe<CR>
+```lua
+mode n:
+        [',r'] = { ":call PyEvalSelection('Eval', '')<CR>"}
+        [',g'] = { ":silent call PyEvalSelection('SmartGoto', '')<CR>"}
+mode x:
+        [',r'] = { ":<C-U> call PyEvalSelection('Eval', visualmode())<CR>"}
+        [',g'] = { ":<C-U> silent call PyEvalSelection('SmartGoto', visualmode())<CR>"}
 ```
 
 This lazy loads the module on first use.
 
-If wanted, same style, also `,g` and `,E`. Naturally, those shorcuts are just suggestions.
+Naturally, those shortcuts are just suggestions.
 
 ### Requirements
 
 - Should work for vim and neovim with python3 support but tested only in neovim
 - Autoformatting of results only in neovim.
 - For filetype python we assume these requirements in your config:
-- `set foldmethod=indent` should be set, since we collapse classes after creating swagger
+- `set foldmethod=indent` should be set for python, since we collapse classes after creating swagger
   support definitions.
 
 ## Developing
