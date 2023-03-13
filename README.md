@@ -1,7 +1,6 @@
 # Vim Python Eval
 
 <!--toc:start-->
-
 - [Vim Python Eval](#vim-python-eval)
   - [Evaluate Python Code (`,r`)](#evaluate-python-code-r)
     - [Setup](#setup)
@@ -25,6 +24,7 @@
   - [Builtin Modules](#builtin-modules)
     - [Module Demos](#module-demos)
   - [Non Python Evaluation: EvalInto](#non-python-evaluation-evalinto)
+  - [Pickers](#pickers)
   - [Smart Goto](#smart-goto)
     - [Usage Smart Goto](#usage-smart-goto)
   - [Jump References](#jump-references)
@@ -37,7 +37,7 @@
     - [A lib in my venv/conda env cannot be imported](#a-lib-in-my-venvconda-env-cannot-be-imported)
     - [gevent monkey patch causes trouble](#gevent-monkey-patch-causes-trouble)
   - [Credits, Alternatives, Interesting Links](#credits-alternatives-interesting-links)
-  <!--toc:end-->
+<!--toc:end-->
 
 ## Evaluate Python Code (`,r`)
 
