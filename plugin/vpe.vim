@@ -27,56 +27,100 @@ function! s:EvalInto()
   :%d
   put=output
 endfunction
+command! EvalInto silent call s:EvalInto()
 
-function! s:VPE(func_name, l1, l2) range
-"" Executes functions from py_api.py
+function! PyEvalSelection(func_name, mode)
+    if a:mode == 'picker'
+        let l = ['last']
+    else
+      if a:mode == ''
+          let l = [['']]
+      else
+          let l = [s:get_selected_lines(a:mode)]
+      endif
+      call add(l, expand("<cword>"))
+      call add(l, expand("%:p"))
+      call add(l, getline('.'))
+      call add(l, getcursorcharpos())
+      call add(l, s:script_path)
+      " must be last!
+      if exists('vpe_reload')
+        call add(l, 'rel')
+      else
+        call add(l, '')
+      endif
+    endif
 
-if exists('vpe_reload')
-  let s:vpe_reload = 1
-else
-  let s:vpe_reload = 0
-endif
-let s:vpe_word = expand("<cword>")
-let s:vpe_pth = expand("%:p")
-"let s:vpe_foo = getpos("'<")[1:2]
-" just indent all python
-python3 << EOL
+    let s:nfos = l
+    python3 << EOL
+
 if 'python':
     import os, sys
-    D=vim.eval("s:script_path")
-    reload_=vim.eval("s:vpe_reload")
-    line = vim.eval("getline('.')")
-    if not D in sys.path:
-        sys.path.insert(0, D)
-        import vim_python_eval
-    if int(reload_) or ':reload' in  line:
-        m = vim_python_eval.ctx.state
-        for k in  list(sys.modules.keys()):
-          v = sys.modules[k]
-          if '/vpe/' in str(v):
-            sys.modules.pop(k)
-        import vim_python_eval
-        vim_python_eval.ctx.state = m
-    # make a lot of stuff accessible via ctx, for the module:
-    # 2: actual col, not bytes. like in python
-    ccp = vim.eval('getcursorcharpos()')
-    #os.system(f'notify-send ccp  "{ccp}"')
-    _ = vim_python_eval
-    _.ctx.L1  = int(ccp[1]) # like vim, from 1
-    _.ctx.COL  = int(ccp[2]) # like vim, from 1
-    _.ctx.L2  = int(vim.eval("a:l2"))
-    _.ctx.W   = vim.eval("s:vpe_word")
-    _.ctx.PTH = vim.eval("s:vpe_pth")
-    _.ctx.L   = line
-    _.ctx.executed_lines = []
-    # funcname: 'ExecuteSelectedRange' or 'SmartGoto'
+    l = vim.eval('s:nfos')
+    if not l[0] == 'last':
+        d = {
+            'last_sel': l,
+            'SEL': l[0],
+            'W':   l[1],
+            'PTH': l[2],
+            'L':   l[3],
+            'CCP': l[4],
+            'D':   l[5],
+            'rld': l[6],
+            }
+        lines = len(l[0])
+        d['L1'] = l1 = int(d['CCP'][1])
+        d['L2'] = -1 if lines < 2 else (l1 + lines -1)
+        d['COL'] = int(d['CCP'][2])
+        d['executed_lines'] = []
+
+        if not d['D'] in sys.path:
+            sys.path.insert(0, d['D'])
+            import vim_python_eval
+
+        if d['rld'] or ':reload' in  d['L']:
+            m = vim_python_eval.ctx.state
+            for k in  list(sys.modules.keys()):
+              v = sys.modules[k]
+              if '/vpe/' in str(v):
+                sys.modules.pop(k)
+            import vim_python_eval
+            vim_python_eval.ctx.state = m
+
+        m = vim_python_eval.ctx
+        [setattr(m, k, v) for k, v in d.items()]
+        # funcname: 'Eval' or 'SmartGoto'
     getattr(vim_python_eval, vim.eval("a:func_name"))()
+    # with open('/tmp/b1', 'w') as fd:
+    #     fd.write(str(d))
+    # os.system(f'notify-send -t 10 "foo"  "{d["SEL"]}"')
 EOL
 endfunction
-
-command! PythonEval silent  call s:VPE('ExecuteSelectedRange', -1, -1) 
-command! PythonGoto silent  call s:VPE('SmartGoto', -1, -1) 
-command! -range PythonEvalRange silent <line1>,<line2> call s:VPE('ExecuteSelectedRange', <line1>, <line2>)
-command! -range PythonGotoRange silent <line1>,<line2> call s:VPE('SmartGoto', <line1>, <line2>)
-command! EvalInto silent call s:EvalInto()
+   
+function s:get_selected_lines(mode)
+    " Returns selected text. Call with visualmode() as the argument
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end]     = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    if a:mode ==# 'v'
+        " Must trim the end before the start, the beginning will shift left.
+        let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+        let lines[0] = lines[0][column_start - 1:]
+    elseif  a:mode ==# 'V'
+        " Line mode no need to trim start or end
+    elseif  a:mode == "\<c-v>"
+        " Block mode, trim every line
+        let new_lines = []
+        let i = 0
+        for line in lines
+            let lines[i] = line[column_start - 1: column_end - (&selection == 'inclusive' ? 1 : 2)]
+            let i = i + 1
+        endfor
+    endif
+    return lines
+endfunction
+command! PyEvalFromPicker silent call PyEvalSelection('Eval', 'picker')
+" for your config, e.g.:
+" xnoremap ,r :<C-U> call PyEvalSelection(visualmode())<Cr>
+" nnoremap ,r :call PyEvalSelection('')<Cr>
 

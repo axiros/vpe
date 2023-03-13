@@ -92,8 +92,6 @@ def try_module(line):
         if line.startswith(k):
             line = aliases[k] + line[len(k):]
     # if line[0] in aliases: line = aliases[line[0]] + ' ' + line[1:]
-    notify('line', line)
-
     modn = line.split(' ')[0]
     if modn not in all_mods:
         if ctx.prev_mod_line:

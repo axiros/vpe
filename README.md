@@ -283,7 +283,7 @@ Existing content between the markers will be overwritten by the new stuff.
 
 Call syntax (in vim):
 
-`<module name>  [argument]`
+`<module name>  [argument]`, at column 1 of any line of a buffer, then eval hotkey (e.g. `,r`)
 
 This hands over evaluation to modules, doing specific things with the args.
 
@@ -304,18 +304,20 @@ vpe <module name> [argument]`
 
 Aliases in square brackets
 
-| Module             | Alias(es) | What                                                    |
-| ------------------ | --------- | ------------------------------------------------------- |
-| [cmd][cmd]         | : :vpe    | Run Vim Commands, incl. find & execute (see cast below) |
-| [google][google]   | g         | Searches Google                                         |
-| [grapheasy][ge]    | ge        | Draws Graph Easy Plots                                  |
-| [plantuml][plant]  | plant uml | Draws Plantuml Plots                                    |
-| [shot][shot]       |           | Adds Screenshots                                        |
-| [swagger][swagger] | openapi   | Builds Interactive API Client                           |
+| **Module**           | **Alias(es)** | **What**                                                  |
+| ------------------ | ---------   | ------------------------------------------------------- |
+| [cmd][cmd]         | : :vpe      | Run Vim Commands, incl. find & execute (see cast below) |
+| [google][google]   | g           | Searches Google                                         |
+| [grapheasy][ge]    | ge          | Draws Graph Easy Plots                                  |
+| [leo][leo]         | leo         | Translates the arguments, using the [leo][leo] command  |
+| [plantuml][plant]  | plant uml   | Draws Plantuml Plots                                    |
+| [shot][shot]       |             | Adds Screenshots                                        |
+| [swagger][swagger] | openapi     | Builds Interactive API Client                           |
 
-[cmd]: plugin/modules/cmd.py
+[cmd]: plugin/modules/_cmd.py
 [google]: plugin/modules/google.py
 [ge]: plugin/modules/grapheasy.py
+[leo]: https://pypi.org/project/leo-cli/ 
 [plant]: plugin/modules/plantuml.py
 [shot]: plugin/modules/shot.py
 [swagger]: docs/swagger.md
@@ -334,6 +336,17 @@ Aliases in square brackets
 A function evaluating _anything_ vim can do in ex mode (e.g. `!ls -lta`) into a split window is also included.
 
 See [here](./docs/eval_into.md) for details.
+
+## Pickers
+
+Hotkey over prosa words anywhere in a line will result in the evaluation to fail. Absent a
+`vpe_on_err` directive, vpe proceeds to open a telescope picker with certain options,
+about what to do with the word.
+
+Those options are found, based on modules available or linked within the
+`vpe/plugin/modules/pickermods` directory.
+
+
 
 ## Smart Goto
 

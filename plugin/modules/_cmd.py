@@ -64,5 +64,5 @@ def try_load(line, **kw):
                 continue
             have.add(lstr)
             ctx.L1 = ctx.L2 = line + 1
-            vim_python_eval.ExecuteSelectedRange()
+            vim_python_eval.Eval()
             vim.current.window = wind

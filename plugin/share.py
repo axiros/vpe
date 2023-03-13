@@ -21,6 +21,11 @@ except Exception:
 all_mods = {}
 
 
+def wrap_text_result(s, modn, words):
+    lines = f'\n\n<!-- {modn} results for "{words}"\n{s.strip()}\n-->\n\n'
+    return lines
+
+
 class ctx:
     """Interface for the caller, setting us up Also transfers state over debug module reloads.
 
@@ -167,6 +172,10 @@ def delete_cur_line():
 
 
 fn_into_buf = '/tmp/vi.here.%s' % os.environ['USER']
+
+'''
+asdfasd  buffer
+'''
 
 
 def add_lines(lines, offs=1):

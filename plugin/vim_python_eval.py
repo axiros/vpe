@@ -3,7 +3,7 @@
 """
 Tools to make use of python API.
 
-API funcs are in Capitals. Currently only "ExecuteSelectedRange" -
+API funcs are in Capitals. Currently only "Eval" -
 evaluating selected python code.
 """
 import traceback
@@ -263,7 +263,7 @@ def browse(lnk):
     os.system('%s "%s" >/dev/null 2>/dev/null &' % (browser, lnk))
 
 
-def ExecuteSelectedRange():
+def Eval():
     """Called method when hotkey is pressed in vim"""
     # set by the vim plugin -> always emtpy at hotkey press
 
@@ -278,7 +278,7 @@ def ExecuteSelectedRange():
 
     if on_any:
         ctx.L1 = ctx.L2 = on_any
-        return ExecuteSelectedRange()
+        return Eval()
 
     filetype = ctx.filetype = vim.eval('&filetype')
     nrs = list(range(ctx.L1 - 1, ctx.L2))   # lines start with 1, buffer is a list -> 0
@@ -463,7 +463,7 @@ def ExecuteSelectedRange():
                 if l1:
                     vim.current.buffer = src_buf
                     ctx.L1 = ctx.L2 = l1
-                    return ExecuteSelectedRange()
+                    return Eval()
 
                 if len(ctx.W) > 0:
                     from picker import show_action_picker

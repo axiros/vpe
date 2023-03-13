@@ -31,7 +31,7 @@ class S:
     last_picker = None
 
 
-def process_result():
+def process_result(txt):
     modn = S.last_picker = read_file(fn_picker_result)
     os.unlink(fn_picker_result)
     if not all_mods.get(modn):
@@ -39,20 +39,24 @@ def process_result():
         #  show any exception in vim:
         all_mods[modn] = import_module(f'modules.pickermods.{modn}')
     mod = all_mods[modn]
-    res = mod.from_picker(ctx.W)
+    res = mod.from_picker(txt)
     lines = res['lines']
     add_lines(lines, offs=0)
 
 
 def show_action_picker():
+    txt = '\n'.join(ctx.SEL)
+    txt = txt or ctx.W
     if exists(fn_picker_result):
-        return process_result()
+        notify('foo', str(txt))
+        return process_result(txt)
+    title = txt.split('\n', 1)[0] + '...' if '\n' in txt else txt
     p = make_picker()
     l = list(pickers())
     if S.last_picker:
         l.remove(S.last_picker)
         l.insert(0, S.last_picker)
-    p.show(ctx.W, l, fn_picker_result)
+    p.show(title, l, fn_picker_result)
 
     # time.sleep(3)
     # notify('open')

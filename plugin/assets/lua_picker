@@ -29,7 +29,7 @@ local show = function(title, list, fn_res)
                                     file:close()
                                     -- print(vim.inspect(selection))
                                     -- vim.api.nvim_put({ selection[1] }, "", false, true)
-                                    vim.cmd("PythonEval")
+                                    vim.cmd("PyEvalFromPicker")
                             end)
                             return true
                     end,

@@ -30,7 +30,7 @@ https: // vim.fandom.com
 ```
 """
 
-from share import notify, vim
+from share import notify, vim, wrap_text_result
 import sys
 import base64
 import uuid
@@ -111,7 +111,8 @@ def try_load(line='vpe', **kw):
 
     t = requests.get(url, headers=n).text
     l = links(t)
-    s = '\n'.join(['"""', '', '\n'.join([i for i in l]), '', '"""'])
+    s = '\n'.join(l).strip()
+    s = wrap_text_result(s, 'google', line)
     return {'lines': s, ':here': True, 'list': l}
 
 
