@@ -49,7 +49,7 @@ def starts_with_sep(line):
 
 # due to how mdtable currently works, the alias *has* to be single pipe. 'leo' does not need a mod, works like this
 # with a `leo` cmd available:
-aliases = {'|': 'mdtable ', ':': '_cmd ', 'leo ': '_cmd !leo '}
+aliases = {'|': 'mdtable ', ':': '_cmd ', 'leo ': '_cmd !leo ', 'tr ': 'translate '}
 
 
 def try_module(line):

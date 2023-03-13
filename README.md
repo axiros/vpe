@@ -304,20 +304,22 @@ vpe <module name> [argument]`
 
 Aliases in square brackets
 
-| **Module**           | **Alias(es)** | **What**                                                  |
-| ------------------ | ---------   | ------------------------------------------------------- |
-| [cmd][cmd]         | : :vpe      | Run Vim Commands, incl. find & execute (see cast below) |
-| [google][google]   | g           | Searches Google                                         |
-| [grapheasy][ge]    | ge          | Draws Graph Easy Plots                                  |
-| [leo][leo]         | leo         | Translates the arguments, using the [leo][leo] command  |
-| [plantuml][plant]  | plant uml   | Draws Plantuml Plots                                    |
-| [shot][shot]       |             | Adds Screenshots                                        |
-| [swagger][swagger] | openapi     | Builds Interactive API Client                           |
+| **Module**               | **Alias(es)** | **What**                                                  |
+| ------------------     | ---------   | ------------------------------------------------------- |
+| [cmd][cmd]             | : :vpe      | Run Vim Commands, incl. find & execute (see cast below) |
+| [google][google]       | g           | Searches Google                                         |
+| [grapheasy][ge]        | ge          | Draws Graph Easy Plots                                  |
+| [leo][leo]             | leo         | Translates the arguments, using the [leo][leo] command  |
+| [translate][translate] | tr          | Translates the arguments, using the [translate-cli][translate] command  |
+| [plantuml][plant]      | plant uml   | Draws Plantuml Plots                                    |
+| [shot][shot]           |             | Adds Screenshots                                        |
+| [swagger][swagger]     | openapi     | Builds Interactive API Client                           |
 
 [cmd]: plugin/modules/_cmd.py
 [google]: plugin/modules/google.py
 [ge]: plugin/modules/grapheasy.py
 [leo]: https://pypi.org/project/leo-cli/ 
+[translate]: https://pypi.org/project/translate/
 [plant]: plugin/modules/plantuml.py
 [shot]: plugin/modules/shot.py
 [swagger]: docs/swagger.md
@@ -345,6 +347,8 @@ about what to do with the word.
 
 Those options are found, based on modules available or linked within the
 `vpe/plugin/modules/pickermods` directory.
+
+[![asciicast](https://asciinema.org/a/3ABSxi4OeQS2XILZ4TNMtJTbf.svg)](https://asciinema.org/a/3ABSxi4OeQS2XILZ4TNMtJTbf)
 
 
 
