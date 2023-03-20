@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 """
-# Use 'translate-cli' to translate sentences
+# Use 'translate' to translate sentences
 
 `translate en;fr: That parrot is dead!`
 
 Default language, when not give: English
+Default source lang, when not given: $VPE_SRC_LANG, default: de
+
+## Requirements
+
+1. pip install translate
+2. translate-cli within your $PATH
+
+## Note
+
+The results seem better than those from googletrans (pip install googletrans==4.0.0rc1)
+so we don't even offer that as alternative.
 """
 
 from share import notify, vim, wrap_text_result
@@ -16,10 +27,13 @@ def from_picker(word):
     return res
 
 
+src_lang = os.environ.get('VPE_SRC_LANG', 'de')
+
+
 def parse(line):
     lang = line[:9].split(':')
     if len(lang) == 1:
-        slang, lang = 'de', 'en'
+        slang, lang = src_lang, 'en'
     else:
         lang, line = [i.strip() for i in line.split(':', 1)]
         if ';' not in lang:
