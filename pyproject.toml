@@ -26,6 +26,17 @@ exclude = [
     "venv",
 ]
 line-length = 90
+
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+
+[tool.ruff.format]
+# Prefer single quotes over double quotes
+quote-style = "single"
+
+
 [tool.blue]
 line-length = 90
 
