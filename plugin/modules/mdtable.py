@@ -14,14 +14,16 @@ delimitted by empty lines.
 - Autoclears empty columns right
 - Keeps alignment of | delimiters even when concealleval is > 0, i.e. the ** bold markers are concealled (shifting cell width by 2)
 """
-from share import vimcmdr, ctx, vim, notify, buf
+from share import ctx, vim, buf
 
-PH = '❗🟥'   # placeholder
+PH = '❗🟥'  # placeholder
 
 
 def bold(s):
     if not s:
         return ''
+    return s
+    # done by markdown nvim, the formatting
     while not s[:2] == '**':
         s = '*' + s
     while not s[-2:] == '**':
@@ -48,7 +50,7 @@ def cells(l, row, conce):
     [COLS.append(0) for i in range(len(COLS), len(l))]
     minus = 0
     if row == 0 and conce > 0:
-        minus = 2
+        minus = 0
     for col in range(len(l)):
         COLS[col] = max(COLS[col], len(l[col]) - minus)
     return l
@@ -72,7 +74,7 @@ def fill(row, cols, nr):
     return row
 
 
-COLS = []   # column width. Reset per run.
+COLS = []  # column width. Reset per run.
 
 
 def cell(s, spec, col, conce):
