@@ -2,6 +2,7 @@
 """
 Tests: see __main__
 """
+
 import time
 from pathlib import Path
 import re
@@ -72,7 +73,7 @@ def google(word):
 def is_markdown_ref_link(fn, word, word_space_sepped, dir, line, **kw):
     """Always open it, no matter where we are in that line"""
     if not line:
-        return   # or not fn.endswith('.md'): return
+        return  # or not fn.endswith('.md'): return
     # comments (with e.g. other links) are anyway not allowed in ref link lines by md => really, just hit the link:
     if not (line[0] == '[' and ']: ' in line):
         return
@@ -130,9 +131,16 @@ def touch_new_md_file(fn, title):
         fd.write('# %s' % title)
 
 
+def is_markdown_direct_link(fn, word_space_sepped, **kw):
+    w = word_space_sepped
+    if w.startswith('<http') and '://' in w and w[-1] == '>':
+        browse(w[1:-1])
+
+
 def is_markdown_link(col, fn, word, word_space_sepped, dir, line, **kw):
     """On title: browse. On link: open. On ref link: go to it"""
-    if not word_space_sepped:   # or not fn.endswith('.md'):
+    # log('link', **locals())
+    if not word_space_sepped:  # or not fn.endswith('.md'):
         return
 
     # word can be within a space sepped title ->
@@ -309,6 +317,7 @@ def handle(col, word, line, linenr=1, fn='x.md'):
     for f in [
         is_man_page,
         is_help,
+        is_markdown_direct_link,
         is_markdown_ref_link,
         is_markdown_link,
         is_file_path_or_url,
@@ -431,6 +440,10 @@ def test(match):
                 [[(1, 6), 'foobar', 'a foobar bar foo'], [0, G('foobar')]],
                 [[(0, 6), 'foobar', 'foobar bar foo'], [0, G('foobar')]],
                 [[(5, 12), 'a', 'b [a](http://foo/bar) x'], [0, 'http://foo/bar']],
+                # markdown_direct_links:
+                [[(5, 12), 'a', 'b <http://foo/bar>'], [0, 'http://foo/bar']],
+                [[(5, 12), 'a', 'b <https://foo/bar> '], [0, 'https://foo/bar']],
+                # ref link:
                 [[(0, 10), 'foo', f'[foo]: {L}'], [0, L]],
                 [
                     [(3, 9), 'git', 'a "git/hub" foo'],

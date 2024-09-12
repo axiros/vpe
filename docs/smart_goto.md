@@ -35,6 +35,8 @@ If you marked a bunch of URLs, those will be opened in browser as well.
 |`foobar`|`a foobar bar foo` <br> `.^^^^^` <br> 🌐search: `client=%s-b-d&q=foobar`| 
 |`foobar`|`foobar bar foo` <br> `^^^^^^` <br> 🌐search: `client=%s-b-d&q=foobar`| 
 |`a`|`b [a](http://foo/bar) x` <br> `.....^^^^^^^` <br> 🌐`http://foo/bar`| 
+|`a`|`b <http://foo/bar>` <br> `.....^^^^^^^` <br> 🌐`http://foo/bar`| 
+|`a`|`b <https://foo/bar> ` <br> `.....^^^^^^^` <br> 🌐`https://foo/bar`| 
 |`foo`|`[foo]: http://foo.bar` <br> `^^^^^^^^^^` <br> 🌐`http://foo.bar`| 
 |`git`|`a "git/hub" foo` <br> `...^^^^^^` <br> 🌐`https://github.com/git/hub`|github default for 2 word slash sepped| 
 |`foo`|`[foo]: http://foo.bar .` <br> `.^` <br> 🌐`http://foo.bar`|Splits off after the link by space| 
