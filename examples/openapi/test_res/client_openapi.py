@@ -480,10 +480,40 @@ class users___user_id_:
         R.body = dict(first_name = str_dflt, last_name = str_dflt)
 
 # ─────────────── Tools ─────────────────────
-import requests, json, functools, inspect, os
-keyw = {'from', 'for', 'raise', 'async', 'if', 'import', 'continue', 'while', 'not', 'except'}
+import json, functools, inspect, os, gzip, base64, types
+from urllib import request as urlreq, parse as urlparse, error as urlerr
+keyw = {'async', 'raise', 'while', 'if', 'import', 'for', 'not', 'continue', 'except', 'from'}
 
 class Tools:
+    @staticmethod
+    def http(methd, url, params=None, headers=None, timeout=None, data=None, auth=None, digest=False):
+        headers = dict(headers or {})
+        if params:
+            url += ('&' if '?' in url else '?') + urlparse.urlencode(params, doseq=True)
+        if isinstance(data, (dict, list)):
+            data = urlparse.urlencode(data, doseq=True)
+        if isinstance(data, str):
+            data = data.encode('utf-8')
+        handlers = []
+        if auth and digest:
+            mgr = urlreq.HTTPPasswordMgrWithDefaultRealm()
+            mgr.add_password(None, url, *auth)
+            handlers.append(urlreq.HTTPDigestAuthHandler(mgr))
+        elif auth:
+            headers['Authorization'] = 'Basic ' + base64.b64encode(':'.join(auth).encode()).decode()
+        headers.setdefault('User-Agent', 'vpe')
+        req = urlreq.Request(url, data=data, headers=headers, method=methd.upper())
+        try:
+            r = urlreq.build_opener(*handlers).open(req, timeout=timeout)
+        except urlerr.HTTPError as e:
+            r = e
+        with r:
+            body = r.read()
+            if r.headers.get('Content-Encoding') == 'gzip':
+                body = gzip.decompress(body)
+            text = body.decode(r.headers.get_content_charset() or 'utf-8', errors='replace')
+            return types.SimpleNamespace(url=r.geturl(), status_code=r.status, headers=dict(r.headers), text=text)
+
     @staticmethod
     def build_req(meth):
         data, h, q = None, API.hdrs, {}
@@ -560,15 +590,14 @@ class Tools:
             if getenv(API.passw):
                 kw['auth'] = (getenv(API.user), getenv(API.passw))
             if getattr(API, 'digest', 0):
-                kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth'])
+                kw['digest'] = True
             if isinstance(data, (list, dict)):
                 kw['data'] = repl(data)
-            req = getattr(requests, methd)
             if result == 0:   # no send
                 return [url, methd, kw]
             if 'json' in h.get('Content-Type') and data is not None:
                 kw['data'] = json.dumps(kw['data'])
-            req = req(url, **kw)
+            req = Tools.http(methd, url, **kw)
             if result == 3:
                 return req   # show all
             r = {'status': req.status_code}

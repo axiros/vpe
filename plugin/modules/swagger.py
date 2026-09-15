@@ -14,7 +14,7 @@ import json
 import string
 from copy import deepcopy
 from share import log, read_file, ctx, is_, debug   # noqa
-from share import out, lib, BRKT, deindent, vim, vimcmd   # noqa
+from share import out, lib, BRKT, deindent, vim, vimcmd, http   # noqa
 
 pyallwd = set(string.digits + string.ascii_letters + '_')
 
@@ -94,10 +94,40 @@ class swagger:
     tools_code = """
 
         # ─────────────── Tools ─────────────────────
-        import requests, json, functools, inspect, os
+        import json, functools, inspect, os, gzip, base64, types
+        from urllib import request as urlreq, parse as urlparse, error as urlerr
         keyw = %(forbidden_kw)s
 
         class Tools:
+            @staticmethod
+            def http(methd, url, params=None, headers=None, timeout=None, data=None, auth=None, digest=False):
+                headers = dict(headers or {})
+                if params:
+                    url += ('&' if '?' in url else '?') + urlparse.urlencode(params, doseq=True)
+                if isinstance(data, (dict, list)):
+                    data = urlparse.urlencode(data, doseq=True)
+                if isinstance(data, str):
+                    data = data.encode('utf-8')
+                handlers = []
+                if auth and digest:
+                    mgr = urlreq.HTTPPasswordMgrWithDefaultRealm()
+                    mgr.add_password(None, url, *auth)
+                    handlers.append(urlreq.HTTPDigestAuthHandler(mgr))
+                elif auth:
+                    headers['Authorization'] = 'Basic ' + base64.b64encode(':'.join(auth).encode()).decode()
+                headers.setdefault('User-Agent', 'vpe')
+                req = urlreq.Request(url, data=data, headers=headers, method=methd.upper())
+                try:
+                    r = urlreq.build_opener(*handlers).open(req, timeout=timeout)
+                except urlerr.HTTPError as e:
+                    r = e
+                with r:
+                    body = r.read()
+                    if r.headers.get('Content-Encoding') == 'gzip':
+                        body = gzip.decompress(body)
+                    text = body.decode(r.headers.get_content_charset() or 'utf-8', errors='replace')
+                    return types.SimpleNamespace(url=r.geturl(), status_code=r.status, headers=dict(r.headers), text=text)
+
             @staticmethod
             def build_req(meth):
                 data, h, q = None, API.hdrs, {}
@@ -174,15 +204,14 @@ class swagger:
                     if getenv(API.passw):
                         kw['auth'] = (getenv(API.user), getenv(API.passw))
                     if getattr(API, 'digest', 0):
-                        kw['auth'] = requests.auth.HTTPDigestAuth(*kw['auth'])
+                        kw['digest'] = True
                     if isinstance(data, (list, dict)):
                         kw['data'] = repl(data)
-                    req = getattr(requests, methd)
                     if result == 0:   # no send
                         return [url, methd, kw]
                     if 'json' in h.get('Content-Type') and data is not None:
                         kw['data'] = json.dumps(kw['data'])
-                    req = req(url, **kw)
+                    req = Tools.http(methd, url, **kw)
                     if result == 3:
                         return req   # show all
                     r = {'status': req.status_code}
@@ -476,13 +505,10 @@ class swagger:
     def try_load(line, **kw):
         """s the content of a swagger definition file"""
 
-        h = ['http://', 'https://']
-        if line.startswith(h[0]) or line.startswith(h[1]):
-            s = lib('requests').get(line).text
-
-        s = read_file(line)
-        if not s and line.split(':', 1)[0] in h:   # and url.endswith('.json'):
-            s = lib('requests').get(line).text
+        if line.startswith(('http://', 'https://')):
+            s = http(line).text
+        else:
+            s = read_file(line)
 
         url = line
         s = s.encode().decode('utf-8-sig')

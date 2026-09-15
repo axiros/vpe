@@ -219,10 +219,9 @@ import zlib
 import base64
 import sys
 import json
-from requests import post, get
 import os
 
-from share import notify, ctx, cli_mode, uid, vimcmd, BL_SQR
+from share import notify, ctx, cli_mode, uid, vimcmd, BL_SQR, http
 from share import delete_cur_line, read_file, write_file, unlink_if
 from share import get_this_and_block_after, buf, linekw, write_file_relative
 
@@ -248,8 +247,8 @@ def srv(spec, fmt, bin=False):
     spec = f'@startuml\n{spec}\n@enduml'
     k = base64.urlsafe_b64encode(zlib.compress(spec.encode('utf-8'), 9)).decode('utf-8')
     # TODO: txt not working always utxt!?
-    s = get(f'{SERVER}/plantuml/{fmt}/{k}')
-    return s.text if not bin else s.content
+    s = http(f'{SERVER}/plantuml/{fmt}/{k}')
+    return s.content if bin else s.text
 
 
 def render(spec,  fmt, **kw):

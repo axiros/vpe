@@ -125,6 +125,68 @@ def notify(title='', msg='', dt=3):
     os.system(f'notify-send -t {dt} "{title}" "{msg}"')
 
 
+# ------------------------------------------------------------------------------------------------ HTTP
+class Response:
+    """The parts of requests.Response the modules use"""
+
+    def __init__(self, url, status_code, headers, content, encoding):
+        self.url, self.status_code, self.headers = url, status_code, headers
+        self.content, self.encoding = content, encoding
+
+    @property
+    def text(self):
+        return self.content.decode(self.encoding, errors='replace')
+
+    def json(self):
+        import json
+
+        return json.loads(self.content)
+
+
+def http(url, method='GET', params=None, data=None, json=None, headers=None, timeout=30, auth=None, digest=False):
+    """HTTP request via the standard library. Error statuses return a Response, as with requests.
+
+    data: dict/list is form encoded, str/bytes sent as is. json: sent as JSON body.
+    auth: (user, password), basic auth unless digest is True.
+    """
+    import gzip
+    import json as jsonlib
+    from base64 import b64encode
+    from urllib.error import HTTPError
+    from urllib.parse import urlencode
+    from urllib.request import Request, build_opener, HTTPDigestAuthHandler, HTTPPasswordMgrWithDefaultRealm
+
+    headers = {'User-Agent': 'vpe', **(headers or {})}
+    if params:
+        url += ('&' if '?' in url else '?') + urlencode(params, doseq=True)
+    if json is not None:
+        data = jsonlib.dumps(json)
+        headers.setdefault('Content-Type', 'application/json')
+    elif is_(data, (dict, list)):
+        data = urlencode(data, doseq=True)
+        headers.setdefault('Content-Type', 'application/x-www-form-urlencoded')
+    if is_(data, str):
+        data = data.encode('utf-8')
+    handlers = []
+    if auth and digest:
+        mgr = HTTPPasswordMgrWithDefaultRealm()
+        mgr.add_password(None, url, *auth)
+        handlers.append(HTTPDigestAuthHandler(mgr))
+    elif auth:
+        headers['Authorization'] = 'Basic ' + b64encode(':'.join(auth).encode()).decode()
+    req = Request(url, data=data, headers=headers, method=method.upper())
+    try:
+        r = build_opener(*handlers).open(req, timeout=timeout)
+    except HTTPError as e:
+        r = e
+    with r:
+        body = r.read()
+        if r.headers.get('Content-Encoding') == 'gzip':
+            body = gzip.decompress(body)
+        enc = r.headers.get_content_charset() or 'utf-8'
+        return Response(r.geturl(), r.status, dict(r.headers), body, enc)
+
+
 # ------------------------------------------------------------------------------------------------ Vim API tools
 
 

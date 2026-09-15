@@ -55,9 +55,8 @@ https://lambdalabs.com/ buy modelling time on GPUs
 
 from json import dumps, loads
 import time
-from share import notify, vim, wrap_text_result, cast, write_file, here, read_file
+from share import notify, vim, wrap_text_result, cast, write_file, here, read_file, http
 import os
-import requests
 from functools import partial
 
 openai_key_cmd = 'pass show OPENAI_API_KEY'
@@ -104,13 +103,12 @@ def req(endpoint, data=None, timeout=5, **kw):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + api_key,
     }
-    r = requests.get if not data else requests.post
-    r = partial(r, api_endpoint, headers=request_headers, timeout=timeout)
+    r = partial(http, api_endpoint, headers=request_headers, timeout=timeout)
     if not data:
         response = r()
     else:
         try:
-            response = r(json=data)
+            response = r(method='POST', json=data)
         except Exception as ex:
             return f'{ex} [dt={timeout}s]', 0
     if response.status_code == 200:

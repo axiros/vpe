@@ -44,7 +44,7 @@ Note: In the recording, the 'swagger' keyword was not required before the url. M
 - 0 in order to only see request parameters w/o actually sending it
 - 1 (default) to see the responses only
 - 2 for both
-- 3 shows the whole requests object, with all attributes resolved
+- 3 shows the whole response object (`status_code`, `headers`, `text`, `url`)
 
 5. Configure any authentication within `class API`. Environ variables are understood.
 6. Directives are at the end of the `methods` block, ready for change.
@@ -210,7 +210,7 @@ The parameters you do NOT want to send,
 
 ### Authentication
 
-If API.passw is set, then by default requests is using BasicAuth.
+If API.passw is set, then by default the client uses BasicAuth.
 For digest, set `digest = True` into the API class.
 
 ## Command Line Usage

@@ -30,12 +30,11 @@ https: // vim.fandom.com
 ```
 """
 
-from share import notify, vim, wrap_text_result
+from share import notify, vim, wrap_text_result, http
 import sys
 import base64
 import uuid
-import requests
-import urllib
+import urllib.parse
 import re
 
 
@@ -109,7 +108,7 @@ def try_load(line='vpe', **kw):
         'DNT': '1',
     }
 
-    t = requests.get(url, headers=n).text
+    t = http(url, headers=n).text
     l = links(t)
     s = '\n'.join(l).strip()
     s = wrap_text_result(s, 'google', line)

@@ -4,18 +4,25 @@ from share import os, read_file
 # some predefined code blocks, extensible by user:
 m_r = """
 if 'Sending requests to API endpoint':
-    from requests import get, post, delete, patch
+    from urllib.request import Request, urlopen
+    from urllib.error import HTTPError
     from json import dumps
-    from functools import partial
-    headers = {'Content-Type': 'application/json'}
-    Post = lambda url, data: post(url, data=data, headers=headers)
+    headers = {'Content-Type': 'application/json', 'User-Agent': 'vpe'}
+
+    def Post(url, data):
+        req = Request(url, data=dumps(data).encode(), headers=headers, method='POST')
+        try:
+            with urlopen(req, timeout=10) as r:
+                return r.read().decode()
+        except HTTPError as e:
+            return e.read().decode()
 
 class R:
     # :clear
     # :cmt pastebin example
     url = 'http://httpbin.org/post'
     data = { "mydata": { "hello": "world" }}
-    p = Post(url, data=data).text
+    p = Post(url, data=data)
     # y = Post(url, data=data)
 
 """
